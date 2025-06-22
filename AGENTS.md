@@ -116,7 +116,22 @@ haptic-maze/
 
 ## 8. ビルド & テスト
 
-- 未定
+開発環境は **Node.js 20** 以上と `pnpm` を前提とする。
+
+1. 依存パッケージのインストール
+   ```bash
+   pnpm install
+   ```
+2. 開発サーバ起動
+   ```bash
+   pnpm ios      # iOS シミュレータ
+   pnpm android  # Android 実機
+   ```
+3. Lint / テスト
+   ```bash
+   pnpm lint     # ESLint による静的解析
+   # jest 実行は後日追加予定
+   ```
 
 ---
 

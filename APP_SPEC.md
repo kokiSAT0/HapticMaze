@@ -174,7 +174,7 @@ const borderW = lerp(2, 8, 1 - t); // 2→8px
 
 | パッケージ              | バージョン | 用途             |
 | ----------------------- | ---------- | ---------------- |
-| expo                    | SDK 50     | Baseline         |
+| expo                    | SDK 53     | Baseline         |
 | expo‑haptics            | latest     | 振動 API         |
 | react‑native‑svg        | 15.x       | MiniMap 描画     |
 | react‑native‑reanimated | 3.x        | 枠アニメーション |
@@ -183,11 +183,13 @@ const borderW = lerp(2, 8, 1 - t); // 2→8px
 
 ## 9. ビルド & 実行
 
+事前に **Node.js 20** 以上と `pnpm` をインストールしておく。
+
 ```bash
 # 1. プロジェクト作成
 npx create-expo-app haptic-maze -t expo-template-blank-typescript
 cd haptic-maze
-pnpm i expo-haptics react-native-svg react-native-reanimated@next
+pnpm add expo-haptics react-native-svg react-native-reanimated
 
 # 2. 迷路 JSON 追加
 mkdir -p assets/mazes && cp <path>/maze001.json assets/mazes/
