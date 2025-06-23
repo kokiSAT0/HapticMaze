@@ -70,22 +70,22 @@ export function applyDistanceFeedback(
   const showTime = Math.max(period * duty, 30);
 
   // r が遠いほど弱く、近いほど強く振動
+  // 0.66 より遠い → Light
+  // 0.33 より遠い → Medium
+  // それ以外 → Heavy
   const style =
     r > 0.66
-      ? null
+      ? Haptics.ImpactFeedbackStyle.Light
       : r > 0.33
-        ? Haptics.ImpactFeedbackStyle.Light
-        : r > 0.1
-          ? Haptics.ImpactFeedbackStyle.Medium
-          : Haptics.ImpactFeedbackStyle.Heavy;
-  if (style) {
+        ? Haptics.ImpactFeedbackStyle.Medium
+        : Haptics.ImpactFeedbackStyle.Heavy;
+
+  Haptics.impactAsync(style);
+  // 枠が表示されている間 (showTime + 300ms) は短い振動を繰り返す
+  const id = setInterval(() => {
     Haptics.impactAsync(style);
-    // 枠が表示されている間 (showTime + 300ms) は短い振動を繰り返す
-    const id = setInterval(() => {
-      Haptics.impactAsync(style);
-    }, 150);
-    setTimeout(() => clearInterval(id), showTime + 300);
-  }
+  }, 150);
+  setTimeout(() => clearInterval(id), showTime + 300);
 
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
