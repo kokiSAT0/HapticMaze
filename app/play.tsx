@@ -157,7 +157,8 @@ export default function PlayScreen() {
         onPress={() => setShowMenu(true)}
         accessibilityLabel="メニューを開く"
       >
-        <MaterialIcons name="more-vert" size={24} color="black" />
+        {/* 背景が黒のためアイコンを濃いグレーにして視認性を確保 */}
+        <MaterialIcons name="more-vert" size={24} color="#555" />
       </Pressable>
       <View style={[styles.miniMapWrapper, { top: mapTop }]}>
         <MiniMap
