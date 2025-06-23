@@ -23,7 +23,11 @@ import { ThemedView } from "@/components/ThemedView";
 import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView, Dir } from "@/src/types/maze";
 import { useGame } from "@/src/game/useGame";
-import { applyBumpFeedback, applyDistanceFeedback } from "@/src/game/utils";
+import {
+  applyBumpFeedback,
+  applyDistanceFeedback,
+  nextPosition,
+} from "@/src/game/utils";
 
 // LinearGradient を Reanimated 用にラップ
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
@@ -91,11 +95,7 @@ export default function PlayScreen() {
     // ここでロックを開始
     setLocked(true);
     // 移動後の座標を計算しておく
-    const next = { x: state.pos.x, y: state.pos.y };
-    if (dir === "Up") next.y -= 1;
-    if (dir === "Down") next.y += 1;
-    if (dir === "Left") next.x -= 1;
-    if (dir === "Right") next.x += 1;
+    const next = nextPosition(state.pos, dir);
 
     // move の戻り値が false のときは壁に衝突
     const ok = move(dir);

@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { wallSet, canMove, getHitWall } from './utils';
+import { wallSet, canMove, getHitWall, nextPosition } from './utils';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
@@ -41,11 +41,7 @@ function reducer(state: GameState, action: Action): GameState {
       };
     case 'move': {
       const { pos } = state;
-      const next: Vec2 = { x: pos.x, y: pos.y };
-      if (action.dir === 'Up') next.y -= 1;
-      if (action.dir === 'Down') next.y += 1;
-      if (action.dir === 'Left') next.x -= 1;
-      if (action.dir === 'Right') next.x += 1;
+      const next = nextPosition(pos, action.dir);
       if (!canMove(pos, action.dir, maze)) {
         const hit = getHitWall(pos, action.dir, maze);
         const hitV = new Set(state.hitV);

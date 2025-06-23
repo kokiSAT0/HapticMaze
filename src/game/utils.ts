@@ -154,6 +154,29 @@ export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
 }
 
 /**
+ * 現在位置 pos と方向 dir から次の座標を計算します。
+ * 単純に座標を±1 するだけの処理です。
+ */
+export function nextPosition(pos: Vec2, dir: Dir): Vec2 {
+  const next = { ...pos };
+  switch (dir) {
+    case "Up":
+      next.y -= 1;
+      break;
+    case "Down":
+      next.y += 1;
+      break;
+    case "Left":
+      next.x -= 1;
+      break;
+    case "Right":
+      next.x += 1;
+      break;
+  }
+  return next;
+}
+
+/**
  * 衝突した壁の座標を取得します。
  * 壁が存在しない場合は null を返します。
  */
