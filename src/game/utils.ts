@@ -6,12 +6,7 @@ import {
   withSequence,
   SharedValue,
 } from 'react-native-reanimated';
-import type { MazeData, Dir } from '@/src/types/maze';
-
-export interface Vec2 {
-  x: number;
-  y: number;
-}
+import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
 /**
  * 2点間の直線距離を求めます。
