@@ -15,8 +15,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { MiniMap } from '@/src/components/MiniMap';
 import type { MazeData as MazeView, Dir } from '@/src/types/maze';
 import { useGame } from '@/src/game/useGame';
-import { applyBumpFeedback } from '@/src/game/utils';
-import { useDistanceFeedback } from '@/hooks/useDistanceFeedback';
+import { applyBumpFeedback, applyDistanceFeedback } from '@/src/game/utils';
 
 // LinearGradient を Reanimated 用にラップ
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
@@ -48,8 +47,6 @@ export default function PlayScreen() {
       setShowResult(true);
     }
   }, [state.pos, maze.goal]);
-  // ゴール距離に応じた周期でフィードバックを発火
-  useDistanceFeedback(state.pos, { x: maze.goal[0], y: maze.goal[1] }, borderW);
 
   const handleOk = () => {
     setShowResult(false);
@@ -72,14 +69,29 @@ export default function PlayScreen() {
 
   // DPad からの入力を処理する関数
   const handleMove = (dir: Dir) => {
-    // move の戻り値が false のときは壁にぶつかったということ
+    // 移動後の座標を計算しておく
+    const next = { x: state.pos.x, y: state.pos.y };
+    if (dir === 'Up') next.y -= 1;
+    if (dir === 'Down') next.y += 1;
+    if (dir === 'Left') next.x -= 1;
+    if (dir === 'Right') next.x += 1;
+
+    // move の戻り値が false のときは壁に衝突
     const ok = move(dir);
     if (!ok) {
+      // 壁衝突時は赤い枠と強い振動を 1 回だけ出す
       applyBumpFeedback(
         state.pos,
         { x: maze.goal[0], y: maze.goal[1] },
         borderW,
         setBorderColor
+      );
+    } else {
+      // 移動成功時は距離に応じた枠アニメーションと振動を 1 回だけ実行
+      applyDistanceFeedback(
+        next,
+        { x: maze.goal[0], y: maze.goal[1] },
+        borderW
       );
     }
   };
