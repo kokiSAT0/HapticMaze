@@ -16,6 +16,7 @@ interface GameState {
   player: [number, number];
   steps: number;
   bumps: number;
+  path: [number, number][]; // 移動履歴。MiniMap 用に保存しておく
   maze: MazeData;
 }
 
@@ -29,6 +30,7 @@ const initialState: GameState = {
   player: maze.start,
   steps: 0,
   bumps: 0,
+  path: [maze.start],
   maze,
 };
 
@@ -56,7 +58,7 @@ function hasWall(
 function reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'reset':
-      return { ...state, player: state.maze.start, steps: 0, bumps: 0 };
+      return { ...state, player: state.maze.start, steps: 0, bumps: 0, path: [state.maze.start] };
     case 'move': {
       let next: [number, number] = state.player;
       if (action.direction === 'up') next = [state.player[0], state.player[1] - 1];
@@ -66,7 +68,12 @@ function reducer(state: GameState, action: GameAction): GameState {
       if (hasWall(state.maze, state.player, next)) {
         return { ...state, bumps: state.bumps + 1 };
       }
-      return { ...state, player: next, steps: state.steps + 1 };
+      return {
+        ...state,
+        player: next,
+        steps: state.steps + 1,
+        path: [...state.path, next],
+      };
     }
     default:
       return state;
