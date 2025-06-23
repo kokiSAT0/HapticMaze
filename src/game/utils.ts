@@ -101,11 +101,13 @@ export function applyBumpFeedback(
   // 枠線を赤く変更
   setColor('red');
 
-  // 2 回短く振動させることで衝突を表現
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  // 2 回ともやや長めに、強く振動させて衝突をわかりやすくする
+  // Heavy は Light よりも大きい振動を表します
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  // 200 ミリ秒後に再度振動させることで "2 回" を体感できるようにする
   setTimeout(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, 100);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  }, 200);
 
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
