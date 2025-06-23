@@ -46,6 +46,8 @@ export default function PlayScreen() {
   // 連打を防ぐための入力ロック
   const [locked, setLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // applyDistanceFeedback で使う setInterval の ID を保持
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   // 枠の太さを共通化するため縦横で別々の AnimatedStyle を用意
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
@@ -82,6 +84,7 @@ export default function PlayScreen() {
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
@@ -97,20 +100,30 @@ export default function PlayScreen() {
     if (dir === "Left") next.x -= 1;
     if (dir === "Right") next.x += 1;
 
+    // 前回の setInterval が残っていれば停止
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     // move の戻り値が false のときは壁に衝突
-    const ok = move(dir);
-    const wait = !ok
-      ? applyBumpFeedback(
-          state.pos,
-          { x: maze.goal[0], y: maze.goal[1] },
-          borderW,
-          setBorderColor
-        )
-      : applyDistanceFeedback(
-          next,
-          { x: maze.goal[0], y: maze.goal[1] },
-          borderW
-        );
+    let wait: number;
+    if (!move(dir)) {
+      wait = applyBumpFeedback(
+        state.pos,
+        { x: maze.goal[0], y: maze.goal[1] },
+        borderW,
+        setBorderColor
+      );
+    } else {
+      const { wait: w, id } = applyDistanceFeedback(
+        next,
+        { x: maze.goal[0], y: maze.goal[1] },
+        borderW
+      );
+      wait = w;
+      intervalRef.current = id;
+    }
 
     // フィードバック終了から 50ms 後にロック解除
     if (timerRef.current) clearTimeout(timerRef.current);
