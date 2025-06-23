@@ -106,7 +106,7 @@ export function applyBumpFeedback(
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
-) {
+): number {
   // 暫定実装として太さ 30px、表示時間 600ms に固定
   const width = 30;
   const showTime = 600;
@@ -125,6 +125,8 @@ export function applyBumpFeedback(
 
   // フィードバック終了後に色を元へ戻す
   setTimeout(() => setColor('white'), showTime + 300);
+  // 次回入力まで待つ時間を返す
+  return showTime + 300;
 }
 
 /**

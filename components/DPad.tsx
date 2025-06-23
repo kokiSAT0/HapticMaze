@@ -6,13 +6,20 @@ import type { Dir } from '@/src/types/maze';
  * 方向入力を受け取り、useGame の move 関数へ渡す役割を持ちます。
  * Dir 型は 'Up' | 'Down' | 'Left' | 'Right' の四種類を表します。
  */
-export function DPad({ onPress }: { onPress: (dir: Dir) => void }) {
+export function DPad({
+  onPress,
+  disabled = false, // true のときタップを受け付けない
+}: {
+  onPress: (dir: Dir) => void;
+  disabled?: boolean;
+}) {
   return (
     <View style={styles.container}>
       {/* 一段目: 上ボタンを中央に配置 */}
       <View style={styles.row}>
         <View style={styles.spacer} />
         <Pressable
+          disabled={disabled}
           onPress={() => onPress('Up')}
           style={styles.btn}
           accessibilityLabel="上へ移動"
@@ -25,6 +32,7 @@ export function DPad({ onPress }: { onPress: (dir: Dir) => void }) {
       {/* 二段目: 左右ボタン */}
       <View style={styles.row}>
         <Pressable
+          disabled={disabled}
           onPress={() => onPress('Left')}
           style={styles.btn}
           accessibilityLabel="左へ移動"
@@ -33,6 +41,7 @@ export function DPad({ onPress }: { onPress: (dir: Dir) => void }) {
         </Pressable>
         <View style={styles.spacer} />
         <Pressable
+          disabled={disabled}
           onPress={() => onPress('Right')}
           style={styles.btn}
           accessibilityLabel="右へ移動"
@@ -44,6 +53,7 @@ export function DPad({ onPress }: { onPress: (dir: Dir) => void }) {
       <View style={styles.row}>
         <View style={styles.spacer} />
         <Pressable
+          disabled={disabled}
           onPress={() => onPress('Down')}
           style={styles.btn}
           accessibilityLabel="下へ移動"
