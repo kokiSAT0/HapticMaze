@@ -167,18 +167,28 @@ export function getHitWall(
 ): { kind: 'v' | 'h'; key: string } | null {
   const h = maze.v_walls as unknown as Set<string>;
   const v = maze.h_walls as unknown as Set<string>;
+  // 迷路の端は last 番のマスの外側にあると考える
+  const last = maze.size - 1;
   switch (dir) {
     case 'Right':
       if (h.has(`${x},${y}`)) return { kind: 'v', key: `${x},${y}` };
+      // 右端にぶつかった場合
+      if (x >= last) return { kind: 'v', key: `${last},${y}` };
       break;
     case 'Left':
       if (h.has(`${x - 1},${y}`)) return { kind: 'v', key: `${x - 1},${y}` };
+      // 左端にぶつかった場合
+      if (x <= 0) return { kind: 'v', key: `-1,${y}` };
       break;
     case 'Down':
       if (v.has(`${x},${y}`)) return { kind: 'h', key: `${x},${y}` };
+      // 下端にぶつかった場合
+      if (y >= last) return { kind: 'h', key: `${x},${last}` };
       break;
     case 'Up':
       if (v.has(`${x},${y - 1}`)) return { kind: 'h', key: `${x},${y - 1}` };
+      // 上端にぶつかった場合
+      if (y <= 0) return { kind: 'h', key: `${x},-1` };
       break;
   }
   return null;

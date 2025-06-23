@@ -47,6 +47,7 @@ export function MiniMap({
     const lines = [] as React.JSX.Element[];
 
     // 外周の壁
+    // 通常モードでは表示しないが、デバッグ時のみ全体を確認するため描画
     lines.push(
       <Rect
         key="border"
@@ -101,6 +102,7 @@ export function MiniMap({
   };
 
   // 衝突した壁を黄色で描画
+  // 外周との衝突も同じ座標形式で渡される
   const renderHitWalls = () => {
     const lines = [] as React.JSX.Element[];
     hitV?.forEach((k) => {
