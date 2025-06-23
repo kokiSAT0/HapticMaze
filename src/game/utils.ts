@@ -33,8 +33,13 @@ export interface FeedbackOptions {
   maxDist?: number;
   /** 枠太さの範囲 [細いとき, 太いとき] */
   borderRange?: [number, number];
-  /** 枠表示時間の範囲 [短いとき, 長いとき] */
-  showRange?: [number, number];
+}
+
+/**
+ * 値を一定範囲に収める簡単な clamp 関数。
+ */
+export function clamp(v: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, v));
 }
 
 /**
@@ -46,34 +51,38 @@ export function applyDistanceFeedback(
   goal: Vec2,
   borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
-) {
-  const {
-    maxDist = Math.hypot(goal.x, goal.y),
-    borderRange = [2, 40],
-    showRange = [200, 1000],
-  } = opts;
+): number {
+  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [2, 40] } = opts;
 
   const dist = distance(pos, goal);
-  const t = dist / maxDist; // 0〜1 の値
-  const width = lerp(borderRange[0], borderRange[1], 1 - t);
+  // r = 0 がゴール、1 が最遠の正規化値
+  const r = clamp(dist / maxDist, 0, 1);
+  const width = lerp(borderRange[0], borderRange[1], 1 - r);
 
-  // ゴールに近いほど長く枠を表示する時間を計算
-  // showRange[1] を 1000 とすると最大 1 秒表示される
-  const showTime = lerp(showRange[0], showRange[1], 1 - t);
+  // 周期 800→200ms を距離に応じて線形補間
+  const period = clamp(lerp(800, 200, 1 - r), 150, 1000);
+  // デューティ比 0.25→0.75 で枠を表示する時間を決める
+  const duty = lerp(0.25, 0.75, 1 - r);
+  const showTime = Math.max(period * duty, 30);
 
-  // t の値に応じて Light → Medium → Heavy の順で振動を強くする
+  // r が遠いほど弱く、近いほど強く振動
   const style =
-    t > 2 / 3
-      ? Haptics.ImpactFeedbackStyle.Light
-      : t > 1 / 3
-        ? Haptics.ImpactFeedbackStyle.Medium
-        : Haptics.ImpactFeedbackStyle.Heavy;
-  Haptics.impactAsync(style);
-  // withSequence を使って 1 回の代入で連続アニメーションを実行
+    r > 0.66
+      ? null
+      : r > 0.33
+        ? Haptics.ImpactFeedbackStyle.Light
+        : r > 0.1
+          ? Haptics.ImpactFeedbackStyle.Medium
+          : Haptics.ImpactFeedbackStyle.Heavy;
+  if (style) Haptics.impactAsync(style);
+
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
     withDelay(showTime, withTiming(0, { duration: 150 }))
   );
+
+  // 次回呼び出しまでの待ち時間を返す
+  return period;
 }
 
 /**
