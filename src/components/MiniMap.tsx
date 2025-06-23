@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle } from 'react-native-svg';
+import Svg, { Line, Rect, Circle, Polygon } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
@@ -42,7 +42,7 @@ export function MiniMap({
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
-    // デバッグオフなら壁を描かない
+    // デバッグオフ時は外周を含む壁を描画しない
     if (!showAll) return null;
     const lines = [] as React.JSX.Element[];
 
@@ -113,7 +113,7 @@ export function MiniMap({
           x2={(x + 1) * cell}
           y2={y * cell + cell}
           stroke="yellow"
-          strokeWidth={2}
+          strokeWidth={1}
         />
       );
     });
@@ -127,7 +127,7 @@ export function MiniMap({
           x2={x * cell + cell}
           y2={(y + 1) * cell}
           stroke="yellow"
-          strokeWidth={2}
+          strokeWidth={1}
         />
       );
     });
@@ -148,7 +148,7 @@ export function MiniMap({
           y1={(a.y + 0.5) * cell}
           x2={(b.x + 0.5) * cell}
           y2={(b.y + 0.5) * cell}
-          stroke="red"
+          stroke="white"
           strokeWidth={2}
         />
       );
@@ -162,13 +162,14 @@ export function MiniMap({
         {renderWalls()}
         {renderHitWalls()}
         {renderPath()}
-        {/* スタート位置を緑色で表示 */}
-        <Rect
-          x={(maze.start[0] + 0.25) * cell}
-          y={(maze.start[1] + 0.25) * cell}
-          width={cell * 0.5}
-          height={cell * 0.5}
-          fill="green"
+        {/* スタート位置を右向き三角形で表示 */}
+        <Polygon
+          points={`\
+            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.25) * cell} \
+            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.75) * cell} \
+            ${(maze.start[0] + 0.8) * cell},${(maze.start[1] + 0.5) * cell}
+          `}
+          fill="white"
         />
         {showAll && (
           // ゴール位置はデバッグ時のみ表示
@@ -177,7 +178,7 @@ export function MiniMap({
             y={(maze.goal[1] + 0.25) * cell}
             width={cell * 0.5}
             height={cell * 0.5}
-            fill="red"
+            fill="white"
           />
         )}
         {/* 現在位置を円で表示 */}
@@ -185,7 +186,7 @@ export function MiniMap({
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
           r={cell * 0.3}
-          fill="blue"
+          fill="white"
         />
       </Svg>
     </Animated.View>
