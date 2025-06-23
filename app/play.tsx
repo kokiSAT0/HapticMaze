@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Modal, StyleSheet, View, Pressable, Switch } from 'react-native';
+import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -17,6 +17,8 @@ export default function PlayScreen() {
   const router = useRouter();
   // SafeArea 用の余白情報を取得
   const insets = useSafeAreaInsets();
+  // 画面サイズを取得。useWindowDimensions は画面回転にも追従する
+  const { height } = useWindowDimensions();
   const { state, move, reset, maze } = useGame();
   const [showResult, setShowResult] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
@@ -51,6 +53,9 @@ export default function PlayScreen() {
     router.replace('/');
   };
 
+  const dpadTop = height * (2 / 3);
+  const mapTop = height / 3;
+
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}
     >
@@ -62,15 +67,21 @@ export default function PlayScreen() {
       >
         <MaterialIcons name="more-vert" size={24} color="black" />
       </Pressable>
-      <ThemedText>位置: {state.pos.x}, {state.pos.y}</ThemedText>
-      <DPad onPress={move} />
-      <MiniMap
-        maze={maze as MazeView}
-        path={state.path}
-        pos={state.pos}
-        flash={borderW}
-        showAll={debugAll}
-      />
+      <View style={[styles.miniMapWrapper, { top: mapTop }]}
+      >
+        <MiniMap
+          maze={maze as MazeView}
+          path={state.path}
+          pos={state.pos}
+          flash={borderW}
+          showAll={debugAll}
+          size={160}
+        />
+      </View>
+      <View style={[styles.dpadWrapper, { top: dpadTop }]}
+      >
+        <DPad onPress={move} />
+      </View>
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
@@ -114,7 +125,9 @@ export default function PlayScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  container: {
+    flex: 1,
+  },
   menuBtn: {
     position: 'absolute',
     top: 10,
@@ -149,5 +162,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     width: 250,
+  },
+  // ミニマップを画面上 1/3 の位置に中央揃えで配置
+  miniMapWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  // DPad を画面下 1/3 の位置に中央揃えで配置
+  dpadWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
   },
 });
