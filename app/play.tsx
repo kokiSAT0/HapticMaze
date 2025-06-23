@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Modal, StyleSheet, View, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSharedValue } from 'react-native-reanimated';
@@ -14,6 +15,8 @@ import { applyDistanceFeedback } from '@/src/game/utils';
 
 export default function PlayScreen() {
   const router = useRouter();
+  // SafeArea 用の余白情報を取得
+  const insets = useSafeAreaInsets();
   const { state, move, reset, maze } = useGame();
   const [showResult, setShowResult] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
@@ -47,10 +50,11 @@ export default function PlayScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: insets.top }]}
+    >
       {/* 右上のメニューアイコン */}
       <Pressable
-        style={styles.menuBtn}
+        style={[styles.menuBtn, { top: insets.top + 10 }]}
         onPress={() => setShowMenu(true)}
         accessibilityLabel="メニューを開く"
       >
@@ -63,7 +67,8 @@ export default function PlayScreen() {
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
         <Pressable style={styles.menuOverlay} onPress={() => setShowMenu(false)}>
-          <View style={styles.menuContent}>
+          <View style={[styles.menuContent, { top: insets.top + 40 }]}
+          >
             <Button
               title="Reset Maze"
               onPress={handleReset}
