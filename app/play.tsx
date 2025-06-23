@@ -133,7 +133,8 @@ export default function PlayScreen() {
           showAll={debugAll}
           hitV={state.hitV}
           hitH={state.hitH}
-          size={160}
+          // ミニマップを1.5倍のサイズ（240px）で表示する
+          size={240}
         />
       </View>
       <View style={[styles.dpadWrapper, { top: dpadTop }]}
