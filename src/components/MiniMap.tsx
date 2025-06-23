@@ -15,6 +15,7 @@ export interface MiniMapProps {
   /**
    * デバッグ表示フラグ
    * true のとき壁とゴールを含む全情報を描画
+   * 外枠の色もオレンジに変わる
    */
   showAll?: boolean;
   /** 衝突した壁 (縦方向) */
@@ -159,7 +160,14 @@ export function MiniMap({
   };
 
   return (
-    <Animated.View style={[{ width: size, height: size, borderColor: 'orange' }, style]}>
+    // showAll が true のときだけ外枠をオレンジ色で表示する
+    // false の場合は transparent を指定して枠線を隠す
+    <Animated.View
+      style={[
+        { width: size, height: size, borderColor: showAll ? 'orange' : 'transparent' },
+        style,
+      ]}
+    >
       <Svg width={size} height={size}>
         {renderWalls()}
         {renderHitWalls()}
