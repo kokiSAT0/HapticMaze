@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { withTiming, SharedValue } from 'react-native-reanimated';
+import { withTiming, withDelay, SharedValue } from 'react-native-reanimated';
 import type { MazeData, Dir } from '@/src/types/maze';
 
 export interface Vec2 {
@@ -30,6 +30,8 @@ export interface FeedbackOptions {
   vibrateRange?: [number, number];
   /** 枠太さの範囲 [最小, 最大] */
   borderRange?: [number, number];
+  /** 枠を表示する時間 (ミリ秒) */
+  showTime?: number;
 }
 
 /**
@@ -46,6 +48,7 @@ export function applyDistanceFeedback(
     maxDist = Math.hypot(goal.x, goal.y),
     vibrateRange = [120, 20],
     borderRange = [2, 8],
+    showTime = 1000,
   } = opts;
 
   const dist = distance(pos, goal);
@@ -55,6 +58,7 @@ export function applyDistanceFeedback(
 
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);
   borderW.value = withTiming(width, { duration: 150 });
+  borderW.value = withDelay(showTime, withTiming(0, { duration: 150 }));
 }
 
 /**

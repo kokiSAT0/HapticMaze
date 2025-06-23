@@ -3,7 +3,7 @@ import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { DPad } from '@/components/DPad';
 import { ThemedText } from '@/components/ThemedText';
@@ -25,7 +25,8 @@ export default function PlayScreen() {
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
   const [debugAll, setDebugAll] = useState(false);
-  const borderW = useSharedValue(2);
+  const borderW = useSharedValue(0);
+  const flashStyle = useAnimatedStyle(() => ({ borderWidth: borderW.value }));
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
@@ -57,7 +58,8 @@ export default function PlayScreen() {
   const mapTop = height / 3;
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}
+    <Animated.View
+      style={[styles.container, flashStyle, { paddingTop: insets.top }]}
     >
       {/* 右上のメニューアイコン */}
       <Pressable
@@ -73,7 +75,6 @@ export default function PlayScreen() {
           maze={maze as MazeView}
           path={state.path}
           pos={state.pos}
-          flash={borderW}
           showAll={debugAll}
           size={160}
         />
@@ -120,13 +121,15 @@ export default function PlayScreen() {
           </ThemedView>
         </View>
       </Modal>
-    </ThemedView>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black',
+    borderColor: 'white',
   },
   menuBtn: {
     position: 'absolute',
