@@ -46,7 +46,7 @@ haptic-maze/
 │   │   ├── DPad.tsx         # 十字キー
 │   │   └── MiniMap.tsx      # ミニマップ
 │   ├── game/                # ロジック
-│   │   ├── useGame.ts       # 状態管理 (Reducer)
+│   │   ├── useGame.tsx      # 状態管理 (Reducer)
 │   │   └── utils.ts         # canMove 等ヘルパ
 │   └── types/maze.ts        # MazeData 型
 └── README.md
