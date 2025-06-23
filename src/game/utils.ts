@@ -1,4 +1,5 @@
 import * as Haptics from 'expo-haptics';
+import { Vibration } from 'react-native';
 import {
   withTiming,
   withDelay,
@@ -96,7 +97,7 @@ export function applyDistanceFeedback(
 /**
  * 壁に衝突したときのフィードバックを出します。
  * 太さ 30px の赤枠を 600ms 表示し、
- * 強い振動を 3 回 (200ms 間隔) 発生させます。
+ * 400ms の長い振動を 1 回発生させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
@@ -113,14 +114,9 @@ export function applyBumpFeedback(
   // 枠線を赤く変更
   setColor('red');
 
-  // 200ms 間隔で 3 回連続して強く振動させる
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  setTimeout(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  }, 200);
-  setTimeout(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  }, 400);
+  // Vibration.vibrate を用いて 400ms の長い振動を 1 回発生させる
+  // iOS では duration を指定しても常に 400ms 固定
+  Vibration.vibrate(400);
 
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
