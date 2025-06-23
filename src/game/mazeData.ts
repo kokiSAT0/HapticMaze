@@ -1,0 +1,16 @@
+import { MazeData } from '@/src/types/maze';
+
+export const maze: MazeData = {
+  id: 'maze001',
+  size: 10,
+  start: [0, 0],
+  goal: [9, 9],
+  v_walls: [
+    [0, 0],
+    [3, 5],
+  ],
+  h_walls: [
+    [2, 4],
+    [8, 1],
+  ],
+};
