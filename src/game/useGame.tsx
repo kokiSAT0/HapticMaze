@@ -1,11 +1,16 @@
-import { createContext, useContext, useReducer, type Dispatch, type ReactNode } from 'react';
-import type { Vec2 } from '@/src/types/maze';
+import { createContext, useContext, useReducer, type ReactNode } from 'react';
+import { wallSet, canMove } from './utils';
+import { loadMaze } from './loadMaze';
+import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
-/**
- * GameState はプレイヤーの位置や手数を管理するデータ構造です。
- * 初心者向けに補足すると、オブジェクト型の一種であり
- * ゲーム進行に必要な数値をまとめて保持します。
- */
+// Maze データを読み込み Set 化
+const rawMaze = loadMaze();
+const maze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
+  ...rawMaze,
+  v_walls: wallSet(rawMaze.v_walls),
+  h_walls: wallSet(rawMaze.h_walls),
+};
+
 export interface GameState {
   pos: Vec2;
   steps: number;
@@ -13,62 +18,55 @@ export interface GameState {
   path: Vec2[];
 }
 
-/** 初期状態を定義します */
-export const initialState: GameState = {
-  pos: { x: 0, y: 0 },
+const initialState: GameState = {
+  pos: { x: maze.start[0], y: maze.start[1] },
   steps: 0,
   bumps: 0,
-  path: [{ x: 0, y: 0 }],
+  path: [{ x: maze.start[0], y: maze.start[1] }],
 };
 
-/**
- * Reducer で扱うアクションの種類です。
- * type プロパティで処理を分岐します。
- */
-export type GameAction =
-  | { type: 'reset' }
-  | { type: 'move'; next: Vec2; bumped: boolean };
+type Action = { type: 'reset' } | { type: 'move'; dir: Dir };
 
-/**
- * useReducer へ渡す純粋関数。状態とアクションから次の状態を返します。
- */
-function gameReducer(state: GameState, action: GameAction): GameState {
+function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case 'reset':
       return { ...initialState };
-    case 'move':
+    case 'move': {
+      const { pos } = state;
+      const next: Vec2 = { x: pos.x, y: pos.y };
+      if (action.dir === 'Up') next.y -= 1;
+      if (action.dir === 'Down') next.y += 1;
+      if (action.dir === 'Left') next.x -= 1;
+      if (action.dir === 'Right') next.x += 1;
+      if (!canMove(pos, action.dir, maze)) {
+        return { ...state, bumps: state.bumps + 1 };
+      }
       return {
-        pos: action.next,
-        steps: state.steps + (action.bumped ? 0 : 1),
-        bumps: state.bumps + (action.bumped ? 1 : 0),
-        path: [...state.path, action.next],
+        pos: next,
+        steps: state.steps + 1,
+        bumps: state.bumps,
+        path: [...state.path, next],
       };
-    default:
-      return state;
+    }
   }
 }
 
-/** useReducer をラップしたカスタムフック */
-export function useGameReducer() {
-  return useReducer(gameReducer, initialState);
-}
-
-export const GameContext = createContext<
-  | { state: GameState; dispatch: Dispatch<GameAction> }
+const GameContext = createContext<
+  | { state: GameState; move: (dir: Dir) => void; reset: () => void; maze: MazeData }
   | undefined
 >(undefined);
 
-/** Context Provider。ゲーム画面全体を囲む形で使用します */
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useGameReducer();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const move = (dir: Dir) => dispatch({ type: 'move', dir });
+  const reset = () => dispatch({ type: 'reset' });
   return (
-    <GameContext.Provider value={{ state, dispatch }}>
+    <GameContext.Provider value={{ state, move, reset, maze: rawMaze }}>
       {children}
     </GameContext.Provider>
   );
 }
 
-/** Context から状態と dispatch を取得するためのヘルパー */
 export function useGame() {
   const ctx = useContext(GameContext);
   if (!ctx) throw new Error('useGame は GameProvider 内で利用してください');

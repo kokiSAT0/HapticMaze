@@ -68,25 +68,25 @@ export interface MazeData {
 
 ```
 haptic-maze/
-├─ App.tsx                    // Navigation Entrypoint
+├─ app/                       // expo-router ルート
+│   ├─ _layout.tsx            // Stack 定義
+│   ├─ index.tsx              // タイトル画面
+│   └─ play.tsx               // ゲーム画面
 ├─ app.json                   // Expo 設定
 ├─ assets/
 │  └─ mazes/maze001.json
 └─ src/
-   ├─ screens/
-   │   ├─ TitleScreen.tsx
-   │   └─ PlayScreen.tsx
    ├─ components/
    │   ├─ DPad.tsx
    │   └─ MiniMap.tsx
    ├─ game/
-   │   ├─ useGame.ts          // ゲームロジック & 状態管理 (Reducer)
+   │   ├─ useGame.tsx         // GameContext と Reducer
    │   └─ utils.ts            // 汎用関数 (canMove, distance etc.)
    └─ types/
        └─ maze.ts
 ```
 
-- **Navigation**: `react-navigation` は未使用。`useState` で `scene` 分岐。
+- **Navigation**: 画面遷移は `expo-router` を用いた Stack 構成。
 - **状態管理**: `useReducer<GameState>` を `GameContext` で共有。
 
 ---
