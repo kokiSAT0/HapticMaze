@@ -41,7 +41,8 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
         y={0}
         width={size}
         height={size}
-        stroke="black"
+        // 背景が黒でも見えるよう白色で枠線を描く
+        stroke="white"
         strokeWidth={1}
         fill="none"
       />
@@ -58,7 +59,8 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
           y1={py}
           x2={px}
           y2={py + cell}
-          stroke="black"
+          // 縦壁も白で描画する
+          stroke="white"
           strokeWidth={1}
         />
       );
@@ -75,7 +77,8 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
           y1={py}
           x2={px + cell}
           y2={py}
-          stroke="black"
+          // 横壁も白で描画する
+          stroke="white"
           strokeWidth={1}
         />
       );
