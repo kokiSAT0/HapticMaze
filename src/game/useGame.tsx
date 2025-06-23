@@ -52,13 +52,18 @@ function reducer(state: GameState, action: Action): GameState {
 }
 
 const GameContext = createContext<
-  | { state: GameState; move: (dir: Dir) => void; reset: () => void; maze: MazeData }
+  | { state: GameState; move: (dir: Dir) => boolean; reset: () => void; maze: MazeData }
   | undefined
 >(undefined);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const move = (dir: Dir) => dispatch({ type: 'move', dir });
+  // 移動が成功したかどうかを返すように改良
+  const move = (dir: Dir): boolean => {
+    const success = canMove(state.pos, dir, maze);
+    dispatch({ type: 'move', dir });
+    return success;
+  };
   const reset = () => dispatch({ type: 'reset' });
   return (
     <GameContext.Provider value={{ state, move, reset, maze: rawMaze }}>

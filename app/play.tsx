@@ -9,9 +9,9 @@ import { DPad } from '@/components/DPad';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { MiniMap } from '@/src/components/MiniMap';
-import type { MazeData as MazeView } from '@/src/types/maze';
+import type { MazeData as MazeView, Dir } from '@/src/types/maze';
 import { useGame } from '@/src/game/useGame';
-import { applyDistanceFeedback } from '@/src/game/utils';
+import { applyDistanceFeedback, applyBumpFeedback } from '@/src/game/utils';
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -25,8 +25,11 @@ export default function PlayScreen() {
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
   const [debugAll, setDebugAll] = useState(false);
+  // 枠線の色を状態として管理
+  const [borderColor, setBorderColor] = useState('white');
   const borderW = useSharedValue(0);
   const flashStyle = useAnimatedStyle(() => ({ borderWidth: borderW.value }));
+  const colorStyle = { borderColor };
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
@@ -54,6 +57,20 @@ export default function PlayScreen() {
     router.replace('/');
   };
 
+  // DPad からの入力を処理する関数
+  const handleMove = (dir: Dir) => {
+    // move の戻り値が false のときは壁にぶつかったということ
+    const ok = move(dir);
+    if (!ok) {
+      applyBumpFeedback(
+        state.pos,
+        { x: maze.goal[0], y: maze.goal[1] },
+        borderW,
+        setBorderColor
+      );
+    }
+  };
+
   const dpadTop = height * (2 / 3);
   const mapTop = height / 3;
 
@@ -62,7 +79,7 @@ export default function PlayScreen() {
       {/* 枠線用のオーバーレイ。pointerEvents を none にして操作に影響しない */}
       <Animated.View
         pointerEvents="none"
-        style={[styles.borderOverlay, flashStyle]}
+        style={[styles.borderOverlay, flashStyle, colorStyle]}
       />
       {/* 右上のメニューアイコン */}
       <Pressable
@@ -84,7 +101,7 @@ export default function PlayScreen() {
       </View>
       <View style={[styles.dpadWrapper, { top: dpadTop }]}
       >
-        <DPad onPress={move} />
+        <DPad onPress={handleMove} />
       </View>
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">

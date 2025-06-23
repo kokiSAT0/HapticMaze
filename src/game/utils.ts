@@ -51,7 +51,6 @@ export function applyDistanceFeedback(
 ) {
   const {
     maxDist = Math.hypot(goal.x, goal.y),
-    vibrateRange = [120, 20],
     borderRange = [2, 20],
     showRange = [200, 1000],
   } = opts;
@@ -71,6 +70,48 @@ export function applyDistanceFeedback(
     withTiming(width, { duration: 150 }),
     withDelay(showTime, withTiming(0, { duration: 150 }))
   );
+}
+
+/**
+ * 壁に衝突したときのフィードバックを出します。
+ * applyDistanceFeedback と同じ計算式で枠の太さと表示時間を決め、
+ * 色は赤に変更します。
+ * setColor には枠線の色を変更する関数を渡します。
+ */
+export function applyBumpFeedback(
+  pos: Vec2,
+  goal: Vec2,
+  borderW: SharedValue<number>,
+  setColor: (color: string) => void,
+  opts: FeedbackOptions = {}
+) {
+  const {
+    maxDist = Math.hypot(goal.x, goal.y),
+    borderRange = [2, 20],
+    showRange = [200, 1000],
+  } = opts;
+
+  const dist = distance(pos, goal);
+  const t = dist / maxDist;
+  const width = lerp(borderRange[0], borderRange[1], 1 - t);
+  const showTime = lerp(showRange[0], showRange[1], 1 - t);
+
+  // 枠線を赤く変更
+  setColor('red');
+
+  // 2 回短く振動させることで衝突を表現
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  setTimeout(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, 100);
+
+  borderW.value = withSequence(
+    withTiming(width, { duration: 150 }),
+    withDelay(showTime, withTiming(0, { duration: 150 }))
+  );
+
+  // フィードバック終了後に色を元へ戻す
+  setTimeout(() => setColor('white'), showTime + 300);
 }
 
 /**
