@@ -1,21 +1,29 @@
-import { useEffect, useState, useRef } from 'react';
-import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useEffect, useState, useRef } from "react";
+import {
+  Button,
+  Modal,
+  StyleSheet,
+  View,
+  Pressable,
+  Switch,
+  useWindowDimensions,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-} from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+} from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { DPad } from '@/components/DPad';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { MiniMap } from '@/src/components/MiniMap';
-import type { MazeData as MazeView, Dir } from '@/src/types/maze';
-import { useGame } from '@/src/game/useGame';
-import { applyBumpFeedback, applyDistanceFeedback } from '@/src/game/utils';
+import { DPad } from "@/components/DPad";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { MiniMap } from "@/src/components/MiniMap";
+import type { MazeData as MazeView, Dir } from "@/src/types/maze";
+import { useGame } from "@/src/game/useGame";
+import { applyBumpFeedback, applyDistanceFeedback } from "@/src/game/utils";
 
 // LinearGradient を Reanimated 用にラップ
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
@@ -33,7 +41,7 @@ export default function PlayScreen() {
   // 全てを可視化するかのフラグ。デフォルトはオフ
   const [debugAll, setDebugAll] = useState(false);
   // 枠線の色を状態として管理
-  const [borderColor, setBorderColor] = useState('white');
+  const [borderColor, setBorderColor] = useState("white");
   const borderW = useSharedValue(0);
   // 連打を防ぐための入力ロック
   const [locked, setLocked] = useState(false);
@@ -43,7 +51,7 @@ export default function PlayScreen() {
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
   // グラデーションの色配列。中心に近いほど透明にする
   // LinearGradient が期待する型に合わせるためタプルにする
-  const gradColors: [string, string] = [borderColor, 'transparent'];
+  const gradColors: [string, string] = [borderColor, "transparent"];
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
@@ -54,7 +62,7 @@ export default function PlayScreen() {
   const handleOk = () => {
     setShowResult(false);
     reset();
-    router.replace('/');
+    router.replace("/");
   };
 
   // Reset Maze 選択時に呼ばれる
@@ -67,7 +75,7 @@ export default function PlayScreen() {
   const handleExit = () => {
     setShowMenu(false);
     reset();
-    router.replace('/');
+    router.replace("/");
   };
 
   // コンポーネント破棄時にタイマーを解除
@@ -84,10 +92,10 @@ export default function PlayScreen() {
     setLocked(true);
     // 移動後の座標を計算しておく
     const next = { x: state.pos.x, y: state.pos.y };
-    if (dir === 'Up') next.y -= 1;
-    if (dir === 'Down') next.y += 1;
-    if (dir === 'Left') next.x -= 1;
-    if (dir === 'Right') next.x += 1;
+    if (dir === "Up") next.y -= 1;
+    if (dir === "Down") next.y += 1;
+    if (dir === "Left") next.x -= 1;
+    if (dir === "Right") next.x += 1;
 
     // move の戻り値が false のときは壁に衝突
     const ok = move(dir);
@@ -104,16 +112,16 @@ export default function PlayScreen() {
           borderW
         );
 
-    // フィードバック終了から 100ms 後にロック解除
+    // フィードバック終了から 50ms 後にロック解除
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setLocked(false), wait + 100);
+    timerRef.current = setTimeout(() => setLocked(false), wait + 50);
   };
 
   const dpadTop = height * (2 / 3);
   const mapTop = height / 3;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}> 
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* 枠線用のオーバーレイ。グラデーションで中央へ行くほど色が薄くなる */}
       <AnimatedLG
         pointerEvents="none"
@@ -151,8 +159,7 @@ export default function PlayScreen() {
       >
         <MaterialIcons name="more-vert" size={24} color="black" />
       </Pressable>
-      <View style={[styles.miniMapWrapper, { top: mapTop }]}
-      >
+      <View style={[styles.miniMapWrapper, { top: mapTop }]}>
         <MiniMap
           maze={maze as MazeView}
           path={state.path}
@@ -164,16 +171,17 @@ export default function PlayScreen() {
           size={240}
         />
       </View>
-      <View style={[styles.dpadWrapper, { top: dpadTop }]}
-      >
+      <View style={[styles.dpadWrapper, { top: dpadTop }]}>
         <DPad onPress={handleMove} disabled={locked} />
       </View>
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
-        <Pressable style={styles.menuOverlay} onPress={() => setShowMenu(false)}>
-          <View style={[styles.menuContent, { top: insets.top + 40 }]}
-          >
+        <Pressable
+          style={styles.menuOverlay}
+          onPress={() => setShowMenu(false)}
+        >
+          <View style={[styles.menuContent, { top: insets.top + 40 }]}>
             <Button
               title="Reset Maze"
               onPress={handleReset}
@@ -202,7 +210,11 @@ export default function PlayScreen() {
             <ThemedText type="title">ゴール！</ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>
-            <Button title="OK" onPress={handleOk} accessibilityLabel="タイトルへ戻る" />
+            <Button
+              title="OK"
+              onPress={handleOk}
+              accessibilityLabel="タイトルへ戻る"
+            />
           </ThemedView>
         </View>
       </Modal>
@@ -213,81 +225,81 @@ export default function PlayScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   menuBtn: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
     padding: 4,
   },
   menuOverlay: { flex: 1 },
   menuContent: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 8,
     gap: 8,
   },
   switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   modalWrapper: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 10,
     width: 250,
   },
   // ミニマップを画面上 1/3 の位置に中央揃えで配置
   miniMapWrapper: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
-    alignItems: 'center',
+    alignItems: "center",
   },
   // DPad を画面下 1/3 の位置に中央揃えで配置
   dpadWrapper: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
-    alignItems: 'center',
+    alignItems: "center",
   },
   // 枠線 (グラデーション) の各辺共通スタイル
   edge: {
-    position: 'absolute',
+    position: "absolute",
   },
   topEdge: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
   },
   bottomEdge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   leftEdge: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
   },
   rightEdge: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,

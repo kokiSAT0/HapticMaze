@@ -1,12 +1,12 @@
-import * as Haptics from 'expo-haptics';
-import { Vibration } from 'react-native';
+import * as Haptics from "expo-haptics";
+import { Vibration } from "react-native";
 import {
   withTiming,
   withDelay,
   withSequence,
   SharedValue,
-} from 'react-native-reanimated';
-import type { MazeData, Vec2, Dir } from '@/src/types/maze';
+} from "react-native-reanimated";
+import type { MazeData, Vec2, Dir } from "@/src/types/maze";
 
 /**
  * 2点間の直線距離を求めます。
@@ -72,8 +72,8 @@ export function applyDistanceFeedback(
     r > 0.66
       ? Haptics.ImpactFeedbackStyle.Light
       : r > 0.33
-        ? Haptics.ImpactFeedbackStyle.Medium
-        : Haptics.ImpactFeedbackStyle.Heavy;
+      ? Haptics.ImpactFeedbackStyle.Medium
+      : Haptics.ImpactFeedbackStyle.Heavy;
 
   Haptics.impactAsync(style);
   // 枠が表示されている間 (showTime + 300ms) は短い振動を繰り返す
@@ -104,12 +104,12 @@ export function applyBumpFeedback(
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
 ): number {
-  // 暫定実装として太さ 30px、表示時間 600ms に固定
-  const width = 30;
-  const showTime = 600;
+  // 暫定実装として太さ 50px、表示時間 300ms に固定
+  const width = 50;
+  const showTime = 300;
 
   // 枠線を赤く変更
-  setColor('red');
+  setColor("red");
 
   // Vibration.vibrate を用いて 400ms の長い振動を 1 回発生させる
   // iOS では duration を指定しても常に 400ms 固定
@@ -121,7 +121,7 @@ export function applyBumpFeedback(
   );
 
   // フィードバック終了後に色を元へ戻す
-  setTimeout(() => setColor('white'), showTime + 300);
+  setTimeout(() => setColor("white"), showTime + 300);
   // 次回入力まで待つ時間を返す
   return showTime + 300;
 }
@@ -142,13 +142,13 @@ export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
   const v = maze.h_walls as unknown as Set<string>;
   const last = maze.size - 1;
   switch (dir) {
-    case 'Right':
+    case "Right":
       return !h.has(`${x},${y}`) && x < last;
-    case 'Left':
+    case "Left":
       return !h.has(`${x - 1},${y}`) && x > 0;
-    case 'Down':
+    case "Down":
       return !v.has(`${x},${y}`) && y < last;
-    case 'Up':
+    case "Up":
       return !v.has(`${x},${y - 1}`) && y > 0;
   }
 }
@@ -161,31 +161,31 @@ export function getHitWall(
   { x, y }: Vec2,
   dir: Dir,
   maze: MazeData
-): { kind: 'v' | 'h'; key: string } | null {
+): { kind: "v" | "h"; key: string } | null {
   const h = maze.v_walls as unknown as Set<string>;
   const v = maze.h_walls as unknown as Set<string>;
   // 迷路の端は last 番のマスの外側にあると考える
   const last = maze.size - 1;
   switch (dir) {
-    case 'Right':
-      if (h.has(`${x},${y}`)) return { kind: 'v', key: `${x},${y}` };
+    case "Right":
+      if (h.has(`${x},${y}`)) return { kind: "v", key: `${x},${y}` };
       // 右端にぶつかった場合
-      if (x >= last) return { kind: 'v', key: `${last},${y}` };
+      if (x >= last) return { kind: "v", key: `${last},${y}` };
       break;
-    case 'Left':
-      if (h.has(`${x - 1},${y}`)) return { kind: 'v', key: `${x - 1},${y}` };
+    case "Left":
+      if (h.has(`${x - 1},${y}`)) return { kind: "v", key: `${x - 1},${y}` };
       // 左端にぶつかった場合
-      if (x <= 0) return { kind: 'v', key: `-1,${y}` };
+      if (x <= 0) return { kind: "v", key: `-1,${y}` };
       break;
-    case 'Down':
-      if (v.has(`${x},${y}`)) return { kind: 'h', key: `${x},${y}` };
+    case "Down":
+      if (v.has(`${x},${y}`)) return { kind: "h", key: `${x},${y}` };
       // 下端にぶつかった場合
-      if (y >= last) return { kind: 'h', key: `${x},${last}` };
+      if (y >= last) return { kind: "h", key: `${x},${last}` };
       break;
-    case 'Up':
-      if (v.has(`${x},${y - 1}`)) return { kind: 'h', key: `${x},${y - 1}` };
+    case "Up":
+      if (v.has(`${x},${y - 1}`)) return { kind: "h", key: `${x},${y - 1}` };
       // 上端にぶつかった場合
-      if (y <= 0) return { kind: 'h', key: `${x},-1` };
+      if (y <= 0) return { kind: "h", key: `${x},-1` };
       break;
   }
   return null;
