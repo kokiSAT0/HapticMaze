@@ -3,10 +3,9 @@ import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import {
+import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  createAnimatedComponent,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -19,7 +18,7 @@ import { useGame } from '@/src/game/useGame';
 import { applyDistanceFeedback, applyBumpFeedback } from '@/src/game/utils';
 
 // LinearGradient を Reanimated 用にラップ
-const AnimatedLG = createAnimatedComponent(LinearGradient);
+const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -40,7 +39,8 @@ export default function PlayScreen() {
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
   // グラデーションの色配列。中心に近いほど透明にする
-  const gradColors = [borderColor, 'transparent'];
+  // LinearGradient が期待する型に合わせるためタプルにする
+  const gradColors: [string, string] = [borderColor, 'transparent'];
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
