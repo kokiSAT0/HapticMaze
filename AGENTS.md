@@ -94,7 +94,7 @@ haptic-maze/
 
 ### ✅ 出力時チェックリスト
 
-1. Expo SDK 50 に対応しているか？
+1. Expo SDK 53 に対応しているか？
 2. `react-native-svg` / `reanimated` 使用箇所が正しいか？
 3. 型定義 (`interface`) を付与したか？
 4. `accessibilityLabel` を設定したか？
