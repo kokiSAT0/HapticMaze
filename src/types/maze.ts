@@ -12,4 +12,6 @@ export interface Vec2 {
   y: number;
 }
 
+
 export type Dir = 'Up' | 'Down' | 'Left' | 'Right';
+
