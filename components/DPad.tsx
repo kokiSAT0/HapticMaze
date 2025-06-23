@@ -1,6 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Dir } from '@/src/types/maze';
 
+// DPad はここに集約
+
 /**
  * DPad コンポーネント
  * 方向入力を受け取り、useGame の move 関数へ渡す役割を持ちます。
