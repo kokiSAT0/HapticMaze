@@ -49,11 +49,7 @@ export function applyDistanceFeedback(
 ) {
   const {
     maxDist = Math.hypot(goal.x, goal.y),
-
-    // ゴールから遠いとき 120ms, 近いとき 20ms 振動させます
-    vibrateRange = [120, 20],
     borderRange = [2, 40],
-
     showRange = [200, 1000],
   } = opts;
 
