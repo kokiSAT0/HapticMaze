@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
 import Svg, { Line, Rect, Circle } from 'react-native-svg';
 
@@ -9,16 +9,19 @@ import type { MazeData, Vec2 } from '@/types/maze';
 // ミニマップに必要な情報をまとめて渡す
 export interface MiniMapProps {
   maze: MazeData; // 迷路の壁情報
-  path: Vec2[];   // 通過したマスの履歴
-  pos: Vec2;      // 現在の位置
-  flash?: number; // 外枠の太さ (アニメーション用)
-  size?: number;  // 表示サイズ (デフォルト80px)
+  path: Vec2[]; // 通過したマスの履歴
+  pos: Vec2; // 現在の位置
+  flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
+  size?: number; // 表示サイズ (デフォルト80px)
 }
 
 // MiniMap コンポーネント
 // react-native-svg を使い迷路と軌跡を描画する
 export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
+  const style = useAnimatedStyle(() => ({
+    borderWidth: typeof flash === 'number' ? flash : flash.value,
+  }));
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
@@ -98,7 +101,7 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps)
   };
 
   return (
-    <View style={{ width: size, height: size, borderWidth: flash, borderColor: 'orange' }}>
+    <Animated.View style={[{ width: size, height: size, borderColor: 'orange' }, style]}>
       <Svg width={size} height={size}>
         {renderWalls()}
         {renderPath()}
@@ -126,6 +129,6 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps)
           fill="blue"
         />
       </Svg>
-    </View>
+    </Animated.View>
   );
 }

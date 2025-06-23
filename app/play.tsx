@@ -1,29 +1,31 @@
 import { useEffect, useState } from 'react';
-import { Button, Modal, StyleSheet, View, Pressable, Switch, Text } from 'react-native';
+import { Button, Modal, StyleSheet, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { DPad } from '@/components/DPad';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { MiniMap } from '@/src/components/MiniMap';
 import type { MazeData as MazeView } from '@/src/types/maze';
-import { useGame } from '@/game/useGame';
+import { useGame } from '@/src/game/useGame';
+import { applyDistanceFeedback } from '@/src/game/utils';
 
 export default function PlayScreen() {
   const router = useRouter();
-  const { state, move, reset } = useGame();
+  const { state, move, reset, maze } = useGame();
   const [showResult, setShowResult] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
-  // デバッグ用: ミニマップで迷路全体を表示するかどうか
-  const [showAll, setShowAll] = useState(false);
+  const borderW = useSharedValue(2);
 
   useEffect(() => {
-    if (state.player[0] === state.maze.goal[0] && state.player[1] === state.maze.goal[1]) {
+    if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setShowResult(true);
     }
-  }, [state.player, state.maze.goal]);
+    applyDistanceFeedback(state.pos, { x: maze.goal[0], y: maze.goal[1] }, borderW);
+  }, [state.pos, maze.goal, borderW]);
 
   const handleOk = () => {
     setShowResult(false);
@@ -54,15 +56,9 @@ export default function PlayScreen() {
       >
         <MaterialIcons name="more-vert" size={24} color="black" />
       </Pressable>
-      <ThemedText>位置: {state.player[0]}, {state.player[1]}</ThemedText>
+      <ThemedText>位置: {state.pos.x}, {state.pos.y}</ThemedText>
       <DPad onPress={move} />
-      {showAll && (
-        <MiniMap
-          maze={state.maze as MazeView}
-          path={state.path.map(([x, y]) => ({ x, y }))}
-          pos={{ x: state.player[0], y: state.player[1] }}
-        />
-      )}
+      <MiniMap maze={maze as MazeView} path={state.path} pos={state.pos} flash={borderW} />
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
@@ -78,14 +74,6 @@ export default function PlayScreen() {
               onPress={handleExit}
               accessibilityLabel="タイトルへ戻る"
             />
-            <View style={styles.toggleRow}>
-              <Text>全てを可視化</Text>
-              <Switch
-                value={showAll}
-                onValueChange={setShowAll}
-                accessibilityLabel="ミニマップに迷路全体を表示する"
-              />
-            </View>
           </View>
         </Pressable>
       </Modal>
@@ -119,12 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 8,
-    gap: 8,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     gap: 8,
   },
   modalWrapper: {

@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { withTiming, SharedValue } from 'react-native-reanimated';
+import type { MazeData, Dir } from '@/src/types/maze';
 
 export interface Vec2 {
   x: number;
@@ -54,4 +55,31 @@ export function applyDistanceFeedback(
 
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);
   borderW.value = withTiming(width, { duration: 150 });
+}
+
+/**
+ * 壁配列から O(1) 検索用の Set を生成します。
+ */
+export function wallSet(walls: [number, number][]): Set<string> {
+  return new Set(walls.map(([x, y]) => `${x},${y}`));
+}
+
+/**
+ * 現在位置と進行方向から移動可能か判定します。
+ * MazeData の v_walls / h_walls は Set である前提です。
+ */
+export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
+  const h = maze.v_walls as unknown as Set<string>;
+  const v = maze.h_walls as unknown as Set<string>;
+  const last = maze.size - 1;
+  switch (dir) {
+    case 'Right':
+      return !h.has(`${x},${y}`) && x < last;
+    case 'Left':
+      return !h.has(`${x - 1},${y}`) && x > 0;
+    case 'Down':
+      return !v.has(`${x},${y}`) && y < last;
+    case 'Up':
+      return !v.has(`${x},${y - 1}`) && y > 0;
+  }
 }
