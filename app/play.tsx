@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Modal, StyleSheet, View, Pressable } from 'react-native';
+import { Button, Modal, StyleSheet, View, Pressable, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -21,6 +21,8 @@ export default function PlayScreen() {
   const [showResult, setShowResult] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
+  // 全てを可視化するかのフラグ。デフォルトはオフ
+  const [debugAll, setDebugAll] = useState(false);
   const borderW = useSharedValue(2);
 
   useEffect(() => {
@@ -62,7 +64,13 @@ export default function PlayScreen() {
       </Pressable>
       <ThemedText>位置: {state.pos.x}, {state.pos.y}</ThemedText>
       <DPad onPress={move} />
-      <MiniMap maze={maze as MazeView} path={state.path} pos={state.pos} flash={borderW} />
+      <MiniMap
+        maze={maze as MazeView}
+        path={state.path}
+        pos={state.pos}
+        flash={borderW}
+        showAll={debugAll}
+      />
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
@@ -79,6 +87,15 @@ export default function PlayScreen() {
               onPress={handleExit}
               accessibilityLabel="タイトルへ戻る"
             />
+            {/* デバッグ用スイッチ */}
+            <View style={styles.switchRow}>
+              <ThemedText>全てを可視化</ThemedText>
+              <Switch
+                value={debugAll}
+                onValueChange={setDebugAll}
+                accessibilityLabel="迷路を全て表示"
+              />
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -113,6 +130,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     gap: 8,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   modalWrapper: {
     flex: 1,

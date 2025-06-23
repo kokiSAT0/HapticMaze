@@ -1,6 +1,5 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-// eslint-disable-next-line import/no-unresolved
 import Svg, { Line, Rect, Circle } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/types/maze';
@@ -13,11 +12,16 @@ export interface MiniMapProps {
   pos: Vec2; // 現在の位置
   flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
+  /**
+   * デバッグ表示フラグ
+   * true のとき壁とゴールを含む全情報を描画
+   */
+  showAll?: boolean;
 }
 
 // MiniMap コンポーネント
 // react-native-svg を使い迷路と軌跡を描画する
-export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps) {
+export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === 'number' ? flash : flash.value,
@@ -25,6 +29,8 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps)
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
+    // デバッグオフなら壁を描かない
+    if (!showAll) return null;
     const lines = [] as JSX.Element[];
 
     // 外周の壁
@@ -113,14 +119,16 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps)
           height={cell * 0.5}
           fill="green"
         />
-        {/* ゴール位置を赤色で表示 */}
-        <Rect
-          x={(maze.goal[0] + 0.25) * cell}
-          y={(maze.goal[1] + 0.25) * cell}
-          width={cell * 0.5}
-          height={cell * 0.5}
-          fill="red"
-        />
+        {showAll && (
+          // ゴール位置はデバッグ時のみ表示
+          <Rect
+            x={(maze.goal[0] + 0.25) * cell}
+            y={(maze.goal[1] + 0.25) * cell}
+            width={cell * 0.5}
+            height={cell * 0.5}
+            fill="red"
+          />
+        )}
         {/* 現在位置を円で表示 */}
         <Circle
           cx={(pos.x + 0.5) * cell}
