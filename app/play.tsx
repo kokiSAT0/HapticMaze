@@ -58,9 +58,12 @@ export default function PlayScreen() {
   const mapTop = height / 3;
 
   return (
-    <Animated.View
-      style={[styles.container, flashStyle, { paddingTop: insets.top }]}
-    >
+    <View style={[styles.container, { paddingTop: insets.top }]}> 
+      {/* 枠線用のオーバーレイ。pointerEvents を none にして操作に影響しない */}
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.borderOverlay, flashStyle]}
+      />
       {/* 右上のメニューアイコン */}
       <Pressable
         style={[styles.menuBtn, { top: insets.top + 10 }]}
@@ -121,7 +124,7 @@ export default function PlayScreen() {
           </ThemedView>
         </View>
       </Modal>
-    </Animated.View>
+    </View>
   );
 }
 
@@ -129,7 +132,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    borderColor: 'white',
   },
   menuBtn: {
     position: 'absolute',
@@ -179,5 +181,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+  },
+  // 枠線だけを表示するための絶対配置ビュー
+  borderOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderColor: 'white',
   },
 });
