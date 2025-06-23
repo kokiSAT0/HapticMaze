@@ -150,7 +150,7 @@ _(Set<string> で常時  O(1) 判定)_
 const maxDist = Math.hypot(9, 9);
 const dist = Math.hypot(goal.x - x, goal.y - y);
 const t = dist / maxDist; // 0–1
-const borderW = lerp(2, 20, 1 - t); // 2→20px
+const borderW = lerp(2, 80, 1 - t); // 2→80px
 ```
 
 - 振動: `Haptics.impactAsync(style)` ※ style は距離に応じて Light → Medium → Heavy を切り替え
