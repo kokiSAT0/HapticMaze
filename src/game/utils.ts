@@ -1,5 +1,10 @@
 import * as Haptics from 'expo-haptics';
-import { withTiming, withDelay, SharedValue } from 'react-native-reanimated';
+import {
+  withTiming,
+  withDelay,
+  withSequence,
+  SharedValue,
+} from 'react-native-reanimated';
 import type { MazeData, Dir } from '@/src/types/maze';
 
 export interface Vec2 {
@@ -61,8 +66,11 @@ export function applyDistanceFeedback(
   const showTime = lerp(showRange[0], showRange[1], 1 - t);
 
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);
-  borderW.value = withTiming(width, { duration: 150 });
-  borderW.value = withDelay(showTime, withTiming(0, { duration: 150 }));
+  // withSequence を使って 1 回の代入で連続アニメーションを実行
+  borderW.value = withSequence(
+    withTiming(width, { duration: 150 }),
+    withDelay(showTime, withTiming(0, { duration: 150 }))
+  );
 }
 
 /**
