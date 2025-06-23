@@ -79,7 +79,7 @@ export default function PlayScreen() {
     // move の戻り値が false のときは壁に衝突
     const ok = move(dir);
     if (!ok) {
-      // 壁衝突時は赤い枠と強い振動を 3 回鳴らす
+      // 壁衝突時は赤い枠と 400ms の長い振動を 1 回鳴らす
       applyBumpFeedback(
         state.pos,
         { x: maze.goal[0], y: maze.goal[1] },
