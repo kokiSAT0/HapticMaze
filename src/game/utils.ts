@@ -43,12 +43,22 @@ export function clamp(v: number, min: number, max: number): number {
  * 同じ時間だけ impactAsync を繰り返して振動します。
  * borderW は Reanimated の SharedValue<number> です。
  */
+/**
+ * applyDistanceFeedback の戻り値型
+ * wait: 次回呼び出しまでの待ち時間
+ * id:   setInterval から得られるタイマー ID
+ */
+export interface DistanceFeedbackResult {
+  wait: number;
+  id: NodeJS.Timeout;
+}
+
 export function applyDistanceFeedback(
   pos: Vec2,
   goal: Vec2,
   borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
-): number {
+): DistanceFeedbackResult {
   // borderRange のデフォルトは [2, 80]。
   // 移動時に表示する枠線の太さが 2px から 80px の範囲で変化します。
   const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [2, 80] } = opts;
@@ -87,8 +97,8 @@ export function applyDistanceFeedback(
     withDelay(showTime, withTiming(0, { duration: 150 }))
   );
 
-  // 次回呼び出しまでの待ち時間を返す
-  return period;
+  // wait に待ち時間、id にタイマー ID をまとめて返す
+  return { wait: period, id };
 }
 
 /**
