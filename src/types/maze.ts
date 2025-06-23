@@ -7,6 +7,7 @@ export interface MazeData {
   h_walls: [number, number][];
 }
 
+
 export interface Vec2 {
   x: number;
   y: number;
