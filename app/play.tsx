@@ -109,12 +109,7 @@ export default function PlayScreen() {
     // move の戻り値が false のときは壁に衝突
     let wait: number;
     if (!move(dir)) {
-      wait = applyBumpFeedback(
-        state.pos,
-        { x: maze.goal[0], y: maze.goal[1] },
-        borderW,
-        setBorderColor
-      );
+      wait = applyBumpFeedback(borderW, setBorderColor);
     } else {
       const { wait: w, id } = applyDistanceFeedback(
         next,

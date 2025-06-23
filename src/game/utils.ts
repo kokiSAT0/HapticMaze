@@ -103,13 +103,11 @@ export function applyDistanceFeedback(
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * 太さ 30px の赤枠を 600ms 表示し、
+ * 太さ 50px の赤枠を 300ms 表示し、
  * 400ms の長い振動を 1 回発生させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
-  pos: Vec2,
-  goal: Vec2,
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
