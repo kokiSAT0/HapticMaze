@@ -2,7 +2,7 @@ import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { Line, Rect, Circle } from 'react-native-svg';
 
-import type { MazeData, Vec2 } from '@/types/maze';
+import type { MazeData, Vec2 } from '@/src/types/maze';
 
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
@@ -17,11 +17,24 @@ export interface MiniMapProps {
    * true のとき壁とゴールを含む全情報を描画
    */
   showAll?: boolean;
+  /** 衝突した壁 (縦方向) */
+  hitV?: Set<string>;
+  /** 衝突した壁 (横方向) */
+  hitH?: Set<string>;
 }
 
 // MiniMap コンポーネント
 // react-native-svg を使い迷路と軌跡を描画する
-export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false }: MiniMapProps) {
+export function MiniMap({
+  maze,
+  path,
+  pos,
+  flash = 2,
+  size = 80,
+  showAll = false,
+  hitV,
+  hitH,
+}: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === 'number' ? flash : flash.value,
@@ -31,7 +44,7 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
   const renderWalls = () => {
     // デバッグオフなら壁を描かない
     if (!showAll) return null;
-    const lines = [] as JSX.Element[];
+    const lines = [] as React.JSX.Element[];
 
     // 外周の壁
     lines.push(
@@ -87,10 +100,44 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
     return lines;
   };
 
+  // 衝突した壁を黄色で描画
+  const renderHitWalls = () => {
+    const lines = [] as React.JSX.Element[];
+    hitV?.forEach((k) => {
+      const [x, y] = k.split(',').map(Number);
+      lines.push(
+        <Line
+          key={`hv${k}`}
+          x1={(x + 1) * cell}
+          y1={y * cell}
+          x2={(x + 1) * cell}
+          y2={y * cell + cell}
+          stroke="yellow"
+          strokeWidth={2}
+        />
+      );
+    });
+    hitH?.forEach((k) => {
+      const [x, y] = k.split(',').map(Number);
+      lines.push(
+        <Line
+          key={`hh${k}`}
+          x1={x * cell}
+          y1={(y + 1) * cell}
+          x2={x * cell + cell}
+          y2={(y + 1) * cell}
+          stroke="yellow"
+          strokeWidth={2}
+        />
+      );
+    });
+    return lines;
+  };
+
   // プレイヤーの通過軌跡を線で描く
   const renderPath = () => {
     if (path.length < 2) return null;
-    const segments = [] as JSX.Element[];
+    const segments = [] as React.JSX.Element[];
     for (let i = 0; i < path.length - 1; i++) {
       const a = path[i];
       const b = path[i + 1];
@@ -113,6 +160,7 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80, showAll = false
     <Animated.View style={[{ width: size, height: size, borderColor: 'orange' }, style]}>
       <Svg width={size} height={size}>
         {renderWalls()}
+        {renderHitWalls()}
         {renderPath()}
         {/* スタート位置を緑色で表示 */}
         <Rect

@@ -96,6 +96,8 @@ export default function PlayScreen() {
           path={state.path}
           pos={state.pos}
           showAll={debugAll}
+          hitV={state.hitV}
+          hitH={state.hitH}
           size={160}
         />
       </View>

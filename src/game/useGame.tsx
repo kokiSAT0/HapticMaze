@@ -1,21 +1,23 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { wallSet, canMove } from './utils';
+import { wallSet, canMove, getHitWall } from './utils';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
 // Maze データを読み込み Set 化
 const rawMaze = loadMaze();
-const maze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
+const maze = {
   ...rawMaze,
   v_walls: wallSet(rawMaze.v_walls),
   h_walls: wallSet(rawMaze.h_walls),
-};
+} as MazeData & { v_walls: Set<string>; h_walls: Set<string> };
 
 export interface GameState {
   pos: Vec2;
   steps: number;
   bumps: number;
   path: Vec2[];
+  hitV: Set<string>;
+  hitH: Set<string>;
 }
 
 const initialState: GameState = {
@@ -23,6 +25,8 @@ const initialState: GameState = {
   steps: 0,
   bumps: 0,
   path: [{ x: maze.start[0], y: maze.start[1] }],
+  hitV: new Set(),
+  hitH: new Set(),
 };
 
 type Action = { type: 'reset' } | { type: 'move'; dir: Dir };
@@ -30,7 +34,11 @@ type Action = { type: 'reset' } | { type: 'move'; dir: Dir };
 function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case 'reset':
-      return { ...initialState };
+      return {
+        ...initialState,
+        hitV: new Set(),
+        hitH: new Set(),
+      };
     case 'move': {
       const { pos } = state;
       const next: Vec2 = { x: pos.x, y: pos.y };
@@ -39,13 +47,22 @@ function reducer(state: GameState, action: Action): GameState {
       if (action.dir === 'Left') next.x -= 1;
       if (action.dir === 'Right') next.x += 1;
       if (!canMove(pos, action.dir, maze)) {
-        return { ...state, bumps: state.bumps + 1 };
+        const hit = getHitWall(pos, action.dir, maze);
+        const hitV = new Set(state.hitV);
+        const hitH = new Set(state.hitH);
+        if (hit) {
+          if (hit.kind === 'v') hitV.add(hit.key);
+          else hitH.add(hit.key);
+        }
+        return { ...state, bumps: state.bumps + 1, hitV, hitH };
       }
       return {
         pos: next,
         steps: state.steps + 1,
         bumps: state.bumps,
         path: [...state.path, next],
+        hitV: state.hitV,
+        hitH: state.hitH,
       };
     }
   }
