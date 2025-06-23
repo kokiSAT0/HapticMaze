@@ -15,7 +15,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { MiniMap } from '@/src/components/MiniMap';
 import type { MazeData as MazeView, Dir } from '@/src/types/maze';
 import { useGame } from '@/src/game/useGame';
-import { applyDistanceFeedback, applyBumpFeedback } from '@/src/game/utils';
+import { applyBumpFeedback } from '@/src/game/utils';
+import { useDistanceFeedback } from '@/hooks/useDistanceFeedback';
 
 // LinearGradient を Reanimated 用にラップ
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
@@ -46,8 +47,9 @@ export default function PlayScreen() {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setShowResult(true);
     }
-    applyDistanceFeedback(state.pos, { x: maze.goal[0], y: maze.goal[1] }, borderW);
-  }, [state.pos, maze.goal, borderW]);
+  }, [state.pos, maze.goal]);
+  // ゴール距離に応じた周期でフィードバックを発火
+  useDistanceFeedback(state.pos, { x: maze.goal[0], y: maze.goal[1] }, borderW);
 
   const handleOk = () => {
     setShowResult(false);
