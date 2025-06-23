@@ -6,3 +6,13 @@ export interface MazeData {
   v_walls: [number, number][];
   h_walls: [number, number][];
 }
+
+
+export interface Vec2 {
+  x: number;
+  y: number;
+}
+
+
+export type Dir = 'Up' | 'Down' | 'Left' | 'Right';
+
