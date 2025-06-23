@@ -3,7 +3,12 @@ import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  createAnimatedComponent,
+} from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { DPad } from '@/components/DPad';
 import { ThemedText } from '@/components/ThemedText';
@@ -12,6 +17,9 @@ import { MiniMap } from '@/src/components/MiniMap';
 import type { MazeData as MazeView, Dir } from '@/src/types/maze';
 import { useGame } from '@/src/game/useGame';
 import { applyDistanceFeedback, applyBumpFeedback } from '@/src/game/utils';
+
+// LinearGradient を Reanimated 用にラップ
+const AnimatedLG = createAnimatedComponent(LinearGradient);
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -28,8 +36,11 @@ export default function PlayScreen() {
   // 枠線の色を状態として管理
   const [borderColor, setBorderColor] = useState('white');
   const borderW = useSharedValue(0);
-  const flashStyle = useAnimatedStyle(() => ({ borderWidth: borderW.value }));
-  const colorStyle = { borderColor };
+  // 枠の太さを共通化するため縦横で別々の AnimatedStyle を用意
+  const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
+  const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
+  // グラデーションの色配列。中心に近いほど透明にする
+  const gradColors = [borderColor, 'transparent'];
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
@@ -76,10 +87,34 @@ export default function PlayScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
-      {/* 枠線用のオーバーレイ。pointerEvents を none にして操作に影響しない */}
-      <Animated.View
+      {/* 枠線用のオーバーレイ。グラデーションで中央へ行くほど色が薄くなる */}
+      <AnimatedLG
         pointerEvents="none"
-        style={[styles.borderOverlay, flashStyle, colorStyle]}
+        colors={gradColors}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={[styles.edge, styles.topEdge, vertStyle]}
+      />
+      <AnimatedLG
+        pointerEvents="none"
+        colors={gradColors}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+        style={[styles.edge, styles.bottomEdge, vertStyle]}
+      />
+      <AnimatedLG
+        pointerEvents="none"
+        colors={gradColors}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={[styles.edge, styles.leftEdge, horizStyle]}
+      />
+      <AnimatedLG
+        pointerEvents="none"
+        colors={gradColors}
+        start={{ x: 1, y: 0.5 }}
+        end={{ x: 0, y: 0.5 }}
+        style={[styles.edge, styles.rightEdge, horizStyle]}
       />
       {/* 右上のメニューアイコン */}
       <Pressable
@@ -201,13 +236,32 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
-  // 枠線だけを表示するための絶対配置ビュー
-  borderOverlay: {
+  // 枠線 (グラデーション) の各辺共通スタイル
+  edge: {
+    position: 'absolute',
+  },
+  topEdge: {
     position: 'absolute',
     top: 0,
+    left: 0,
+    right: 0,
+  },
+  bottomEdge: {
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    borderColor: 'white',
+  },
+  leftEdge: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+  },
+  rightEdge: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 });
