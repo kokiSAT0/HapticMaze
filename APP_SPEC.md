@@ -203,14 +203,14 @@ expo start --android
 
 ## 10. TODO チェックリスト
 
-- [ ] Maze JSON パーサ実装
-- [ ] GameContext / useGameReducer
-- [ ] D‑Pad UI + 入力ハンドラ
-- [ ] 壁衝突判定 & 状態更新
-- [ ] ミニマップ & 軌跡描画
-- [ ] 振動 / 枠フィードバック関数
-- [ ] ゴール判定 & ResultModal
-- [ ] ヘッダーサブメニュー
+- [x] Maze JSON パーサ実装
+- [x] GameContext / useGameReducer
+- [x] D‑Pad UI + 入力ハンドラ
+- [x] 壁衝突判定 & 状態更新
+- [x] ミニマップ & 軌跡描画
+- [x] 振動 / 枠フィードバック関数
+- [x] ゴール判定 & ResultModal
+- [x] ヘッダーサブメニュー
 - [ ] EAS build (iOS TestFlight / Android APK)
 
 ---
