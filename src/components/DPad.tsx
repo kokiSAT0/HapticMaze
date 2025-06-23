@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Vec2 や方角の型定義をまとめたファイルから Dir をインポート
 import type { Dir } from '@/src/types/maze';
@@ -21,33 +21,37 @@ export function DPad({ onMove }: DPadProps) {
     <View style={styles.container}>
       {/* 上ボタン。accessibilityLabel で読み上げ用の説明を指定 */}
       <View style={styles.row}>
-        <Button
-          title="▲"
-          color="white"
+        <Pressable
           onPress={() => onMove('Up')}
+          style={styles.btn}
           accessibilityLabel="上へ移動"
-        />
+        >
+          <Text style={styles.txt}>▲</Text>
+        </Pressable>
       </View>
       {/* 左・下・右ボタンを横並びに配置 */}
       <View style={styles.row}>
-        <Button
-          title="◀"
-          color="white"
+        <Pressable
           onPress={() => onMove('Left')}
+          style={styles.btn}
           accessibilityLabel="左へ移動"
-        />
-        <Button
-          title="▼"
-          color="white"
+        >
+          <Text style={styles.txt}>◀</Text>
+        </Pressable>
+        <Pressable
           onPress={() => onMove('Down')}
+          style={styles.btn}
           accessibilityLabel="下へ移動"
-        />
-        <Button
-          title="▶"
-          color="white"
+        >
+          <Text style={styles.txt}>▼</Text>
+        </Pressable>
+        <Pressable
           onPress={() => onMove('Right')}
+          style={styles.btn}
           accessibilityLabel="右へ移動"
-        />
+        >
+          <Text style={styles.txt}>▶</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -62,5 +66,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row', // 子要素を横並びにする設定
     gap: 10,
+  },
+  // ボタンの押下領域を確保
+  btn: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // テキストカラーを白に指定
+  txt: {
+    color: 'white',
+    fontSize: 24,
   },
 });
