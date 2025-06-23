@@ -31,8 +31,6 @@ export function lerp(start: number, end: number, t: number): number {
 export interface FeedbackOptions {
   /** 距離の最大値。デフォルトはゴール座標から計算した距離 */
   maxDist?: number;
-  /** 振動時間の範囲 [長いとき, 短いとき] */
-  vibrateRange?: [number, number];
   /** 枠太さの範囲 [細いとき, 太いとき] */
   borderRange?: [number, number];
   /** 枠表示時間の範囲 [短いとき, 長いとき] */
@@ -51,22 +49,27 @@ export function applyDistanceFeedback(
 ) {
   const {
     maxDist = Math.hypot(goal.x, goal.y),
-    // ゴールから遠いとき 120ms, 近いとき 20ms 振動させます
-    vibrateRange = [120, 20],
+    // 枠の太さは最小 2 → 最大 20 の範囲で補間
     borderRange = [2, 20],
     showRange = [200, 1000],
   } = opts;
 
   const dist = distance(pos, goal);
   const t = dist / maxDist; // 0〜1 の値
-  const vibMs = lerp(vibrateRange[0], vibrateRange[1], 1 - t);
   const width = lerp(borderRange[0], borderRange[1], 1 - t);
 
   // ゴールに近いほど長く枠を表示する時間を計算
   // showRange[1] を 1000 とすると最大 1 秒表示される
   const showTime = lerp(showRange[0], showRange[1], 1 - t);
 
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);
+  // t の値に応じて Light → Medium → Heavy の順で振動を強くする
+  const style =
+    t > 2 / 3
+      ? Haptics.ImpactFeedbackStyle.Light
+      : t > 1 / 3
+        ? Haptics.ImpactFeedbackStyle.Medium
+        : Haptics.ImpactFeedbackStyle.Heavy;
+  Haptics.impactAsync(style);
   // withSequence を使って 1 回の代入で連続アニメーションを実行
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
