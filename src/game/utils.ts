@@ -144,3 +144,31 @@ export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
       return !v.has(`${x},${y - 1}`) && y > 0;
   }
 }
+
+/**
+ * 衝突した壁の座標を取得します。
+ * 壁が存在しない場合は null を返します。
+ */
+export function getHitWall(
+  { x, y }: Vec2,
+  dir: Dir,
+  maze: MazeData
+): { kind: 'v' | 'h'; key: string } | null {
+  const h = maze.v_walls as unknown as Set<string>;
+  const v = maze.h_walls as unknown as Set<string>;
+  switch (dir) {
+    case 'Right':
+      if (h.has(`${x},${y}`)) return { kind: 'v', key: `${x},${y}` };
+      break;
+    case 'Left':
+      if (h.has(`${x - 1},${y}`)) return { kind: 'v', key: `${x - 1},${y}` };
+      break;
+    case 'Down':
+      if (v.has(`${x},${y}`)) return { kind: 'h', key: `${x},${y}` };
+      break;
+    case 'Up':
+      if (v.has(`${x},${y - 1}`)) return { kind: 'h', key: `${x},${y - 1}` };
+      break;
+  }
+  return null;
+}
