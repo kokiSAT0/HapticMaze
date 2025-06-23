@@ -21,13 +21,33 @@ export function DPad({ onMove }: DPadProps) {
     <View style={styles.container}>
       {/* 上ボタン。accessibilityLabel で読み上げ用の説明を指定 */}
       <View style={styles.row}>
-        <Button title="▲" onPress={() => onMove('Up')} accessibilityLabel="上へ移動" />
+        <Button
+          title="▲"
+          color="white"
+          onPress={() => onMove('Up')}
+          accessibilityLabel="上へ移動"
+        />
       </View>
       {/* 左・下・右ボタンを横並びに配置 */}
       <View style={styles.row}>
-        <Button title="◀" onPress={() => onMove('Left')} accessibilityLabel="左へ移動" />
-        <Button title="▼" onPress={() => onMove('Down')} accessibilityLabel="下へ移動" />
-        <Button title="▶" onPress={() => onMove('Right')} accessibilityLabel="右へ移動" />
+        <Button
+          title="◀"
+          color="white"
+          onPress={() => onMove('Left')}
+          accessibilityLabel="左へ移動"
+        />
+        <Button
+          title="▼"
+          color="white"
+          onPress={() => onMove('Down')}
+          accessibilityLabel="下へ移動"
+        />
+        <Button
+          title="▶"
+          color="white"
+          onPress={() => onMove('Right')}
+          accessibilityLabel="右へ移動"
+        />
       </View>
     </View>
   );
