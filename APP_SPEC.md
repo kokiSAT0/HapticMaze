@@ -151,7 +151,7 @@ const maxDist = Math.hypot(9, 9);
 const dist = Math.hypot(goal.x - x, goal.y - y);
 const t = dist / maxDist; // 0–1
 const vibMs = lerp(120, 20, 1 - t); // 120→20ms
-const borderW = lerp(2, 8, 1 - t); // 2→8px
+const borderW = lerp(2, 20, 1 - t); // 2→20px
 ```
 
 - 振動: `Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);`
@@ -166,7 +166,7 @@ const borderW = lerp(2, 8, 1 - t); // 2→8px
 | ミニマップ   | 80×80 px     | 固定            |
 | D‑Pad        | ボタン 56 dp | CenterBottom    |
 | ヘッダー     | H 48 dp      | rgba(0,0,0,0.6) |
-| 枠フラッシュ | Border       | 2‑8 px / 150 ms |
+| 枠フラッシュ | Border       | 2‑20 px / 150 ms |
 
 ---
 

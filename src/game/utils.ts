@@ -28,10 +28,10 @@ export interface FeedbackOptions {
   maxDist?: number;
   /** 振動時間の範囲 [長いとき, 短いとき] */
   vibrateRange?: [number, number];
-  /** 枠太さの範囲 [最小, 最大] */
+  /** 枠太さの範囲 [細いとき, 太いとき] */
   borderRange?: [number, number];
-  /** 枠を表示する時間 (ミリ秒) */
-  showTime?: number;
+  /** 枠表示時間の範囲 [短いとき, 長いとき] */
+  showRange?: [number, number];
 }
 
 /**
@@ -47,14 +47,18 @@ export function applyDistanceFeedback(
   const {
     maxDist = Math.hypot(goal.x, goal.y),
     vibrateRange = [120, 20],
-    borderRange = [2, 8],
-    showTime = 1000,
+    borderRange = [2, 20],
+    showRange = [200, 1000],
   } = opts;
 
   const dist = distance(pos, goal);
   const t = dist / maxDist; // 0〜1 の値
   const vibMs = lerp(vibrateRange[0], vibrateRange[1], 1 - t);
   const width = lerp(borderRange[0], borderRange[1], 1 - t);
+
+  // ゴールに近いほど長く枠を表示する時間を計算
+  // showRange[1] を 1000 とすると最大 1 秒表示される
+  const showTime = lerp(showRange[0], showRange[1], 1 - t);
 
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium, vibMs);
   borderW.value = withTiming(width, { duration: 150 });
