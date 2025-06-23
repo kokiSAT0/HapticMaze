@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { GameProvider } from '../src/game/useGame';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,11 +20,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <GameProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ title: 'Title' }} />
+          <Stack.Screen name="play" options={{ title: 'Play' }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </GameProvider>
     </ThemeProvider>
   );
 }
