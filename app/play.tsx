@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button, Modal, StyleSheet, View, Pressable } from 'react-native';
+import { Button, Modal, StyleSheet, View, Pressable, Switch, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { DPad } from '@/components/DPad';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { MiniMap } from '@/src/components/MiniMap';
+import type { MazeData as MazeView } from '@/src/types/maze';
 import { useGame } from '@/game/useGame';
 
 export default function PlayScreen() {
@@ -14,6 +16,8 @@ export default function PlayScreen() {
   const [showResult, setShowResult] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
+  // デバッグ用: ミニマップで迷路全体を表示するかどうか
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (state.player[0] === state.maze.goal[0] && state.player[1] === state.maze.goal[1]) {
@@ -52,6 +56,13 @@ export default function PlayScreen() {
       </Pressable>
       <ThemedText>位置: {state.player[0]}, {state.player[1]}</ThemedText>
       <DPad onPress={move} />
+      {showAll && (
+        <MiniMap
+          maze={state.maze as MazeView}
+          path={state.path.map(([x, y]) => ({ x, y }))}
+          pos={{ x: state.player[0], y: state.player[1] }}
+        />
+      )}
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
         {/* 画面全体を押すと閉じるオーバーレイ */}
@@ -67,6 +78,14 @@ export default function PlayScreen() {
               onPress={handleExit}
               accessibilityLabel="タイトルへ戻る"
             />
+            <View style={styles.toggleRow}>
+              <Text>全てを可視化</Text>
+              <Switch
+                value={showAll}
+                onValueChange={setShowAll}
+                accessibilityLabel="ミニマップに迷路全体を表示する"
+              />
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -100,6 +119,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 8,
+    gap: 8,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
   },
   modalWrapper: {

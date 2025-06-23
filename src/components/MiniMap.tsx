@@ -102,6 +102,22 @@ export function MiniMap({ maze, path, pos, flash = 2, size = 80 }: MiniMapProps)
       <Svg width={size} height={size}>
         {renderWalls()}
         {renderPath()}
+        {/* スタート位置を緑色で表示 */}
+        <Rect
+          x={(maze.start[0] + 0.25) * cell}
+          y={(maze.start[1] + 0.25) * cell}
+          width={cell * 0.5}
+          height={cell * 0.5}
+          fill="green"
+        />
+        {/* ゴール位置を赤色で表示 */}
+        <Rect
+          x={(maze.goal[0] + 0.25) * cell}
+          y={(maze.goal[1] + 0.25) * cell}
+          width={cell * 0.5}
+          height={cell * 0.5}
+          fill="red"
+        />
         {/* 現在位置を円で表示 */}
         <Circle
           cx={(pos.x + 0.5) * cell}
