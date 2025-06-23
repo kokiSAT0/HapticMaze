@@ -43,7 +43,8 @@ export function clamp(v: number, min: number, max: number): number {
 }
 
 /**
- * ゴールとの距離に応じて振動と枠アニメーションを発生させます。
+ * ゴールとの距離に応じて枠アニメーションを表示し、
+ * 同じ時間だけ impactAsync を繰り返して振動します。
  * borderW は Reanimated の SharedValue<number> です。
  */
 export function applyDistanceFeedback(
@@ -74,7 +75,14 @@ export function applyDistanceFeedback(
         : r > 0.1
           ? Haptics.ImpactFeedbackStyle.Medium
           : Haptics.ImpactFeedbackStyle.Heavy;
-  if (style) Haptics.impactAsync(style);
+  if (style) {
+    Haptics.impactAsync(style);
+    // 枠が表示されている間 (showTime + 300ms) は短い振動を繰り返す
+    const id = setInterval(() => {
+      Haptics.impactAsync(style);
+    }, 150);
+    setTimeout(() => clearInterval(id), showTime + 300);
+  }
 
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
@@ -87,8 +95,8 @@ export function applyDistanceFeedback(
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * applyDistanceFeedback と同じ計算式で枠の太さと表示時間を決め、
- * 色は赤に変更します。
+ * 太さ 30px の赤枠を 600ms 表示し、
+ * 強い振動を 3 回 (200ms 間隔) 発生させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
@@ -98,27 +106,21 @@ export function applyBumpFeedback(
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
 ) {
-  const {
-    maxDist = Math.hypot(goal.x, goal.y),
-    borderRange = [2, 40],
-    showRange = [200, 1000],
-  } = opts;
-
-  const dist = distance(pos, goal);
-  const t = dist / maxDist;
-  const width = lerp(borderRange[0], borderRange[1], 1 - t);
-  const showTime = lerp(showRange[0], showRange[1], 1 - t);
+  // 暫定実装として太さ 30px、表示時間 600ms に固定
+  const width = 30;
+  const showTime = 600;
 
   // 枠線を赤く変更
   setColor('red');
 
-  // 2 回ともやや長めに、強く振動させて衝突をわかりやすくする
-  // Heavy は Light よりも大きい振動を表します
+  // 200ms 間隔で 3 回連続して強く振動させる
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  // 200 ミリ秒後に再度振動させることで "2 回" を体感できるようにする
   setTimeout(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, 200);
+  setTimeout(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  }, 400);
 
   borderW.value = withSequence(
     withTiming(width, { duration: 150 }),
