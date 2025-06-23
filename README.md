@@ -1,50 +1,53 @@
-# Welcome to your Expo app 👋
+# Haptic Maze α
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+このリポジトリは Expo SDK 53 を用いた触覚迷路ゲーム「Haptic Maze」の α 版です。
+10×10 の固定迷路を読み込み、D‑Pad で操作してゴールを目指します。
 
-## Get started
+## 必要環境
 
-1. Install dependencies
+- Node.js 20 以上
+- pnpm 8 以上 (npm でも動作します)
+
+## セットアップと実行
+
+1. 依存パッケージのインストール
 
    ```bash
-   npm install
+   pnpm install
    ```
 
-2. Start the app
+2. アプリの起動
 
    ```bash
-   npx expo start
+   pnpm ios      # iOS シミュレータで実行
+   pnpm android  # Android 実機で実行
    ```
 
-In the output, you'll find options to open the app in a
+3. コードチェック
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   pnpm lint
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## ゲーム内容
 
-## Get a fresh project
+- 起動時に `assets/mazes/maze001.json` を読み込みます
+- D‑Pad の上下左右ボタンで 1 マスずつ移動します
+- ゴールまでの直線距離に応じて画面の枠がフラッシュし、端末が振動します
+- 壁にぶつかると赤い枠と長めの振動でフィードバックされ、Bumps が加算されます
+- ゴールに到達すると Steps と Bumps を表示するモーダルが開きます
+- 画面右上のメニューから「Reset Maze」「Exit to Title」を選択できます
 
-When you're ready, run:
+## 主要ディレクトリ
 
-```bash
-npm run reset-project
+```
+HapticMaze/
+├─ app/              # 画面コンポーネント (expo-router)
+├─ assets/mazes/     # 迷路 JSON
+├─ components/       # 再利用 UI (DPad など)
+├─ src/game/         # ゲームロジック
+└─ src/types/        # 型定義
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+迷路 JSON の形式や詳細な仕様は `APP_SPEC.md` を参照してください。
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
