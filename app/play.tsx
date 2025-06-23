@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button, Modal, StyleSheet, View, Pressable, Switch, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -35,6 +35,9 @@ export default function PlayScreen() {
   // 枠線の色を状態として管理
   const [borderColor, setBorderColor] = useState('white');
   const borderW = useSharedValue(0);
+  // 連打を防ぐための入力ロック
+  const [locked, setLocked] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   // 枠の太さを共通化するため縦横で別々の AnimatedStyle を用意
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
@@ -67,8 +70,18 @@ export default function PlayScreen() {
     router.replace('/');
   };
 
+  // コンポーネント破棄時にタイマーを解除
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   // DPad からの入力を処理する関数
   const handleMove = (dir: Dir) => {
+    if (locked) return; // ロック中は無視
+    // ここでロックを開始
+    setLocked(true);
     // 移動後の座標を計算しておく
     const next = { x: state.pos.x, y: state.pos.y };
     if (dir === 'Up') next.y -= 1;
@@ -78,22 +91,22 @@ export default function PlayScreen() {
 
     // move の戻り値が false のときは壁に衝突
     const ok = move(dir);
-    if (!ok) {
-      // 壁衝突時は赤い枠と 400ms の長い振動を 1 回鳴らす
-      applyBumpFeedback(
-        state.pos,
-        { x: maze.goal[0], y: maze.goal[1] },
-        borderW,
-        setBorderColor
-      );
-    } else {
-      // 移動成功時は距離に応じた枠アニメーション中、振動を繰り返す
-      applyDistanceFeedback(
-        next,
-        { x: maze.goal[0], y: maze.goal[1] },
-        borderW
-      );
-    }
+    const wait = !ok
+      ? applyBumpFeedback(
+          state.pos,
+          { x: maze.goal[0], y: maze.goal[1] },
+          borderW,
+          setBorderColor
+        )
+      : applyDistanceFeedback(
+          next,
+          { x: maze.goal[0], y: maze.goal[1] },
+          borderW
+        );
+
+    // フィードバック終了から 100ms 後にロック解除
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setLocked(false), wait + 100);
   };
 
   const dpadTop = height * (2 / 3);
@@ -153,7 +166,7 @@ export default function PlayScreen() {
       </View>
       <View style={[styles.dpadWrapper, { top: dpadTop }]}
       >
-        <DPad onPress={handleMove} />
+        <DPad onPress={handleMove} disabled={locked} />
       </View>
       {/* サブメニュー本体 */}
       <Modal transparent visible={showMenu} animationType="fade">
