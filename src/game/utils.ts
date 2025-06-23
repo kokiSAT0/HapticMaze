@@ -98,8 +98,6 @@ export function applyDistanceFeedback(
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
-  pos: Vec2,
-  goal: Vec2,
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}

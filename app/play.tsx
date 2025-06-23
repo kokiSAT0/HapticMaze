@@ -100,12 +100,7 @@ export default function PlayScreen() {
     // move の戻り値が false のときは壁に衝突
     const ok = move(dir);
     const wait = !ok
-      ? applyBumpFeedback(
-          state.pos,
-          { x: maze.goal[0], y: maze.goal[1] },
-          borderW,
-          setBorderColor
-        )
+      ? applyBumpFeedback(borderW, setBorderColor)
       : applyDistanceFeedback(
           next,
           { x: maze.goal[0], y: maze.goal[1] },
