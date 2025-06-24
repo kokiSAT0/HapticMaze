@@ -1,8 +1,22 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle, Polygon } from 'react-native-svg';
+import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
+
+// 星形ポリゴンの座標文字列を生成するヘルパー
+function starPoints(cx: number, cy: number, r: number): string {
+  const points: string[] = [];
+  const step = Math.PI / 5; // 36度おきに頂点を作る
+  for (let i = 0; i < 10; i++) {
+    const rad = i * step - Math.PI / 2; // 上向きに開始
+    const len = i % 2 === 0 ? r : r * 0.5;
+    const x = cx + len * Math.cos(rad);
+    const y = cy + len * Math.sin(rad);
+    points.push(`${x},${y}`);
+  }
+  return points.join(' ');
+}
 
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
@@ -10,6 +24,8 @@ export interface MiniMapProps {
   maze: MazeData; // 迷路の壁情報
   path: Vec2[]; // 通過したマスの履歴
   pos: Vec2; // 現在の位置
+  enemies?: Vec2[]; // 敵の位置一覧
+  enemyPaths?: Vec2[][]; // 敵の移動履歴
   flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
   /**
@@ -30,6 +46,8 @@ export function MiniMap({
   maze,
   path,
   pos,
+  enemies = [],
+  enemyPaths = [],
   flash = 2,
   size = 80,
   showAll = false,
@@ -159,12 +177,64 @@ export function MiniMap({
     return segments;
   };
 
+  // 敵の移動履歴を線で描画
+  // 最も古い線は透明から始まり徐々に白くなる
+  const renderEnemyPaths = () => {
+    const lines = [] as React.JSX.Element[];
+    enemyPaths.forEach((p, idx) => {
+      for (let i = 0; i < p.length - 1; i++) {
+        const a = p[i];
+        const b = p[i + 1];
+        const id = `ep${idx}-${i}`;
+        const startO = i === 0 ? 0 : i === 1 ? 0.5 : 0.8;
+        const endO = i === p.length - 2 ? 1 : i === 0 ? 0.5 : 0.8;
+        lines.push(
+          <React.Fragment key={id}>
+            <Defs>
+              <LinearGradient
+                id={id}
+                x1={(a.x + 0.5) * cell}
+                y1={(a.y + 0.5) * cell}
+                x2={(b.x + 0.5) * cell}
+                y2={(b.y + 0.5) * cell}
+                gradientUnits="userSpaceOnUse"
+              >
+                <Stop offset="0" stopColor="white" stopOpacity={startO} />
+                <Stop offset="1" stopColor="white" stopOpacity={endO} />
+              </LinearGradient>
+            </Defs>
+            <Line
+              x1={(a.x + 0.5) * cell}
+              y1={(a.y + 0.5) * cell}
+              x2={(b.x + 0.5) * cell}
+              y2={(b.y + 0.5) * cell}
+              stroke={`url(#${id})`}
+              strokeWidth={1}
+            />
+          </React.Fragment>
+        );
+      }
+    });
+    return lines;
+  };
+
+  // 敵を星形で描画
+  const renderEnemies = () => {
+    return enemies.map((e, i) => (
+      <Polygon
+        key={`enemy${i}`}
+        points={starPoints((e.x + 0.5) * cell, (e.y + 0.5) * cell, cell * 0.35)}
+        fill="white"
+      />
+    ));
+  };
+
   return (
-    // showAll が true のときだけ外枠をオレンジ色で表示する
-    // false の場合は transparent を指定して枠線を隠す
+    // デバッグ表示の有無にかかわらず外枠は描画しない
+    // borderColor を常に transparent にして非表示にする
     <Animated.View
       style={[
-        { width: size, height: size, borderColor: showAll ? 'orange' : 'transparent' },
+        { width: size, height: size, borderColor: 'transparent' },
         style,
       ]}
     >
@@ -172,13 +242,13 @@ export function MiniMap({
         {renderWalls()}
         {renderHitWalls()}
         {renderPath()}
-        {/* スタート位置を右向き三角形で表示 */}
-        <Polygon
-          points={`\
-            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.25) * cell} \
-            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.75) * cell} \
-            ${(maze.start[0] + 0.8) * cell},${(maze.start[1] + 0.5) * cell}
-          `}
+        {renderEnemyPaths()}
+        {/* スタート位置を正方形で表示 */}
+        <Rect
+          x={(maze.start[0] + 0.25) * cell}
+          y={(maze.start[1] + 0.25) * cell}
+          width={cell * 0.5}
+          height={cell * 0.5}
           fill="white"
         />
         {showAll && (
@@ -198,6 +268,7 @@ export function MiniMap({
           r={cell * 0.3}
           fill="white"
         />
+        {renderEnemies()}
       </Svg>
     </Animated.View>
   );

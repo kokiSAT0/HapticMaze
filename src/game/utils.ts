@@ -221,3 +221,173 @@ export function getHitWall(
   }
   return null;
 }
+
+/**
+ * 敵をランダムな位置に生成します。
+ * count には生成したい数、rnd は乱数関数を指定します。
+ * 同じマスを避け、スタート地点とゴール地点も除外します。
+ */
+export function spawnEnemies(
+  count: number,
+  maze: MazeData,
+  rnd: () => number = Math.random,
+): Vec2[] {
+  const enemies: Vec2[] = [];
+  while (enemies.length < count) {
+    const x = Math.floor(rnd() * maze.size);
+    const y = Math.floor(rnd() * maze.size);
+    const dup = enemies.some((e) => e.x === x && e.y === y);
+    if (dup) continue;
+    if (x === maze.start[0] && y === maze.start[1]) continue;
+    if (x === maze.goal[0] && y === maze.goal[1]) continue;
+    enemies.push({ x, y });
+  }
+  return enemies;
+}
+
+/**
+ * 敵をランダムに一マス移動させます。
+ * rnd を渡すとテストで動きを固定できます。
+ */
+export function moveEnemyRandom(
+  enemy: Vec2,
+  maze: MazeData,
+  rnd: () => number = Math.random,
+): Vec2 {
+  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+    canMove(enemy, d, maze),
+  );
+  if (dirs.length === 0) return enemy;
+  const idx = Math.floor(rnd() * dirs.length);
+  return nextPosition(enemy, dirs[idx]);
+}
+
+/**
+ * BFS を用いて start から goal までの最短経路を探します。
+ * 戻り値は最初の一歩の座標 next と、ゴールまでの距離 dist です。
+ * 到達不能な場合は null を返します。
+ */
+export function shortestStep(
+  start: Vec2,
+  goal: Vec2,
+  maze: MazeData,
+): { next: Vec2; dist: number } | null {
+  const visited = new Set<string>([`${start.x},${start.y}`]);
+  type Node = { pos: Vec2; dist: number; first: Vec2 | null };
+  const queue: Node[] = [{ pos: start, dist: 0, first: null }];
+
+  while (queue.length > 0) {
+    const { pos, dist, first } = queue.shift() as Node;
+    if (pos.x === goal.x && pos.y === goal.y) {
+      return { next: first ?? pos, dist };
+    }
+
+    for (const dir of ['Up', 'Down', 'Left', 'Right'] as const) {
+      if (!canMove(pos, dir, maze)) continue;
+      const nxt = nextPosition(pos, dir);
+      const key = `${nxt.x},${nxt.y}`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      queue.push({ pos: nxt, dist: dist + 1, first: first ?? nxt });
+    }
+  }
+  return null;
+}
+
+/**
+ * 壁を考慮した最短経路で距離を測り、
+ * 2 マス以内ならプレイヤーへ向かう敵 AI。
+ * それ以外では未踏マスを優先して移動します。
+ * visited にはその敵がこれまでに踏んだマスの集合を渡します。
+ */
+export function moveEnemySmart(
+  enemy: Vec2,
+  maze: MazeData,
+  visited: Set<string>,
+  player: Vec2,
+  rnd: () => number = Math.random,
+): Vec2 {
+  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+    canMove(enemy, d, maze),
+  );
+  if (dirs.length === 0) return enemy;
+
+  const chase = shortestStep(enemy, player, maze);
+  if (chase && chase.dist <= 2) {
+    return chase.next;
+  }
+
+  // 旧実装: マンハッタン距離だけで判断していた処理は削除
+
+  const unvisited = dirs.filter((d) => {
+    const next = nextPosition(enemy, d);
+    return !visited.has(`${next.x},${next.y}`);
+  });
+
+  const choices = unvisited.length > 0 ? unvisited : dirs;
+  const idx = Math.floor(rnd() * choices.length);
+  return nextPosition(enemy, choices[idx]);
+}
+
+/**
+ * 敵の移動履歴を更新します。
+ * paths には各敵のこれまでの座標配列を渡します。
+ * enemies は移動後の座標配列です。
+ * 4 点より多い場合は古い順に削除して常に最新 4 点を保ちます。
+ */
+export function updateEnemyPaths(paths: Vec2[][], enemies: Vec2[]): Vec2[][] {
+  return enemies.map((e, i) => {
+    const prev = paths[i] ?? [];
+    const next = [...prev, e];
+    if (next.length > 4) next.shift();
+    return next;
+  });
+}
+
+/**
+ * 盤面サイズからランダムなマス座標を返す関数。
+ * rnd を渡すと任意の乱数でテストしやすくなる。
+ */
+export function randomCell(
+  size: number,
+  rnd: () => number = Math.random,
+): Vec2 {
+  return {
+    x: Math.floor(rnd() * size),
+    y: Math.floor(rnd() * size),
+  };
+}
+
+/**
+ * スタート位置と候補マス配列から、距離が遠いほど選ばれやすい形で1マス選ぶ。
+ * 重み付けにはマンハッタン距離を利用する。
+ */
+export function biasedPickGoal(
+  start: Vec2,
+  cells: Vec2[],
+  rnd: () => number = Math.random,
+): Vec2 {
+  const weights = cells.map(
+    (c) => Math.abs(c.x - start.x) + Math.abs(c.y - start.y) + 1,
+  );
+  const sum = weights.reduce((a, b) => a + b, 0);
+  let r = rnd() * sum;
+  for (let i = 0; i < cells.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return cells[i];
+  }
+  return cells[cells.length - 1];
+}
+
+/**
+ * 盤面サイズから全てのマス座標を列挙する簡易ヘルパー。
+ */
+export function allCells(size: number): Vec2[] {
+  const cells: Vec2[] = [];
+  for (let x = 0; x < size; x++) {
+    for (let y = 0; y < size; y++) {
+      cells.push({ x, y });
+    }
+  }
+  return cells;
+}
