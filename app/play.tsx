@@ -38,9 +38,11 @@ export default function PlayScreen() {
   const insets = useSafeAreaInsets();
   // 画面サイズを取得。useWindowDimensions は画面回転にも追従する
   const { height } = useWindowDimensions();
-  const { state, move, reset, maze } = useGame();
+  const { state, move, maze, nextStage, resetRun } = useGame();
   const [showResult, setShowResult] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [stageClear, setStageClear] = useState(false);
+  const [gameClear, setGameClear] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
@@ -62,40 +64,57 @@ export default function PlayScreen() {
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
-      // ゴールしたら結果表示フラグを立てる
+      // ゴール到達。最終ステージかどうかで分岐
+      setStageClear(true);
       setGameOver(false);
+      setGameClear(state.finalStage);
       setShowResult(true);
       setDebugAll(true);
     } else if (state.caught) {
       // 敵に捕まったとき
       setGameOver(true);
+      setStageClear(false);
       setShowResult(true);
       setDebugAll(true);
     }
-  }, [state.pos, state.caught, maze.goal]);
+  }, [state.pos, state.caught, maze.goal, state.finalStage]);
 
   const handleOk = () => {
-    // 結果モーダルを閉じて Title 画面へ戻る
+    // 結果モーダルを閉じるのみ
     setShowResult(false);
     setGameOver(false);
-    // デバッグ表示も元に戻す
     setDebugAll(false);
-    reset();
-    router.replace("/");
+    setStageClear(false);
+    setGameClear(false);
+    if (gameOver) {
+      // ゲームオーバー時は1ステージ目から再開
+      resetRun();
+    } else if (gameClear) {
+      // 全ステージクリア
+      resetRun();
+      router.replace("/");
+    } else if (stageClear) {
+      // 通常クリアで次のステージへ
+      nextStage();
+    }
   };
 
   // Reset Maze 選択時に呼ばれる
   const handleReset = () => {
     setShowMenu(false);
     setGameOver(false);
-    reset();
+    setStageClear(false);
+    setGameClear(false);
+    resetRun();
   };
 
   // Exit to Title 選択時に呼ばれる
   const handleExit = () => {
     setShowMenu(false);
     setGameOver(false);
-    reset();
+    setStageClear(false);
+    setGameClear(false);
+    resetRun();
     router.replace("/");
   };
 
@@ -236,7 +255,7 @@ export default function PlayScreen() {
         <View style={styles.modalWrapper}>
           <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
             <ThemedText type="title">
-              {gameOver ? "ゲームオーバー" : "ゴール！"}
+              {gameClear ? "ゲームクリア" : gameOver ? "ゲームオーバー" : "ゴール！"}
             </ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>

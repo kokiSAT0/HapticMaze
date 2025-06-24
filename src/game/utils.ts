@@ -343,3 +343,51 @@ export function updateEnemyPaths(paths: Vec2[][], enemies: Vec2[]): Vec2[][] {
     return next;
   });
 }
+
+/**
+ * 盤面サイズからランダムなマス座標を返す関数。
+ * rnd を渡すと任意の乱数でテストしやすくなる。
+ */
+export function randomCell(
+  size: number,
+  rnd: () => number = Math.random,
+): Vec2 {
+  return {
+    x: Math.floor(rnd() * size),
+    y: Math.floor(rnd() * size),
+  };
+}
+
+/**
+ * スタート位置と候補マス配列から、距離が遠いほど選ばれやすい形で1マス選ぶ。
+ * 重み付けにはマンハッタン距離を利用する。
+ */
+export function biasedPickGoal(
+  start: Vec2,
+  cells: Vec2[],
+  rnd: () => number = Math.random,
+): Vec2 {
+  const weights = cells.map(
+    (c) => Math.abs(c.x - start.x) + Math.abs(c.y - start.y) + 1,
+  );
+  const sum = weights.reduce((a, b) => a + b, 0);
+  let r = rnd() * sum;
+  for (let i = 0; i < cells.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return cells[i];
+  }
+  return cells[cells.length - 1];
+}
+
+/**
+ * 盤面サイズから全てのマス座標を列挙する簡易ヘルパー。
+ */
+export function allCells(size: number): Vec2[] {
+  const cells: Vec2[] = [];
+  for (let x = 0; x < size; x++) {
+    for (let y = 0; y < size; y++) {
+      cells.push({ x, y });
+    }
+  }
+  return cells;
+}
