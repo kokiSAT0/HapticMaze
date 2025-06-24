@@ -39,6 +39,9 @@ export default function PlayScreen() {
   // 画面サイズを取得。useWindowDimensions は画面回転にも追従する
   const { height } = useWindowDimensions();
   const { state, move, maze, nextStage, resetRun } = useGame();
+  // 全体のステージ数。迷路サイズ×迷路サイズで計算する
+  // size は迷路の一辺のマス数なので、面積がステージ総数になる
+  const totalStages = maze.size * maze.size;
   const [showResult, setShowResult] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [stageClear, setStageClear] = useState(false);
@@ -259,6 +262,11 @@ export default function PlayScreen() {
             </ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>
+            {/* 現在クリアしたステージ数と総ステージ数を表示 */}
+            {/* totalStages は maze.size × maze.size で計算した結果 */}
+            <ThemedText>
+              Stage: {state.stage}/{totalStages}
+            </ThemedText>
             <Button
               title="OK"
               onPress={handleOk}
