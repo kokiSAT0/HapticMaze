@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle, Polygon } from 'react-native-svg';
+import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
@@ -25,6 +25,7 @@ export interface MiniMapProps {
   path: Vec2[]; // 通過したマスの履歴
   pos: Vec2; // 現在の位置
   enemies?: Vec2[]; // 敵の位置一覧
+  enemyPaths?: Vec2[][]; // 敵の移動履歴
   flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
   /**
@@ -46,6 +47,7 @@ export function MiniMap({
   path,
   pos,
   enemies = [],
+  enemyPaths = [],
   flash = 2,
   size = 80,
   showAll = false,
@@ -175,6 +177,47 @@ export function MiniMap({
     return segments;
   };
 
+  // 敵の移動履歴を線で描画
+  // 最も古い線は透明から始まり徐々に白くなる
+  const renderEnemyPaths = () => {
+    const lines = [] as React.JSX.Element[];
+    enemyPaths.forEach((p, idx) => {
+      for (let i = 0; i < p.length - 1; i++) {
+        const a = p[i];
+        const b = p[i + 1];
+        const id = `ep${idx}-${i}`;
+        const startO = i === 0 ? 0 : i === 1 ? 0.5 : 0.8;
+        const endO = i === p.length - 2 ? 1 : i === 0 ? 0.5 : 0.8;
+        lines.push(
+          <React.Fragment key={id}>
+            <Defs>
+              <LinearGradient
+                id={id}
+                x1={(a.x + 0.5) * cell}
+                y1={(a.y + 0.5) * cell}
+                x2={(b.x + 0.5) * cell}
+                y2={(b.y + 0.5) * cell}
+                gradientUnits="userSpaceOnUse"
+              >
+                <Stop offset="0" stopColor="white" stopOpacity={startO} />
+                <Stop offset="1" stopColor="white" stopOpacity={endO} />
+              </LinearGradient>
+            </Defs>
+            <Line
+              x1={(a.x + 0.5) * cell}
+              y1={(a.y + 0.5) * cell}
+              x2={(b.x + 0.5) * cell}
+              y2={(b.y + 0.5) * cell}
+              stroke={`url(#${id})`}
+              strokeWidth={1}
+            />
+          </React.Fragment>
+        );
+      }
+    });
+    return lines;
+  };
+
   // 敵を星形で描画
   const renderEnemies = () => {
     return enemies.map((e, i) => (
@@ -199,6 +242,7 @@ export function MiniMap({
         {renderWalls()}
         {renderHitWalls()}
         {renderPath()}
+        {renderEnemyPaths()}
         {/* スタート位置を右向き三角形で表示 */}
         <Polygon
           points={`\

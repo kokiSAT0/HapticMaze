@@ -6,6 +6,7 @@ import {
   nextPosition,
   spawnEnemies,
   moveEnemySmart,
+  updateEnemyPaths,
 } from './utils';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
@@ -32,6 +33,7 @@ export interface GameState {
   hitH: Set<string>;
   enemies: Vec2[];
   enemyVisited: Set<string>[];
+  enemyPaths: Vec2[][];
   /** 敵に捕まったとき true になる */
   caught: boolean;
 }
@@ -57,6 +59,7 @@ function initState(m: MazeData): State {
     hitH: new Set(),
     enemies,
     enemyVisited: enemies.map((e) => new Set([`${e.x},${e.y}`])),
+    enemyPaths: enemies.map((e) => [{ ...e }]),
     caught: false,
   };
 }
@@ -106,6 +109,8 @@ function reducer(state: State, action: Action): State {
         return moved;
       });
 
+      const newPaths = updateEnemyPaths(state.enemyPaths, movedEnemies);
+
       const caught = movedEnemies.some((e, i) => {
         const prev = enemies[i];
         const cross = prev.x === newPos.x && prev.y === newPos.y && e.x === pos.x && e.y === pos.y;
@@ -123,6 +128,7 @@ function reducer(state: State, action: Action): State {
         hitH,
         enemies: movedEnemies,
         enemyVisited: newVisited,
+        enemyPaths: newPaths,
         caught,
       };
       return newState;

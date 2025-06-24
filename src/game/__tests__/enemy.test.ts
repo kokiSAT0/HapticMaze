@@ -1,7 +1,7 @@
 // spawnEnemies と moveEnemySmart のテスト
 // 初心者向けに分かりやすく記述
 
-import { spawnEnemies, moveEnemySmart, wallSet } from '../utils';
+import { spawnEnemies, moveEnemySmart, wallSet, updateEnemyPaths } from '../utils';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
 // 基本となる迷路データ（壁なし）
@@ -67,5 +67,14 @@ describe('spawnEnemies', () => {
       .mockReturnValueOnce(0.2);
     const enemies = spawnEnemies(1, baseMaze, rnd);
     expect(enemies[0]).toEqual(pos(1, 2));
+  });
+});
+
+describe('updateEnemyPaths', () => {
+  test('常に最新4点だけを保持する', () => {
+    const paths = [[pos(0, 0), pos(1, 0), pos(2, 0), pos(3, 0)]];
+    const enemies = [pos(4, 0)];
+    const updated = updateEnemyPaths(paths, enemies);
+    expect(updated[0]).toEqual([pos(1, 0), pos(2, 0), pos(3, 0), pos(4, 0)]);
   });
 });

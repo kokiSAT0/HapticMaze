@@ -328,3 +328,18 @@ export function moveEnemySmart(
   const idx = Math.floor(rnd() * choices.length);
   return nextPosition(enemy, choices[idx]);
 }
+
+/**
+ * 敵の移動履歴を更新します。
+ * paths には各敵のこれまでの座標配列を渡します。
+ * enemies は移動後の座標配列です。
+ * 4 点より多い場合は古い順に削除して常に最新 4 点を保ちます。
+ */
+export function updateEnemyPaths(paths: Vec2[][], enemies: Vec2[]): Vec2[][] {
+  return enemies.map((e, i) => {
+    const prev = paths[i] ?? [];
+    const next = [...prev, e];
+    if (next.length > 4) next.shift();
+    return next;
+  });
+}
