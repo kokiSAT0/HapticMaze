@@ -61,12 +61,17 @@ export default function PlayScreen() {
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
+      // ゴールしたら結果表示フラグを立て、迷路を全表示に切り替える
       setShowResult(true);
+      setDebugAll(true);
     }
   }, [state.pos, maze.goal]);
 
   const handleOk = () => {
+    // 結果モーダルを閉じて Title 画面へ戻る
     setShowResult(false);
+    // デバッグ表示も元に戻す
+    setDebugAll(false);
     reset();
     router.replace("/");
   };
@@ -127,6 +132,8 @@ export default function PlayScreen() {
 
   const dpadTop = height * (2 / 3);
   const mapTop = height / 3;
+  // リザルト表示位置。ミニマップより少し下へ配置する
+  const resultTop = mapTop + 260;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -215,7 +222,7 @@ export default function PlayScreen() {
       </Modal>
       <Modal transparent visible={showResult} animationType="fade">
         <View style={styles.modalWrapper}>
-          <ThemedView style={styles.modalContent}>
+          <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
             <ThemedText type="title">ゴール！</ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>
@@ -259,7 +266,8 @@ const styles = StyleSheet.create({
   },
   modalWrapper: {
     flex: 1,
-    justifyContent: "center",
+    // リザルトを上寄せにするため中央揃えを解除
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
