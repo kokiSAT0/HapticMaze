@@ -191,6 +191,7 @@ export default function PlayScreen() {
           path={state.path}
           pos={state.pos}
           enemies={state.enemies}
+          enemyPaths={state.enemyPaths}
           showAll={debugAll}
           hitV={state.hitV}
           hitH={state.hitH}
