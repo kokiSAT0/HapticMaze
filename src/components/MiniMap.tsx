@@ -243,13 +243,12 @@ export function MiniMap({
         {renderHitWalls()}
         {renderPath()}
         {renderEnemyPaths()}
-        {/* スタート位置を右向き三角形で表示 */}
-        <Polygon
-          points={`\
-            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.25) * cell} \
-            ${(maze.start[0] + 0.2) * cell},${(maze.start[1] + 0.75) * cell} \
-            ${(maze.start[0] + 0.8) * cell},${(maze.start[1] + 0.5) * cell}
-          `}
+        {/* スタート位置を正方形で表示 */}
+        <Rect
+          x={(maze.start[0] + 0.25) * cell}
+          y={(maze.start[1] + 0.25) * cell}
+          width={cell * 0.5}
+          height={cell * 0.5}
           fill="white"
         />
         {showAll && (
