@@ -230,11 +230,11 @@ export function MiniMap({
   };
 
   return (
-    // showAll が true のときだけ外枠をオレンジ色で表示する
-    // false の場合は transparent を指定して枠線を隠す
+    // デバッグ表示の有無にかかわらず外枠は描画しない
+    // borderColor を常に transparent にして非表示にする
     <Animated.View
       style={[
-        { width: size, height: size, borderColor: showAll ? 'orange' : 'transparent' },
+        { width: size, height: size, borderColor: 'transparent' },
         style,
       ]}
     >
