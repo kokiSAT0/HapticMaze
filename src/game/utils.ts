@@ -49,9 +49,9 @@ export function applyDistanceFeedback(
   borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
 ): number {
-  // borderRange のデフォルトは [2, 80]。
-  // 移動時に表示する枠線の太さが 2px から 80px の範囲で変化します。
-  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [2, 80] } = opts;
+  // borderRange のデフォルトは [2, 200]。
+  // 移動時に表示する枠線の太さが 2px から 200px の範囲で変化します。
+  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [2, 200] } = opts;
 
   const dist = distance(pos, goal);
   // r = 0 がゴール、1 が最遠の正規化値
