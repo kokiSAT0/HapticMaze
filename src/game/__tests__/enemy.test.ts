@@ -1,7 +1,7 @@
-// spawnEnemies と moveEnemyRandom のテスト
+// spawnEnemies と moveEnemySmart のテスト
 // 初心者向けに分かりやすく記述
 
-import { spawnEnemies, moveEnemyRandom, wallSet } from '../utils';
+import { spawnEnemies, moveEnemySmart, wallSet } from '../utils';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
 // 基本となる迷路データ（壁なし）
@@ -16,23 +16,19 @@ const baseMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
 
 const pos = (x: number, y: number): Vec2 => ({ x, y });
 
-describe('moveEnemyRandom', () => {
-  test('進める方向が一つだけなら必ずそこへ移動する', () => {
-    const maze = {
-      ...baseMaze,
-      // 下方向のみ開けている状態を作る
-      v_walls: wallSet([]),
-      h_walls: wallSet([]),
-    };
+describe('moveEnemySmart', () => {
+  test('プレイヤーが近いときは接近する', () => {
     const e = pos(0, 0);
-    const moved = moveEnemyRandom(e, maze, () => 0);
-    expect(moved).toEqual(pos(0, 1));
+    const visited = new Set<string>();
+    const moved = moveEnemySmart(e, baseMaze, visited, pos(2, 0), () => 0);
+    expect(moved).toEqual(pos(1, 0));
   });
 
-  test('乱数によって方向が決まる', () => {
-    const e = pos(0, 0);
-    const moved = moveEnemyRandom(e, baseMaze, () => 0.6); // Right を選ぶ
-    expect(moved).toEqual(pos(1, 0));
+  test('未踏マスを優先して進む', () => {
+    const e = pos(1, 1);
+    const visited = new Set<string>(['2,1', '1,0', '1,2']);
+    const moved = moveEnemySmart(e, baseMaze, visited, pos(9, 9), () => 0);
+    expect(moved).toEqual(pos(0, 1));
   });
 });
 
