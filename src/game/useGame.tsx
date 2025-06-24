@@ -5,7 +5,7 @@ import {
   getHitWall,
   nextPosition,
   spawnEnemies,
-  moveEnemyRandom,
+  moveEnemySmart,
 } from './utils';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
@@ -31,6 +31,7 @@ export interface GameState {
   hitV: Set<string>;
   hitH: Set<string>;
   enemies: Vec2[];
+  enemyVisited: Set<string>[];
   /** 敵に捕まったとき true になる */
   caught: boolean;
 }
@@ -44,6 +45,7 @@ interface State extends GameState {
 // MazeData から初期状態を作成
 function initState(m: MazeData): State {
   const maze = prepMaze(m);
+  const enemies = spawnEnemies(1, maze);
   return {
     mazeRaw: m,
     maze,
@@ -53,7 +55,8 @@ function initState(m: MazeData): State {
     path: [{ x: m.start[0], y: m.start[1] }],
     hitV: new Set(),
     hitH: new Set(),
-    enemies: spawnEnemies(1, maze),
+    enemies,
+    enemyVisited: enemies.map((e) => new Set([`${e.x},${e.y}`])),
     caught: false,
   };
 }
@@ -94,8 +97,21 @@ function reducer(state: State, action: Action): State {
         steps += 1;
       }
 
-      const movedEnemies = enemies.map((e) => moveEnemyRandom(e, maze));
-      const caught = movedEnemies.some((e) => e.x === newPos.x && e.y === newPos.y);
+      const newVisited: Set<string>[] = [];
+      const movedEnemies = enemies.map((e, i) => {
+        const visited = new Set(state.enemyVisited[i]);
+        const moved = moveEnemySmart(e, maze, visited, newPos);
+        visited.add(`${moved.x},${moved.y}`);
+        newVisited.push(visited);
+        return moved;
+      });
+
+      const caught = movedEnemies.some((e, i) => {
+        const prev = enemies[i];
+        const cross = prev.x === newPos.x && prev.y === newPos.y && e.x === pos.x && e.y === pos.y;
+        const same = e.x === newPos.x && e.y === newPos.y;
+        return same || cross;
+      });
 
       const newState: State = {
         ...state,
@@ -106,6 +122,7 @@ function reducer(state: State, action: Action): State {
         hitV,
         hitH,
         enemies: movedEnemies,
+        enemyVisited: newVisited,
         caught,
       };
       return newState;

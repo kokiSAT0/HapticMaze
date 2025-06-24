@@ -261,3 +261,42 @@ export function moveEnemyRandom(
   const idx = Math.floor(rnd() * dirs.length);
   return nextPosition(enemy, dirs[idx]);
 }
+
+/**
+ * プレイヤーとの距離が 2 マス以内なら接近し、
+ * それ以外では未踏のマスを優先して移動する敵 AI。
+ * visited にはその敵がこれまでに踏んだマスの集合を渡します。
+ */
+export function moveEnemySmart(
+  enemy: Vec2,
+  maze: MazeData,
+  visited: Set<string>,
+  player: Vec2,
+  rnd: () => number = Math.random,
+): Vec2 {
+  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+    canMove(enemy, d, maze),
+  );
+  if (dirs.length === 0) return enemy;
+
+  // マンハッタン距離を求める関数。縦横の差を足し合わせるだけ。
+  const dist = (p: Vec2) => Math.abs(p.x - player.x) + Math.abs(p.y - player.y);
+
+  // 距離が 2 以下ならプレイヤーに近づく方向を選ぶ
+  if (dist(enemy) <= 2) {
+    const chase = dirs.filter((d) => dist(nextPosition(enemy, d)) < dist(enemy));
+    if (chase.length > 0) {
+      const idx = Math.floor(rnd() * chase.length);
+      return nextPosition(enemy, chase[idx]);
+    }
+  }
+
+  const unvisited = dirs.filter((d) => {
+    const next = nextPosition(enemy, d);
+    return !visited.has(`${next.x},${next.y}`);
+  });
+
+  const choices = unvisited.length > 0 ? unvisited : dirs;
+  const idx = Math.floor(rnd() * choices.length);
+  return nextPosition(enemy, choices[idx]);
+}
