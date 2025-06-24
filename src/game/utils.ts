@@ -43,6 +43,16 @@ export function clamp(v: number, min: number, max: number): number {
  * 同じ時間だけ impactAsync を繰り返して振動します。
  * borderW は Reanimated の SharedValue<number> です。
  */
+/**
+ * applyDistanceFeedback の戻り値型
+ * wait: 次回呼び出しまでの待ち時間
+ * id:   setInterval から得られるタイマー ID
+ */
+export interface DistanceFeedbackResult {
+  wait: number;
+  id: NodeJS.Timeout;
+}
+
 export function applyDistanceFeedback(
   pos: Vec2,
   goal: Vec2,
@@ -87,19 +97,17 @@ export function applyDistanceFeedback(
     withDelay(showTime, withTiming(0, { duration: 150 }))
   );
 
-  // 次回呼び出しまでの待ち時間を返す
-  return period;
+  // wait に待ち時間、id にタイマー ID をまとめて返す
+  return { wait: period, id };
 }
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * 太さ 30px の赤枠を 600ms 表示し、
+ * 太さ 50px の赤枠を 300ms 表示し、
  * 400ms の長い振動を 1 回発生させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
-  pos: Vec2,
-  goal: Vec2,
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
@@ -151,6 +159,29 @@ export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
     case "Up":
       return !v.has(`${x},${y - 1}`) && y > 0;
   }
+}
+
+/**
+ * 現在位置 pos と方向 dir から次の座標を計算します。
+ * 単純に座標を±1 するだけの処理です。
+ */
+export function nextPosition(pos: Vec2, dir: Dir): Vec2 {
+  const next = { ...pos };
+  switch (dir) {
+    case "Up":
+      next.y -= 1;
+      break;
+    case "Down":
+      next.y += 1;
+      break;
+    case "Left":
+      next.x -= 1;
+      break;
+    case "Right":
+      next.x += 1;
+      break;
+  }
+  return next;
 }
 
 /**
