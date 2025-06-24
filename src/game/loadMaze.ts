@@ -1,4 +1,4 @@
-// 実際に使う迷路ファイルは 10×10 サイズのこちら
+
 import mazeSet1 from '@/assets/mazes/maze_10x10_T30_L16_20250625_074204.json';
 import type { MazeData } from '@/src/types/maze';
 

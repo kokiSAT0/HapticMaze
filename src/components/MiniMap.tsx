@@ -38,6 +38,11 @@ export interface MiniMapProps {
   hitV?: Set<string>;
   /** 衝突した壁 (横方向) */
   hitH?: Set<string>;
+  /**
+   * これまでにゴールとして使われたマスの集合
+   * "x,y" 形式の文字列で座標を保持する
+   */
+  visitedGoals?: Set<string>;
 }
 
 // MiniMap コンポーネント
@@ -53,6 +58,7 @@ export function MiniMap({
   showAll = false,
   hitV,
   hitH,
+  visitedGoals,
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
   const style = useAnimatedStyle(() => ({
@@ -229,6 +235,28 @@ export function MiniMap({
     ));
   };
 
+  // 過去にゴールだったマスを枠線のみで描画
+  const renderVisitedGoals = () => {
+    if (!showAll || !visitedGoals) return null;
+    const rects = [] as React.JSX.Element[];
+    visitedGoals.forEach((k) => {
+      const [x, y] = k.split(',').map(Number);
+      rects.push(
+        <Rect
+          key={`vg${k}`}
+          x={(x + 0.25) * cell}
+          y={(y + 0.25) * cell}
+          width={cell * 0.5}
+          height={cell * 0.5}
+          stroke="white"
+          strokeWidth={1}
+          fill="none"
+        />,
+      );
+    });
+    return rects;
+  };
+
   return (
     // デバッグ表示の有無にかかわらず外枠は描画しない
     // borderColor を常に transparent にして非表示にする
@@ -243,6 +271,7 @@ export function MiniMap({
         {renderHitWalls()}
         {renderPath()}
         {renderEnemyPaths()}
+        {renderVisitedGoals()}
         {/* スタート位置を正方形で表示 */}
         <Rect
           x={(maze.start[0] + 0.25) * cell}
