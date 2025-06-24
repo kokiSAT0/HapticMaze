@@ -16,12 +16,35 @@ const baseMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
 
 const pos = (x: number, y: number): Vec2 => ({ x, y });
 
+// 敵とプレイヤーの間に壁がある迷路
+const wallMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
+  ...baseMaze,
+  v_walls: wallSet([[0, 0]]), // (0,0)-(1,0) の間に壁
+  h_walls: wallSet([]),
+};
+
 describe('moveEnemySmart', () => {
   test('プレイヤーが近いときは接近する', () => {
     const e = pos(0, 0);
     const visited = new Set<string>();
     const moved = moveEnemySmart(e, baseMaze, visited, pos(2, 0), () => 0);
     expect(moved).toEqual(pos(1, 0));
+  });
+
+  test('壁を避けてでも距離2以内なら接近する', () => {
+    const e = pos(0, 0);
+    const visited = new Set<string>();
+    // プレイヤーは (1,1)。直線では近いが壁により回り道で2歩
+    const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 1), () => 0);
+    expect(moved).toEqual(pos(0, 1));
+  });
+
+  test('壁で遠回りになる場合は接近しない', () => {
+    const e = pos(0, 0);
+    const visited = new Set<string>();
+    // プレイヤーは (1,0) だが壁のせいで最短距離は3歩
+    const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 0), () => 0);
+    expect(moved).not.toEqual(pos(0, 1));
   });
 
   test('未踏マスを優先して進む', () => {
