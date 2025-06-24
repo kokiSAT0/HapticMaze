@@ -1,5 +1,7 @@
 
-import mazeSet1 from '@/assets/mazes/maze_10x10_T30_L16_20250625_074204.json';
+// Maze データのパスは scripts/update-maze-import.js で自動生成された
+// mazeAsset.ts を経由して読み込む。
+import mazeSet1 from './mazeAsset';
 import type { MazeData } from '@/src/types/maze';
 
 /**
