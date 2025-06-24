@@ -4,12 +4,27 @@ import Svg, { Line, Rect, Circle, Polygon } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
+// 星形ポリゴンの座標文字列を生成するヘルパー
+function starPoints(cx: number, cy: number, r: number): string {
+  const points: string[] = [];
+  const step = Math.PI / 5; // 36度おきに頂点を作る
+  for (let i = 0; i < 10; i++) {
+    const rad = i * step - Math.PI / 2; // 上向きに開始
+    const len = i % 2 === 0 ? r : r * 0.5;
+    const x = cx + len * Math.cos(rad);
+    const y = cy + len * Math.sin(rad);
+    points.push(`${x},${y}`);
+  }
+  return points.join(' ');
+}
+
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
 export interface MiniMapProps {
   maze: MazeData; // 迷路の壁情報
   path: Vec2[]; // 通過したマスの履歴
   pos: Vec2; // 現在の位置
+  enemies?: Vec2[]; // 敵の位置一覧
   flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
   /**
@@ -30,6 +45,7 @@ export function MiniMap({
   maze,
   path,
   pos,
+  enemies = [],
   flash = 2,
   size = 80,
   showAll = false,
@@ -159,6 +175,17 @@ export function MiniMap({
     return segments;
   };
 
+  // 敵を星形で描画
+  const renderEnemies = () => {
+    return enemies.map((e, i) => (
+      <Polygon
+        key={`enemy${i}`}
+        points={starPoints((e.x + 0.5) * cell, (e.y + 0.5) * cell, cell * 0.35)}
+        fill="white"
+      />
+    ));
+  };
+
   return (
     // showAll が true のときだけ外枠をオレンジ色で表示する
     // false の場合は transparent を指定して枠線を隠す
@@ -198,6 +225,7 @@ export function MiniMap({
           r={cell * 0.3}
           fill="white"
         />
+        {renderEnemies()}
       </Svg>
     </Animated.View>
   );

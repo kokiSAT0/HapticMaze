@@ -221,3 +221,43 @@ export function getHitWall(
   }
   return null;
 }
+
+/**
+ * 敵をランダムな位置に生成します。
+ * count には生成したい数、rnd は乱数関数を指定します。
+ * 同じマスを避け、スタート地点とゴール地点も除外します。
+ */
+export function spawnEnemies(
+  count: number,
+  maze: MazeData,
+  rnd: () => number = Math.random,
+): Vec2[] {
+  const enemies: Vec2[] = [];
+  while (enemies.length < count) {
+    const x = Math.floor(rnd() * maze.size);
+    const y = Math.floor(rnd() * maze.size);
+    const dup = enemies.some((e) => e.x === x && e.y === y);
+    if (dup) continue;
+    if (x === maze.start[0] && y === maze.start[1]) continue;
+    if (x === maze.goal[0] && y === maze.goal[1]) continue;
+    enemies.push({ x, y });
+  }
+  return enemies;
+}
+
+/**
+ * 敵をランダムに一マス移動させます。
+ * rnd を渡すとテストで動きを固定できます。
+ */
+export function moveEnemyRandom(
+  enemy: Vec2,
+  maze: MazeData,
+  rnd: () => number = Math.random,
+): Vec2 {
+  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+    canMove(enemy, d, maze),
+  );
+  if (dirs.length === 0) return enemy;
+  const idx = Math.floor(rnd() * dirs.length);
+  return nextPosition(enemy, dirs[idx]);
+}

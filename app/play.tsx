@@ -40,6 +40,7 @@ export default function PlayScreen() {
   const { height } = useWindowDimensions();
   const { state, move, reset, maze } = useGame();
   const [showResult, setShowResult] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
@@ -61,15 +62,22 @@ export default function PlayScreen() {
 
   useEffect(() => {
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
-      // ゴールしたら結果表示フラグを立て、迷路を全表示に切り替える
+      // ゴールしたら結果表示フラグを立てる
+      setGameOver(false);
+      setShowResult(true);
+      setDebugAll(true);
+    } else if (state.caught) {
+      // 敵に捕まったとき
+      setGameOver(true);
       setShowResult(true);
       setDebugAll(true);
     }
-  }, [state.pos, maze.goal]);
+  }, [state.pos, state.caught, maze.goal]);
 
   const handleOk = () => {
     // 結果モーダルを閉じて Title 画面へ戻る
     setShowResult(false);
+    setGameOver(false);
     // デバッグ表示も元に戻す
     setDebugAll(false);
     reset();
@@ -79,12 +87,14 @@ export default function PlayScreen() {
   // Reset Maze 選択時に呼ばれる
   const handleReset = () => {
     setShowMenu(false);
+    setGameOver(false);
     reset();
   };
 
   // Exit to Title 選択時に呼ばれる
   const handleExit = () => {
     setShowMenu(false);
+    setGameOver(false);
     reset();
     router.replace("/");
   };
@@ -180,6 +190,7 @@ export default function PlayScreen() {
           maze={maze as MazeView}
           path={state.path}
           pos={state.pos}
+          enemies={state.enemies}
           showAll={debugAll}
           hitV={state.hitV}
           hitH={state.hitH}
@@ -223,7 +234,9 @@ export default function PlayScreen() {
       <Modal transparent visible={showResult} animationType="fade">
         <View style={styles.modalWrapper}>
           <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
-            <ThemedText type="title">ゴール！</ThemedText>
+            <ThemedText type="title">
+              {gameOver ? "ゲームオーバー" : "ゴール！"}
+            </ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>
             <Button
