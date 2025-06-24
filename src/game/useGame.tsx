@@ -1,5 +1,12 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { wallSet, canMove, getHitWall, nextPosition } from './utils';
+import {
+  wallSet,
+  canMove,
+  getHitWall,
+  nextPosition,
+  spawnEnemies,
+  moveEnemyRandom,
+} from './utils';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
@@ -23,6 +30,9 @@ export interface GameState {
   path: Vec2[];
   hitV: Set<string>;
   hitH: Set<string>;
+  enemies: Vec2[];
+  /** 敵に捕まったとき true になる */
+  caught: boolean;
 }
 
 // Provider が保持する全体の状態
@@ -43,6 +53,8 @@ function initState(m: MazeData): State {
     path: [{ x: m.start[0], y: m.start[1] }],
     hitV: new Set(),
     hitH: new Set(),
+    enemies: spawnEnemies(1, maze),
+    caught: false,
   };
 }
 
@@ -61,24 +73,42 @@ function reducer(state: State, action: Action): State {
       // 新しい迷路で初期化
       return initState(action.maze);
     case 'move': {
-      const { pos, maze } = state;
+      const { pos, maze, enemies } = state;
       const next = nextPosition(pos, action.dir);
+      let newPos = pos;
+      let steps = state.steps;
+      let hitV = state.hitV;
+      let hitH = state.hitH;
+      let bumps = state.bumps;
       if (!canMove(pos, action.dir, maze)) {
         const hit = getHitWall(pos, action.dir, maze);
-        const hitV = new Set(state.hitV);
-        const hitH = new Set(state.hitH);
+        hitV = new Set(state.hitV);
+        hitH = new Set(state.hitH);
         if (hit) {
           if (hit.kind === 'v') hitV.add(hit.key);
           else hitH.add(hit.key);
         }
-        return { ...state, bumps: state.bumps + 1, hitV, hitH };
+        bumps += 1;
+      } else {
+        newPos = next;
+        steps += 1;
       }
-      return {
+
+      const movedEnemies = enemies.map((e) => moveEnemyRandom(e, maze));
+      const caught = movedEnemies.some((e) => e.x === newPos.x && e.y === newPos.y);
+
+      const newState: State = {
         ...state,
-        pos: next,
-        steps: state.steps + 1,
-        path: [...state.path, next],
+        pos: newPos,
+        steps,
+        bumps,
+        path: steps !== state.steps ? [...state.path, newPos] : state.path,
+        hitV,
+        hitH,
+        enemies: movedEnemies,
+        caught,
       };
+      return newState;
     }
   }
 }
