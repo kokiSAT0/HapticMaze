@@ -1,4 +1,4 @@
-import mazeSet1 from '@/assets/mazes/maze_11_T30_L16_20250624-161917.json';
+import mazeSet1 from '@/assets/mazes/maze_10x10_T30_L16_20250625_074204.json';
 import type { MazeData } from '@/src/types/maze';
 
 /**
