@@ -59,7 +59,8 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       visible: true,
       interval: 2,
       repeat: 1,
-      cooldown: 0,
+      // interval が 2 のため初期クールダウンを 1 にして偶数ターンで動くようにする
+      cooldown: 1,
       target: null,
       behavior: 'sight',
     });
