@@ -7,6 +7,7 @@ import {
   SharedValue,
 } from "react-native-reanimated";
 import type { MazeData, Vec2, Dir } from "@/src/types/maze";
+import type { Enemy } from "@/src/types/enemy";
 
 /**
  * 2点間の直線距離を求めます。
@@ -253,18 +254,18 @@ export function spawnEnemies(
  * rnd を渡すとテストで動きを固定できます。
  */
 export function moveEnemyRandom(
-  enemy: Vec2,
+  enemy: Enemy,
   maze: MazeData,
   _visited?: Set<string>,
   _player?: Vec2,
   rnd: () => number = Math.random,
-): Vec2 {
+): Enemy {
   const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-    canMove(enemy, d, maze),
+    canMove(enemy.pos, d, maze),
   );
   if (dirs.length === 0) return enemy;
   const idx = Math.floor(rnd() * dirs.length);
-  return nextPosition(enemy, dirs[idx]);
+  return { ...enemy, pos: nextPosition(enemy.pos, dirs[idx]) };
 }
 
 /**
@@ -306,32 +307,89 @@ export function shortestStep(
  * visited にはその敵がこれまでに踏んだマスの集合を渡します。
  */
 export function moveEnemySmart(
-  enemy: Vec2,
+  enemy: Enemy,
   maze: MazeData,
   visited: Set<string>,
   player: Vec2,
   rnd: () => number = Math.random,
-): Vec2 {
+): Enemy {
   const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-    canMove(enemy, d, maze),
+    canMove(enemy.pos, d, maze),
   );
   if (dirs.length === 0) return enemy;
 
-  const chase = shortestStep(enemy, player, maze);
+  const chase = shortestStep(enemy.pos, player, maze);
   if (chase && chase.dist <= 2) {
-    return chase.next;
+    return { ...enemy, pos: chase.next };
   }
 
   // 旧実装: マンハッタン距離だけで判断していた処理は削除
 
   const unvisited = dirs.filter((d) => {
-    const next = nextPosition(enemy, d);
+    const next = nextPosition(enemy.pos, d);
     return !visited.has(`${next.x},${next.y}`);
   });
 
   const choices = unvisited.length > 0 ? unvisited : dirs;
   const idx = Math.floor(rnd() * choices.length);
-  return nextPosition(enemy, choices[idx]);
+  return { ...enemy, pos: nextPosition(enemy.pos, choices[idx]) };
+}
+
+/**
+ * 敵からプレイヤーが直線上に見えるか判定します。
+ * 上下左右3マス以内で壁がない場合に true を返します。
+ */
+function inSight(enemy: Vec2, player: Vec2, maze: MazeData): boolean {
+  if (enemy.x === player.x) {
+    const dy = player.y - enemy.y;
+    const dir: Dir = dy > 0 ? 'Down' : 'Up';
+    if (Math.abs(dy) > 3) return false;
+    for (let i = 0; i < Math.abs(dy); i++) {
+      const pos = { x: enemy.x, y: enemy.y + i * Math.sign(dy) };
+      if (!canMove(pos, dir, maze)) return false;
+    }
+    return true;
+  }
+  if (enemy.y === player.y) {
+    const dx = player.x - enemy.x;
+    const dir: Dir = dx > 0 ? 'Right' : 'Left';
+    if (Math.abs(dx) > 3) return false;
+    for (let i = 0; i < Math.abs(dx); i++) {
+      const pos = { x: enemy.x + i * Math.sign(dx), y: enemy.y };
+      if (!canMove(pos, dir, maze)) return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 直線視野でプレイヤーを追う敵 AI。
+ * プレイヤーが視界にいない場合は moveEnemySmart と同じ動きをします。
+ * 視界外になったときは最後に確認したマスへ向かいます。
+ */
+export function moveEnemySight(
+  enemy: Enemy,
+  maze: MazeData,
+  visited: Set<string>,
+  player: Vec2,
+  rnd: () => number = Math.random,
+): Enemy {
+  let target = enemy.target ?? null;
+  if (inSight(enemy.pos, player, maze)) {
+    target = { ...player };
+  }
+  if (target) {
+    const chase = shortestStep(enemy.pos, target, maze);
+    if (chase) {
+      const next = chase.next;
+      const reached = next.x === target.x && next.y === target.y;
+      return { ...enemy, pos: next, target: reached ? null : target };
+    }
+    target = null;
+  }
+  const moved = moveEnemySmart(enemy, maze, visited, player, rnd);
+  return { ...moved, target };
 }
 
 /**

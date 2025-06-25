@@ -13,6 +13,7 @@ export default function TitleScreen() {
   const [visible, setVisible] = React.useState('1');
   const [invisible, setInvisible] = React.useState('0');
   const [slow, setSlow] = React.useState('0');
+  const [sight, setSight] = React.useState('0');
   return (
     <ThemedView
       /* 背景色を黒に固定。light/dark ともに同じ色を指定する */
@@ -55,6 +56,16 @@ export default function TitleScreen() {
           accessibilityLabel="鈍足・視認ありの数"
         />
       </View>
+      <View style={styles.row}>
+        <ThemedText lightColor="#fff" darkColor="#fff">等速・直線視野</ThemedText>
+        <TextInput
+          style={styles.input}
+          value={sight}
+          onChangeText={setSight}
+          keyboardType="number-pad"
+          accessibilityLabel="等速・直線視野の数"
+        />
+      </View>
       {/* 迷路サイズ別のスタートボタン */}
       <Button
         title="5×5"
@@ -64,6 +75,7 @@ export default function TitleScreen() {
             visible: parseInt(visible) || 0,
             invisible: parseInt(invisible) || 0,
             slow: parseInt(slow) || 0,
+            sight: parseInt(sight) || 0,
           });
           router.replace('/play');
         }}
@@ -78,6 +90,7 @@ export default function TitleScreen() {
             visible: parseInt(visible) || 0,
             invisible: parseInt(invisible) || 0,
             slow: parseInt(slow) || 0,
+            sight: parseInt(sight) || 0,
           });
           router.replace('/play');
         }}

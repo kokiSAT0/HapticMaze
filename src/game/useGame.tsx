@@ -32,13 +32,16 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
   const enemies: Enemy[] = [];
   const exclude = new Set<string>();
   spawnEnemies(counts.visible, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 1, cooldown: 0 });
+    enemies.push({ pos: p, visible: true, interval: 1, cooldown: 0, target: null });
   });
   spawnEnemies(counts.invisible, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: false, interval: 1, cooldown: 0 });
+    enemies.push({ pos: p, visible: false, interval: 1, cooldown: 0, target: null });
   });
   spawnEnemies(counts.slow, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 2, cooldown: 0 });
+    enemies.push({ pos: p, visible: true, interval: 2, cooldown: 0, target: null });
+  });
+  spawnEnemies(counts.sight, maze, Math.random, exclude).forEach((p) => {
+    enemies.push({ pos: p, visible: true, interval: 1, cooldown: 0, target: null });
   });
   return enemies;
 }
@@ -50,6 +53,7 @@ function createFirstStage(base: MazeData, counts: EnemyCounts = {
   visible: 1,
   invisible: 0,
   slow: 0,
+  sight: 0,
 }): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -160,7 +164,7 @@ function initState(
   finalStage: boolean,
   hitV: Set<string> = new Set(),
   hitH: Set<string> = new Set(),
-  enemyCounts: EnemyCounts = { visible: 1, invisible: 0, slow: 0 },
+  enemyCounts: EnemyCounts = { visible: 1, invisible: 0, slow: 0, sight: 0 },
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
@@ -244,12 +248,12 @@ function reducer(state: State, action: Action): State {
           newVisited.push(visited);
           return { ...e, cooldown: e.cooldown - 1 };
         }
-        const movedPos = mover(e.pos, maze, visited, newPos);
-        visited.add(`${movedPos.x},${movedPos.y}`);
+        const moved = mover(e, maze, visited, newPos);
+        visited.add(`${moved.pos.x},${moved.pos.y}`);
         newVisited.push(visited);
         return {
           ...e,
-          pos: movedPos,
+          ...moved,
           cooldown: e.interval - 1,
         };
       });
