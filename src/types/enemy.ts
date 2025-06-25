@@ -6,6 +6,8 @@ export interface Enemy {
   interval: number;
   /** 次に行動するまでの残りターン数 */
   cooldown: number;
+  /** 直線視野で見失ったときに追う座標。未使用時は null */
+  target?: import('./maze').Vec2 | null;
 }
 
 export interface EnemyCounts {
@@ -15,4 +17,6 @@ export interface EnemyCounts {
   visible: number;
   /** 鈍足・視認ありの数 */
   slow: number;
+  /** 等速・直線視野の数 */
+  sight: number;
 }
