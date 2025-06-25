@@ -269,6 +269,29 @@ export function moveEnemyRandom(
 }
 
 /**
+ * 未踏マスを優先して移動する基本行動。
+ * 全方向踏破済みならランダムに進みます。
+ */
+export function moveEnemyBasic(
+  enemy: Enemy,
+  maze: MazeData,
+  visited: Set<string>,
+  rnd: () => number = Math.random,
+): Enemy {
+  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+    canMove(enemy.pos, d, maze),
+  );
+  if (dirs.length === 0) return enemy;
+  const unvisited = dirs.filter((d) => {
+    const next = nextPosition(enemy.pos, d);
+    return !visited.has(`${next.x},${next.y}`);
+  });
+  const choices = unvisited.length > 0 ? unvisited : dirs;
+  const idx = Math.floor(rnd() * choices.length);
+  return { ...enemy, pos: nextPosition(enemy.pos, choices[idx]) };
+}
+
+/**
  * BFS を用いて start から goal までの最短経路を探します。
  * 戻り値は最初の一歩の座標 next と、ゴールまでの距離 dist です。
  * 到達不能な場合は null を返します。
@@ -323,27 +346,23 @@ export function moveEnemySmart(
     return { ...enemy, pos: chase.next };
   }
 
-  // 旧実装: マンハッタン距離だけで判断していた処理は削除
-
-  const unvisited = dirs.filter((d) => {
-    const next = nextPosition(enemy.pos, d);
-    return !visited.has(`${next.x},${next.y}`);
-  });
-
-  const choices = unvisited.length > 0 ? unvisited : dirs;
-  const idx = Math.floor(rnd() * choices.length);
-  return { ...enemy, pos: nextPosition(enemy.pos, choices[idx]) };
+  return moveEnemyBasic(enemy, maze, visited, rnd);
 }
 
 /**
- * 敵からプレイヤーが直線上に見えるか判定します。
- * 上下左右3マス以内で壁がない場合に true を返します。
+ * 敵からプレイヤーが直線上に見えるかを判定する。
+ * range を指定しない場合は無制限で、壁を挟むと視認できない。
  */
-function inSight(enemy: Vec2, player: Vec2, maze: MazeData): boolean {
+function inSight(
+  enemy: Vec2,
+  player: Vec2,
+  maze: MazeData,
+  range: number = Infinity,
+): boolean {
   if (enemy.x === player.x) {
     const dy = player.y - enemy.y;
     const dir: Dir = dy > 0 ? 'Down' : 'Up';
-    if (Math.abs(dy) > 3) return false;
+    if (Math.abs(dy) > range) return false;
     for (let i = 0; i < Math.abs(dy); i++) {
       const pos = { x: enemy.x, y: enemy.y + i * Math.sign(dy) };
       if (!canMove(pos, dir, maze)) return false;
@@ -353,7 +372,7 @@ function inSight(enemy: Vec2, player: Vec2, maze: MazeData): boolean {
   if (enemy.y === player.y) {
     const dx = player.x - enemy.x;
     const dir: Dir = dx > 0 ? 'Right' : 'Left';
-    if (Math.abs(dx) > 3) return false;
+    if (Math.abs(dx) > range) return false;
     for (let i = 0; i < Math.abs(dx); i++) {
       const pos = { x: enemy.x + i * Math.sign(dx), y: enemy.y };
       if (!canMove(pos, dir, maze)) return false;
@@ -365,7 +384,8 @@ function inSight(enemy: Vec2, player: Vec2, maze: MazeData): boolean {
 
 /**
  * 直線視野でプレイヤーを追う敵 AI。
- * プレイヤーが視界にいない場合は moveEnemySmart と同じ動きをします。
+ * range は視認距離で、指定しないと無制限。
+ * プレイヤーが視界にいない間は moveEnemySmart と同じ動きをします。
  * 視界外になったときは最後に確認したマスへ向かいます。
  */
 export function moveEnemySight(
@@ -374,9 +394,10 @@ export function moveEnemySight(
   visited: Set<string>,
   player: Vec2,
   rnd: () => number = Math.random,
+  range: number = Infinity,
 ): Enemy {
   let target = enemy.target ?? null;
-  if (inSight(enemy.pos, player, maze)) {
+  if (inSight(enemy.pos, player, maze, range)) {
     target = { ...player };
   }
   if (target) {
@@ -390,6 +411,43 @@ export function moveEnemySight(
   }
   const moved = moveEnemySmart(enemy, maze, visited, player, rnd);
   return { ...moved, target };
+}
+
+/**
+ * 感知距離内ならプレイヤーへ近づく敵 AI。
+ * range 以内にプレイヤーがいなければ moveEnemyBasic を行う。
+ */
+export function moveEnemySense(
+  enemy: Enemy,
+  maze: MazeData,
+  visited: Set<string>,
+  player: Vec2,
+  rnd: () => number = Math.random,
+  range: number = 3,
+): Enemy {
+  const manhattan =
+    Math.abs(enemy.pos.x - player.x) + Math.abs(enemy.pos.y - player.y);
+  if (manhattan <= range) {
+    const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
+      canMove(enemy.pos, d, maze),
+    );
+    if (dirs.length === 0) return enemy;
+    let best: Dir[] = [];
+    let bestDist = Infinity;
+    for (const d of dirs) {
+      const next = nextPosition(enemy.pos, d);
+      const dist = Math.abs(next.x - player.x) + Math.abs(next.y - player.y);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = [d];
+      } else if (dist === bestDist) {
+        best.push(d);
+      }
+    }
+    const idx = Math.floor(rnd() * best.length);
+    return { ...enemy, pos: nextPosition(enemy.pos, best[idx]) };
+  }
+  return moveEnemyBasic(enemy, maze, visited, rnd);
 }
 
 /**
