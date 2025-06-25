@@ -3,6 +3,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
+import type { Enemy } from '@/src/types/enemy';
 
 // 星形ポリゴンの座標文字列を生成するヘルパー
 function starPoints(cx: number, cy: number, r: number): string {
@@ -24,7 +25,7 @@ export interface MiniMapProps {
   maze: MazeData; // 迷路の壁情報
   path: Vec2[]; // 通過したマスの履歴
   pos: Vec2; // 現在の位置
-  enemies?: Vec2[]; // 敵の位置一覧
+  enemies?: Enemy[]; // 敵の位置一覧
   enemyPaths?: Vec2[][]; // 敵の移動履歴
   flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
@@ -188,6 +189,8 @@ export function MiniMap({
   const renderEnemyPaths = () => {
     const lines = [] as React.JSX.Element[];
     enemyPaths.forEach((p, idx) => {
+      const enemy = enemies[idx];
+      if (enemy && !enemy.visible && !showAll) return;
       for (let i = 0; i < p.length - 1; i++) {
         const a = p[i];
         const b = p[i + 1];
@@ -226,13 +229,20 @@ export function MiniMap({
 
   // 敵を星形で描画
   const renderEnemies = () => {
-    return enemies.map((e, i) => (
-      <Polygon
-        key={`enemy${i}`}
-        points={starPoints((e.x + 0.5) * cell, (e.y + 0.5) * cell, cell * 0.35)}
-        fill="white"
-      />
-    ));
+    return enemies.map((e, i) => {
+      if (!e.visible && !showAll) return null;
+      return (
+        <Polygon
+          key={`enemy${i}`}
+          points={starPoints(
+            (e.pos.x + 0.5) * cell,
+            (e.pos.y + 0.5) * cell,
+            cell * 0.35,
+          )}
+          fill="white"
+        />
+      );
+    });
   };
 
   // 過去にゴールだったマスを枠線のみで描画
