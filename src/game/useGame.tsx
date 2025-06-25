@@ -105,13 +105,14 @@ function createFirstStage(base: MazeData, counts: EnemyCounts = {
     (c) => c.x !== start.x || c.y !== start.y,
   );
   const goal = biasedPickGoal(start, candidates);
-  visited.add(`${goal.x},${goal.y}`);
   const maze: MazeData = {
     ...base,
     start: [start.x, start.y],
     goal: [goal.x, goal.y],
   };
-  const finalStage = visited.size === base.size * base.size;
+  //実際にゴールに到達した時に追加されるので
+  //現状では visited は空のまま
+  const finalStage = visited.size + 1 === base.size * base.size;
   return initState(maze, 1, visited, finalStage, undefined, undefined, counts);
 }
 
@@ -128,6 +129,8 @@ function nextStageState(state: State): State {
   // 次のスタート地点は前回ゴールしたマス
   const start = { x: state.mazeRaw.goal[0], y: state.mazeRaw.goal[1] };
   const visited = new Set(state.visitedGoals);
+  //前ステージで到達したマスを追加
+  visited.add(`${start.x},${start.y}`);
   // 未使用マスのみをゴール候補とする
   const cells = allCells(size).filter((c) => {
     const key = `${c.x},${c.y}`;
@@ -139,13 +142,13 @@ function nextStageState(state: State): State {
     return { ...state, finalStage: true };
   }
   const goal = biasedPickGoal(start, cells);
-  visited.add(`${goal.x},${goal.y}`);
   const maze: MazeData = {
     ...base,
     start: [start.x, start.y],
     goal: [goal.x, goal.y],
   };
-  const finalStage = visited.size === size * size;
+  //\u65B0\u305F\u306B\u8A2D\u5B9A\u3059\u308B\u30B4\u30FC\u30EB\u3092\u542B\u3081\u308B\u3068\u5168\u30DE\u30B9\u306E\u5229\u7528\u304C\u7D42\u308F\u308B\u304B\u3092\u5224\u5B9A
+  const finalStage = visited.size + 1 === size * size;
   // 壁情報を引き継ぐかどうかを決定
   const hitV = changeMap ? new Set<string>() : new Set(state.hitV);
   const hitH = changeMap ? new Set<string>() : new Set(state.hitH);
