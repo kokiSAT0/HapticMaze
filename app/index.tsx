@@ -20,15 +20,25 @@ export default function TitleScreen() {
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
         Haptic Maze
       </ThemedText>
-      {/* ボタンの色も白に合わせる。onPress でゲーム画面へ遷移 */}
+      {/* 迷路サイズ別のスタートボタン */}
       <Button
-        title="スタート"
+        title="5×5"
         onPress={() => {
-          // 毎回異なる迷路を読み込んでからプレイ画面へ
-          newGame();
+          // 5×5 迷路を読み込んでからプレイ画面へ遷移
+          newGame(5);
           router.replace('/play');
         }}
-        accessibilityLabel="ゲームスタート"
+        accessibilityLabel="5マス迷路を開始"
+        color="#fff"
+      />
+      <Button
+        title="10×10"
+        onPress={() => {
+          // 10×10 迷路を読み込んでからプレイ画面へ遷移
+          newGame(10);
+          router.replace('/play');
+        }}
+        accessibilityLabel="10マス迷路を開始"
         color="#fff"
       />
     </ThemedView>
