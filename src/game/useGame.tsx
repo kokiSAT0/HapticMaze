@@ -224,7 +224,8 @@ const GameContext = createContext<
       state: GameState;
       move: (dir: Dir) => boolean;
       reset: () => void;
-      newGame: () => void;
+      /** 新しい迷路を読み込んでゲームを開始する。size で迷路の大きさを指定 */
+      newGame: (size: number) => void;
       nextStage: () => void;
       resetRun: () => void;
       maze: MazeData;
@@ -234,7 +235,8 @@ const GameContext = createContext<
 
 export function GameProvider({ children }: { children: ReactNode }) {
   // useReducer 第3引数を使って初期迷路を読み込む
-  const [state, dispatch] = useReducer(reducer, loadMaze(), createFirstStage);
+  // 初回は 10×10 迷路を使用する
+  const [state, dispatch] = useReducer(reducer, loadMaze(10), createFirstStage);
 
   // 移動処理: 壁に当たったかを返す
   const move = (dir: Dir): boolean => {
@@ -244,7 +246,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const reset = () => dispatch({ type: 'reset' });
-  const newGame = () => dispatch({ type: 'newMaze', maze: loadMaze() });
+  const newGame = (size: number = 10) =>
+    dispatch({ type: 'newMaze', maze: loadMaze(size) });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
 
