@@ -231,16 +231,19 @@ export function spawnEnemies(
   count: number,
   maze: MazeData,
   rnd: () => number = Math.random,
+  exclude: Set<string> = new Set(),
 ): Vec2[] {
   const enemies: Vec2[] = [];
   while (enemies.length < count) {
     const x = Math.floor(rnd() * maze.size);
     const y = Math.floor(rnd() * maze.size);
-    const dup = enemies.some((e) => e.x === x && e.y === y);
+    const key = `${x},${y}`;
+    const dup = exclude.has(key) || enemies.some((e) => e.x === x && e.y === y);
     if (dup) continue;
     if (x === maze.start[0] && y === maze.start[1]) continue;
     if (x === maze.goal[0] && y === maze.goal[1]) continue;
     enemies.push({ x, y });
+    exclude.add(key);
   }
   return enemies;
 }
