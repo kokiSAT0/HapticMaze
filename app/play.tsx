@@ -66,21 +66,25 @@ export default function PlayScreen() {
   const gradColors: [string, string] = [borderColor, "transparent"];
 
   useEffect(() => {
+    // 次ステージで迷路が変わるか判定
+    // ステージ番号が迷路サイズの倍数なら新しいマップを読み込む
+    const willChangeMap = state.stage % maze.size === 0;
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       // ゴール到達。最終ステージかどうかで分岐
       setStageClear(true);
       setGameOver(false);
       setGameClear(state.finalStage);
       setShowResult(true);
-      setDebugAll(true);
+      // 次ステージが同じマップなら全体表示しない
+      setDebugAll(willChangeMap);
     } else if (state.caught) {
-      // 敵に捕まったとき
+      // 敵に捕まったときは常に全てを可視化
       setGameOver(true);
       setStageClear(false);
       setShowResult(true);
       setDebugAll(true);
     }
-  }, [state.pos, state.caught, maze.goal, state.finalStage]);
+  }, [state.pos, state.caught, maze.goal, state.finalStage, state.stage, maze.size]);
 
   const handleOk = () => {
     // 結果モーダルを閉じるのみ
