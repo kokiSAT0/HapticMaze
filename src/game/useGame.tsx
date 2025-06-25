@@ -52,24 +52,30 @@ function createFirstStage(base: MazeData): State {
  */
 function nextStageState(state: State): State {
   const size = state.mazeRaw.size;
+  // 新しい迷路レイアウトをランダムに選択
+  const base = loadMaze(size);
+  // 次のスタート地点は前回ゴールしたマス
   const start = { x: state.mazeRaw.goal[0], y: state.mazeRaw.goal[1] };
   const visited = new Set(state.visitedGoals);
+  // 未使用マスのみをゴール候補とする
   const cells = allCells(size).filter((c) => {
     const key = `${c.x},${c.y}`;
     if (c.x === start.x && c.y === start.y) return false;
     return !visited.has(key);
   });
   if (cells.length === 0) {
+    // 候補がなければ最終ステージ
     return { ...state, finalStage: true };
   }
   const goal = biasedPickGoal(start, cells);
   visited.add(`${goal.x},${goal.y}`);
   const maze: MazeData = {
-    ...state.mazeRaw,
+    ...base,
     start: [start.x, start.y],
     goal: [goal.x, goal.y],
   };
   const finalStage = visited.size === size * size;
+  // ステージ数を +1 した新しい状態を返す
   return initState(maze, state.stage + 1, visited, finalStage);
 }
 
