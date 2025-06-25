@@ -52,8 +52,10 @@ function createFirstStage(base: MazeData): State {
  */
 function nextStageState(state: State): State {
   const size = state.mazeRaw.size;
-  // 新しい迷路レイアウトをランダムに選択
-  const base = loadMaze(size);
+  // size の倍数ステージクリアごとに迷路を変更する
+  const changeMap = state.stage % size === 0;
+  // 迷路を継続する場合は同じレイアウトを使う
+  const base = changeMap ? loadMaze(size) : state.mazeRaw;
   // 次のスタート地点は前回ゴールしたマス
   const start = { x: state.mazeRaw.goal[0], y: state.mazeRaw.goal[1] };
   const visited = new Set(state.visitedGoals);
@@ -75,8 +77,11 @@ function nextStageState(state: State): State {
     goal: [goal.x, goal.y],
   };
   const finalStage = visited.size === size * size;
+  // 壁情報を引き継ぐかどうかを決定
+  const hitV = changeMap ? new Set<string>() : new Set(state.hitV);
+  const hitH = changeMap ? new Set<string>() : new Set(state.hitH);
   // ステージ数を +1 した新しい状態を返す
-  return initState(maze, state.stage + 1, visited, finalStage);
+  return initState(maze, state.stage + 1, visited, finalStage, hitV, hitH);
 }
 
 /**
@@ -122,6 +127,8 @@ function initState(
   stage: number,
   visitedGoals: Set<string>,
   finalStage: boolean,
+  hitV: Set<string> = new Set(),
+  hitH: Set<string> = new Set(),
 ): State {
   const maze = prepMaze(m);
   const enemies = spawnEnemies(1, maze);
@@ -133,8 +140,8 @@ function initState(
     steps: 0,
     bumps: 0,
     path: [{ x: m.start[0], y: m.start[1] }],
-    hitV: new Set(),
-    hitH: new Set(),
+    hitV,
+    hitH,
     enemies,
     enemyVisited: enemies.map((e) => new Set([`${e.x},${e.y}`])),
     enemyPaths: enemies.map((e) => [{ ...e }]),
