@@ -252,6 +252,8 @@ export function spawnEnemies(
 export function moveEnemyRandom(
   enemy: Vec2,
   maze: MazeData,
+  _visited?: Set<string>,
+  _player?: Vec2,
   rnd: () => number = Math.random,
 ): Vec2 {
   const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
