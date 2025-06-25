@@ -246,8 +246,11 @@ export function MiniMap({
   };
 
   // 過去にゴールだったマスを枠線のみで描画
+  // これまでにゴールだったマスを常に描画する
+  // showAll フラグに関係なく表示することで
+  // プレイヤーが到達済みの地点を確認できる
   const renderVisitedGoals = () => {
-    if (!showAll || !visitedGoals) return null;
+    if (!visitedGoals) return null;
     const rects = [] as React.JSX.Element[];
     visitedGoals.forEach((k) => {
       const [x, y] = k.split(',').map(Number);
