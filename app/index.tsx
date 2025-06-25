@@ -10,8 +10,8 @@ export default function TitleScreen() {
   const router = useRouter();
   // GameProvider から新しい迷路を読み込む関数を取得
   const { newGame } = useGame();
-  const [visible, setVisible] = React.useState('1');
-  const [invisible, setInvisible] = React.useState('0');
+  const [sense, setSense] = React.useState('1');
+  const [random, setRandom] = React.useState('0');
   const [slow, setSlow] = React.useState('0');
   const [sight, setSight] = React.useState('0');
   return (
@@ -27,43 +27,43 @@ export default function TitleScreen() {
       </ThemedText>
       {/* 敵の数設定欄 */}
       <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・視認あり</ThemedText>
+        <ThemedText lightColor="#fff" darkColor="#fff">等速・感知</ThemedText>
         <TextInput
           style={styles.input}
-          value={visible}
-          onChangeText={setVisible}
+          value={sense}
+          onChangeText={setSense}
           keyboardType="number-pad"
-          accessibilityLabel="等速・視認ありの数"
+          accessibilityLabel="等速・感知の数"
         />
       </View>
       <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・視認なし</ThemedText>
+        <ThemedText lightColor="#fff" darkColor="#fff">等速・ランダム</ThemedText>
         <TextInput
           style={styles.input}
-          value={invisible}
-          onChangeText={setInvisible}
+          value={random}
+          onChangeText={setRandom}
           keyboardType="number-pad"
-          accessibilityLabel="等速・視認なしの数"
+          accessibilityLabel="等速・ランダムの数"
         />
       </View>
       <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">鈍足・視認あり</ThemedText>
+        <ThemedText lightColor="#fff" darkColor="#fff">鈍足・視認</ThemedText>
         <TextInput
           style={styles.input}
           value={slow}
           onChangeText={setSlow}
           keyboardType="number-pad"
-          accessibilityLabel="鈍足・視認ありの数"
+          accessibilityLabel="鈍足・視認の数"
         />
       </View>
       <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・直線視野</ThemedText>
+        <ThemedText lightColor="#fff" darkColor="#fff">等速・視認</ThemedText>
         <TextInput
           style={styles.input}
           value={sight}
           onChangeText={setSight}
           keyboardType="number-pad"
-          accessibilityLabel="等速・直線視野の数"
+          accessibilityLabel="等速・視認の数"
         />
       </View>
       {/* 迷路サイズ別のスタートボタン */}
@@ -72,10 +72,11 @@ export default function TitleScreen() {
         onPress={() => {
           // 5×5 迷路を読み込んでからプレイ画面へ遷移
           newGame(5, {
-            visible: parseInt(visible) || 0,
-            invisible: parseInt(invisible) || 0,
+            sense: parseInt(sense) || 0,
+            random: parseInt(random) || 0,
             slow: parseInt(slow) || 0,
             sight: parseInt(sight) || 0,
+            fast: 0,
           });
           router.replace('/play');
         }}
@@ -87,10 +88,11 @@ export default function TitleScreen() {
         onPress={() => {
           // 10×10 迷路を読み込んでからプレイ画面へ遷移
           newGame(10, {
-            visible: parseInt(visible) || 0,
-            invisible: parseInt(invisible) || 0,
+            sense: parseInt(sense) || 0,
+            random: parseInt(random) || 0,
             slow: parseInt(slow) || 0,
             sight: parseInt(sight) || 0,
+            fast: 0,
           });
           router.replace('/play');
         }}
