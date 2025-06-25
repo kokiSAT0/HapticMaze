@@ -1,6 +1,9 @@
+/** 敵の行動パターンを表す文字列型 */
+export type EnemyBehavior = 'smart' | 'random' | 'sight' | 'sense';
+
 export interface Enemy {
   pos: import('./maze').Vec2;
-  /** プレイヤーから見えるか */
+  /** プレイヤーから見えるかどうか */
   visible: boolean;
   /** 行動間隔。1なら毎ターン、2なら2ターンに1回 */
   interval: number;
@@ -10,19 +13,19 @@ export interface Enemy {
   cooldown: number;
   /** 直線視野で見失ったときに追う座標。未使用時は null */
   target?: import('./maze').Vec2 | null;
+  /** 敵固有の行動パターン */
+  behavior: EnemyBehavior;
 }
 
 export interface EnemyCounts {
-  /** 等速・視認なしの数 */
-  invisible: number;
-  /** 等速・視認ありの数 */
-  visible: number;
-  /** 鈍足・視認ありの数 */
-  slow: number;
-  /** 等速・直線視野の数 */
-  sight: number;
-  /** 倍速・視認ありの数 */
-  fast: number;
-  /** 感知型の数 */
+  /** 等速・ランダムの数 */
+  random: number;
+  /** 等速・感知の数 */
   sense: number;
+  /** 鈍足・視認の数 */
+  slow: number;
+  /** 等速・視認の数 */
+  sight: number;
+  /** 倍速・視認ありの数 (未使用) */
+  fast: number;
 }
