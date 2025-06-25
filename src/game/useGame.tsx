@@ -31,23 +31,60 @@ function prepMaze(m: MazeData): MazeSets {
 function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
   const enemies: Enemy[] = [];
   const exclude = new Set<string>();
-  spawnEnemies(counts.visible, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 1, repeat: 1, cooldown: 0, target: null });
+  spawnEnemies(counts.sense, maze, Math.random, exclude).forEach((p) => {
+    enemies.push({
+      pos: p,
+      visible: true,
+      interval: 1,
+      repeat: 1,
+      cooldown: 0,
+      target: null,
+      behavior: 'sense',
+    });
   });
-  spawnEnemies(counts.invisible, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: false, interval: 1, repeat: 1, cooldown: 0, target: null });
+  spawnEnemies(counts.random, maze, Math.random, exclude).forEach((p) => {
+    enemies.push({
+      pos: p,
+      visible: false,
+      interval: 1,
+      repeat: 1,
+      cooldown: 0,
+      target: null,
+      behavior: 'random',
+    });
   });
   spawnEnemies(counts.slow, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 2, repeat: 1, cooldown: 0, target: null });
+    enemies.push({
+      pos: p,
+      visible: true,
+      interval: 2,
+      repeat: 1,
+      cooldown: 0,
+      target: null,
+      behavior: 'sight',
+    });
   });
   spawnEnemies(counts.sight, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 1, repeat: 1, cooldown: 0, target: null });
+    enemies.push({
+      pos: p,
+      visible: true,
+      interval: 1,
+      repeat: 1,
+      cooldown: 0,
+      target: null,
+      behavior: 'sight',
+    });
   });
   spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 1, repeat: 2, cooldown: 0, target: null });
-  });
-  spawnEnemies(counts.sense ?? 0, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({ pos: p, visible: true, interval: 1, repeat: 1, cooldown: 0, target: null });
+    enemies.push({
+      pos: p,
+      visible: true,
+      interval: 1,
+      repeat: 2,
+      cooldown: 0,
+      target: null,
+      behavior: 'smart',
+    });
   });
   return enemies;
 }
@@ -56,12 +93,11 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
  * ランダムなスタートとゴールを含む MazeData を作成するヘルパー。
  */
 function createFirstStage(base: MazeData, counts: EnemyCounts = {
-  visible: 1,
-  invisible: 0,
+  sense: 1,
+  random: 0,
   slow: 0,
   sight: 0,
   fast: 0,
-  sense: 0,
 }): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -172,7 +208,7 @@ function initState(
   finalStage: boolean,
   hitV: Set<string> = new Set(),
   hitH: Set<string> = new Set(),
-  enemyCounts: EnemyCounts = { visible: 1, invisible: 0, slow: 0, sight: 0, fast: 0, sense: 0 },
+  enemyCounts: EnemyCounts = { sense: 1, random: 0, slow: 0, sight: 0, fast: 0 },
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
@@ -249,8 +285,8 @@ function reducer(state: State, action: Action): State {
       }
 
       const newVisited: Set<string>[] = [];
-      const mover = getEnemyMover(state.enemyBehavior);
       const movedEnemies = enemies.map((e, i) => {
+        const mover = getEnemyMover(e.behavior ?? state.enemyBehavior);
         const visited = new Set(state.enemyVisited[i]);
         if (e.cooldown > 0) {
           newVisited.push(visited);
