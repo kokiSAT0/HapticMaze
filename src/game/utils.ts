@@ -60,9 +60,10 @@ export function applyDistanceFeedback(
   borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
 ): number {
-  // borderRange のデフォルトは [2, 200]。
-  // 移動時に表示する枠線の太さが 2px から 200px の範囲で変化します。
-  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [2, 200] } = opts;
+  // borderRange のデフォルトは [20, 200]。
+  // 移動時に表示する枠線の太さが 20px から 200px の範囲で変化します。
+  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [20, 200] } =
+    opts;
 
   const dist = distance(pos, goal);
   // r = 0 がゴール、1 が最遠の正規化値
@@ -232,7 +233,7 @@ export function spawnEnemies(
   count: number,
   maze: MazeData,
   rnd: () => number = Math.random,
-  exclude: Set<string> = new Set(),
+  exclude: Set<string> = new Set()
 ): Vec2[] {
   const enemies: Vec2[] = [];
   while (enemies.length < count) {
@@ -258,10 +259,10 @@ export function moveEnemyRandom(
   maze: MazeData,
   _visited?: Set<string>,
   _player?: Vec2,
-  rnd: () => number = Math.random,
+  rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-    canMove(enemy.pos, d, maze),
+  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+    canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
   const idx = Math.floor(rnd() * dirs.length);
@@ -276,10 +277,10 @@ export function moveEnemyBasic(
   enemy: Enemy,
   maze: MazeData,
   visited: Set<string>,
-  rnd: () => number = Math.random,
+  rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-    canMove(enemy.pos, d, maze),
+  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+    canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
   const unvisited = dirs.filter((d) => {
@@ -299,7 +300,7 @@ export function moveEnemyBasic(
 export function shortestStep(
   start: Vec2,
   goal: Vec2,
-  maze: MazeData,
+  maze: MazeData
 ): { next: Vec2; dist: number } | null {
   const visited = new Set<string>([`${start.x},${start.y}`]);
   type Node = { pos: Vec2; dist: number; first: Vec2 | null };
@@ -311,7 +312,7 @@ export function shortestStep(
       return { next: first ?? pos, dist };
     }
 
-    for (const dir of ['Up', 'Down', 'Left', 'Right'] as const) {
+    for (const dir of ["Up", "Down", "Left", "Right"] as const) {
       if (!canMove(pos, dir, maze)) continue;
       const nxt = nextPosition(pos, dir);
       const key = `${nxt.x},${nxt.y}`;
@@ -334,10 +335,10 @@ export function moveEnemySmart(
   maze: MazeData,
   visited: Set<string>,
   player: Vec2,
-  rnd: () => number = Math.random,
+  rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-    canMove(enemy.pos, d, maze),
+  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+    canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
 
@@ -357,11 +358,11 @@ function inSight(
   enemy: Vec2,
   player: Vec2,
   maze: MazeData,
-  range: number = Infinity,
+  range: number = Infinity
 ): boolean {
   if (enemy.x === player.x) {
     const dy = player.y - enemy.y;
-    const dir: Dir = dy > 0 ? 'Down' : 'Up';
+    const dir: Dir = dy > 0 ? "Down" : "Up";
     if (Math.abs(dy) > range) return false;
     for (let i = 0; i < Math.abs(dy); i++) {
       const pos = { x: enemy.x, y: enemy.y + i * Math.sign(dy) };
@@ -371,7 +372,7 @@ function inSight(
   }
   if (enemy.y === player.y) {
     const dx = player.x - enemy.x;
-    const dir: Dir = dx > 0 ? 'Right' : 'Left';
+    const dir: Dir = dx > 0 ? "Right" : "Left";
     if (Math.abs(dx) > range) return false;
     for (let i = 0; i < Math.abs(dx); i++) {
       const pos = { x: enemy.x + i * Math.sign(dx), y: enemy.y };
@@ -394,7 +395,7 @@ export function moveEnemySight(
   visited: Set<string>,
   player: Vec2,
   rnd: () => number = Math.random,
-  range: number = Infinity,
+  range: number = Infinity
 ): Enemy {
   let target = enemy.target ?? null;
   if (inSight(enemy.pos, player, maze, range)) {
@@ -423,13 +424,13 @@ export function moveEnemySense(
   visited: Set<string>,
   player: Vec2,
   rnd: () => number = Math.random,
-  range: number = 3,
+  range: number = 3
 ): Enemy {
   const manhattan =
     Math.abs(enemy.pos.x - player.x) + Math.abs(enemy.pos.y - player.y);
   if (manhattan <= range) {
-    const dirs: Dir[] = ['Up', 'Down', 'Left', 'Right'].filter((d) =>
-      canMove(enemy.pos, d, maze),
+    const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+      canMove(enemy.pos, d, maze)
     );
     if (dirs.length === 0) return enemy;
     let best: Dir[] = [];
@@ -471,7 +472,7 @@ export function updateEnemyPaths(paths: Vec2[][], enemies: Vec2[]): Vec2[][] {
  */
 export function randomCell(
   size: number,
-  rnd: () => number = Math.random,
+  rnd: () => number = Math.random
 ): Vec2 {
   return {
     x: Math.floor(rnd() * size),
@@ -486,10 +487,10 @@ export function randomCell(
 export function biasedPickGoal(
   start: Vec2,
   cells: Vec2[],
-  rnd: () => number = Math.random,
+  rnd: () => number = Math.random
 ): Vec2 {
   const weights = cells.map(
-    (c) => Math.abs(c.x - start.x) + Math.abs(c.y - start.y) + 1,
+    (c) => Math.abs(c.x - start.x) + Math.abs(c.y - start.y) + 1
   );
   const sum = weights.reduce((a, b) => a + b, 0);
   let r = rnd() * sum;
