@@ -5,12 +5,12 @@ import {
   getHitWall,
   nextPosition,
   spawnEnemies,
-  moveEnemySmart,
   updateEnemyPaths,
   randomCell,
   biasedPickGoal,
   allCells,
 } from './utils';
+import { getEnemyMover, selectEnemyBehavior, type EnemyBehavior } from './enemy';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
 
@@ -100,6 +100,8 @@ export interface GameState {
   visitedGoals: Set<string>;
   /** 最終ステージかどうか */
   finalStage: boolean;
+  /** 敵の行動パターン */
+  enemyBehavior: EnemyBehavior;
 }
 
 // Provider が保持する全体の状態
@@ -117,6 +119,7 @@ function initState(
 ): State {
   const maze = prepMaze(m);
   const enemies = spawnEnemies(1, maze);
+  const enemyBehavior = selectEnemyBehavior(m.size, finalStage);
   return {
     mazeRaw: m,
     maze,
@@ -133,6 +136,7 @@ function initState(
     stage,
     visitedGoals,
     finalStage,
+    enemyBehavior,
   };
 }
 
@@ -184,9 +188,10 @@ function reducer(state: State, action: Action): State {
       }
 
       const newVisited: Set<string>[] = [];
+      const mover = getEnemyMover(state.enemyBehavior);
       const movedEnemies = enemies.map((e, i) => {
         const visited = new Set(state.enemyVisited[i]);
-        const moved = moveEnemySmart(e, maze, visited, newPos);
+        const moved = mover(e, maze, visited, newPos);
         visited.add(`${moved.x},${moved.y}`);
         newVisited.push(visited);
         return moved;

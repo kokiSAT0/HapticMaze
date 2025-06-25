@@ -2,6 +2,7 @@
 // 初心者向けに分かりやすく記述
 
 import { spawnEnemies, moveEnemySmart, wallSet, updateEnemyPaths } from '../utils';
+import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
 // 基本となる迷路データ（壁なし）
@@ -76,5 +77,19 @@ describe('updateEnemyPaths', () => {
     const enemies = [pos(4, 0)];
     const updated = updateEnemyPaths(paths, enemies);
     expect(updated[0]).toEqual([pos(1, 0), pos(2, 0), pos(3, 0), pos(4, 0)]);
+  });
+});
+
+describe('selectEnemyBehavior', () => {
+  test('5マスでは追跡しない enemy を選ぶ', () => {
+    expect(selectEnemyBehavior(5, false)).toBe('random');
+  });
+
+  test('10マスでは追跡する enemy を選ぶ', () => {
+    expect(selectEnemyBehavior(10, false)).toBe('smart');
+  });
+
+  test('最終ステージはサイズに関わらず追跡する', () => {
+    expect(selectEnemyBehavior(5, true)).toBe('smart');
   });
 });
