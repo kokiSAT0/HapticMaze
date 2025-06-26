@@ -10,6 +10,8 @@ export interface LevelConfig {
   size: number;
   /** 出現させる敵の種類と数 */
   enemies: EnemyCounts;
+  /** 敵の軌跡を何マス保存するか */
+  pathLength: number;
 }
 
 /**
@@ -22,17 +24,20 @@ export const LEVELS: LevelConfig[] = [
     name: 'レベル1',
     size: 5,
     enemies: { sense: 0, random: 0, slow: 1, sight: 0, fast: 0 },
+    pathLength: 5,
   },
   {
     id: 'level2',
     name: 'レベル2',
     size: 10,
     enemies: { sense: 0, random: 0, slow: 0, sight: 1, fast: 0 },
+    pathLength: 4,
   },
   {
     id: 'level3',
     name: 'レベル3',
     size: 10,
     enemies: { sense: 0, random: 0, slow: 0, sight: 2, fast: 0 },
+    pathLength: 3,
   },
 ];

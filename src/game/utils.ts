@@ -475,11 +475,16 @@ export function moveEnemySense(
  * enemies は移動後の座標配列です。
  * 4 点より多い場合は古い順に削除して常に最新 4 点を保ちます。
  */
-export function updateEnemyPaths(paths: Vec2[][], enemies: Vec2[]): Vec2[][] {
+export function updateEnemyPaths(
+  paths: Vec2[][],
+  enemies: Vec2[],
+  maxLen: number,
+): Vec2[][] {
   return enemies.map((e, i) => {
     const prev = paths[i] ?? [];
     const next = [...prev, e];
-    if (next.length > 4) next.shift();
+    // 配列が指定長より長くなったら先頭を捨てる
+    while (next.length > maxLen) next.shift();
     return next;
   });
 }
