@@ -152,10 +152,13 @@ export default function PlayScreen() {
     if (!move(dir)) {
       wait = applyBumpFeedback(borderW, setBorderColor);
     } else {
+      // 盤面サイズから求めた最大マンハッタン距離 (例: 10×10 なら 18)
+      const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
         next,
         { x: maze.goal[0], y: maze.goal[1] },
-        borderW
+        borderW,
+        { maxDist }
       );
       wait = w;
       intervalRef.current = id;
