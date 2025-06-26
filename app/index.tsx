@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
 
@@ -10,10 +10,11 @@ export default function TitleScreen() {
   const router = useRouter();
   // GameProvider から新しい迷路を読み込む関数を取得
   const { newGame } = useGame();
-  const [sense, setSense] = React.useState('1');
-  const [random, setRandom] = React.useState('0');
-  const [slow, setSlow] = React.useState('0');
-  const [sight, setSight] = React.useState('0');
+  // 敵の数は数値として扱う。初期値はすべて0
+  const [sense, setSense] = React.useState(0);
+  const [random, setRandom] = React.useState(0);
+  const [slow, setSlow] = React.useState(0);
+  const [sight, setSight] = React.useState(0);
   return (
     <ThemedView
       /* 背景色を黒に固定。light/dark ともに同じ色を指定する */
@@ -28,42 +29,69 @@ export default function TitleScreen() {
       {/* 敵の数設定欄 */}
       <View style={styles.row}>
         <ThemedText lightColor="#fff" darkColor="#fff">等速・感知</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={sense}
-          onChangeText={setSense}
-          keyboardType="number-pad"
-          accessibilityLabel="等速・感知の数"
+        {/* マイナスボタンで1減らす。最小は0 */}
+        <Button
+          title="-"
+          onPress={() => setSense(Math.max(0, sense - 1))}
+          accessibilityLabel="等速・感知を減らす"
+        />
+        {/* 現在値を表示 */}
+        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
+          {sense}
+        </ThemedText>
+        {/* プラスボタンで1増やす */}
+        <Button
+          title="+"
+          onPress={() => setSense(sense + 1)}
+          accessibilityLabel="等速・感知を増やす"
         />
       </View>
       <View style={styles.row}>
         <ThemedText lightColor="#fff" darkColor="#fff">等速・ランダム</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={random}
-          onChangeText={setRandom}
-          keyboardType="number-pad"
-          accessibilityLabel="等速・ランダムの数"
+        <Button
+          title="-"
+          onPress={() => setRandom(Math.max(0, random - 1))}
+          accessibilityLabel="等速・ランダムを減らす"
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
+          {random}
+        </ThemedText>
+        <Button
+          title="+"
+          onPress={() => setRandom(random + 1)}
+          accessibilityLabel="等速・ランダムを増やす"
         />
       </View>
       <View style={styles.row}>
         <ThemedText lightColor="#fff" darkColor="#fff">鈍足・視認</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={slow}
-          onChangeText={setSlow}
-          keyboardType="number-pad"
-          accessibilityLabel="鈍足・視認の数"
+        <Button
+          title="-"
+          onPress={() => setSlow(Math.max(0, slow - 1))}
+          accessibilityLabel="鈍足・視認を減らす"
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
+          {slow}
+        </ThemedText>
+        <Button
+          title="+"
+          onPress={() => setSlow(slow + 1)}
+          accessibilityLabel="鈍足・視認を増やす"
         />
       </View>
       <View style={styles.row}>
         <ThemedText lightColor="#fff" darkColor="#fff">等速・視認</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={sight}
-          onChangeText={setSight}
-          keyboardType="number-pad"
-          accessibilityLabel="等速・視認の数"
+        <Button
+          title="-"
+          onPress={() => setSight(Math.max(0, sight - 1))}
+          accessibilityLabel="等速・視認を減らす"
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
+          {sight}
+        </ThemedText>
+        <Button
+          title="+"
+          onPress={() => setSight(sight + 1)}
+          accessibilityLabel="等速・視認を増やす"
         />
       </View>
       {/* 迷路サイズ別のスタートボタン */}
@@ -72,10 +100,10 @@ export default function TitleScreen() {
         onPress={() => {
           // 5×5 迷路を読み込んでからプレイ画面へ遷移
           newGame(5, {
-            sense: parseInt(sense) || 0,
-            random: parseInt(random) || 0,
-            slow: parseInt(slow) || 0,
-            sight: parseInt(sight) || 0,
+            sense,
+            random,
+            slow,
+            sight,
             fast: 0,
           });
           router.replace('/play');
@@ -88,10 +116,10 @@ export default function TitleScreen() {
         onPress={() => {
           // 10×10 迷路を読み込んでからプレイ画面へ遷移
           newGame(10, {
-            sense: parseInt(sense) || 0,
-            random: parseInt(random) || 0,
-            slow: parseInt(slow) || 0,
-            sight: parseInt(sight) || 0,
+            sense,
+            random,
+            slow,
+            sight,
             fast: 0,
           });
           router.replace('/play');
@@ -106,12 +134,13 @@ export default function TitleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  input: {
+  // 現在の数値表示用スタイル
+  count: {
     borderWidth: 1,
     borderColor: '#888',
     color: '#fff',
-    paddingHorizontal: 4,
-    minWidth: 40,
+    paddingHorizontal: 8,
+    minWidth: 32,
     textAlign: 'center',
   },
 });
