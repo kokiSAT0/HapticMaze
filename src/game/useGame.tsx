@@ -42,6 +42,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       cooldown: 0,
       target: null,
       behavior: 'sense',
+      kind: 'sense',
     });
   });
   spawnEnemies(counts.random, maze, Math.random, exclude).forEach((p) => {
@@ -53,6 +54,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       cooldown: 0,
       target: null,
       behavior: 'random',
+      kind: 'random',
     });
   });
   spawnEnemies(counts.slow, maze, Math.random, exclude).forEach((p) => {
@@ -65,6 +67,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       cooldown: 1,
       target: null,
       behavior: 'sight',
+      kind: 'slow',
     });
   });
   spawnEnemies(counts.sight, maze, Math.random, exclude).forEach((p) => {
@@ -76,6 +79,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       cooldown: 0,
       target: null,
       behavior: 'sight',
+      kind: 'sight',
     });
   });
   spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude).forEach((p) => {
@@ -87,6 +91,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       cooldown: 0,
       target: null,
       behavior: 'smart',
+      kind: 'fast',
     });
   });
   return enemies;

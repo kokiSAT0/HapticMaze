@@ -50,4 +50,11 @@ export const LEVELS: LevelConfig[] = [
     playerPathLength: 3,
     wallLifetime: 5,
   },
+  {
+    id: 'level4',
+    name: 'レベル4',
+    size: 10,
+    enemies: { sense: 0, random: 0, slow: 1, sight: 1, fast: 0 },
+    pathLength: 4,
+  },
 ];

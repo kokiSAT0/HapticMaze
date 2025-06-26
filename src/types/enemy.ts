@@ -1,6 +1,9 @@
 /** 敵の行動パターンを表す文字列型 */
 export type EnemyBehavior = 'smart' | 'random' | 'sight' | 'sense';
 
+/** 敵の種類を表す文字列型 */
+export type EnemyKind = 'random' | 'sense' | 'slow' | 'sight' | 'fast';
+
 export interface Enemy {
   pos: import('./maze').Vec2;
   /** プレイヤーから見えるかどうか */
@@ -15,6 +18,8 @@ export interface Enemy {
   target?: import('./maze').Vec2 | null;
   /** 敵固有の行動パターン */
   behavior: EnemyBehavior;
+  /** スポーン時の種別。描画色の判定に利用する */
+  kind?: EnemyKind;
 }
 
 export interface EnemyCounts {

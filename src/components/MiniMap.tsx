@@ -275,8 +275,17 @@ export function MiniMap({
 
   // 敵を星形で描画
   const renderEnemies = () => {
+    // __DEV__ は React Native が提供する開発判定フラグ
+    const colorMap = {
+      random: '#999',
+      sense: '#0ff',
+      slow: '#fa0',
+      sight: '#0f0',
+      fast: '#f0f',
+    } as const;
     return enemies.map((e, i) => {
       if (!e.visible && !showAll) return null;
+      const color = __DEV__ ? colorMap[e.kind ?? 'random'] : 'white';
       return (
         <Polygon
           key={`enemy${i}`}
@@ -285,7 +294,7 @@ export function MiniMap({
             (e.pos.y + 0.5) * cell,
             cell * 0.35,
           )}
-          fill="white"
+          fill={color}
         />
       );
     });
