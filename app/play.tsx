@@ -37,7 +37,7 @@ export default function PlayScreen() {
   // SafeArea 用の余白情報を取得
   const insets = useSafeAreaInsets();
   // 画面サイズを取得。useWindowDimensions は画面回転にも追従する
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const { state, move, maze, nextStage, resetRun } = useGame();
   // 全体のステージ数。迷路サイズ×迷路サイズで計算する
   // size は迷路の一辺のマス数なので、面積がステージ総数になる
@@ -53,6 +53,9 @@ export default function PlayScreen() {
   // 枠線の色を状態として管理
   const [borderColor, setBorderColor] = useState("white");
   const borderW = useSharedValue(0);
+  // ゴール到達時に画面左右から中央まで埋まるよう
+  // 枠線の最大太さを画面幅の半分に設定する
+  const maxBorder = width / 2;
   // 連打を防ぐための入力ロック
   const [locked, setLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -158,7 +161,8 @@ export default function PlayScreen() {
         next,
         { x: maze.goal[0], y: maze.goal[1] },
         borderW,
-        { maxDist }
+        // 最大幅を maxBorder とすることでゴール時に画面が埋まる
+        { maxDist, borderRange: [20, maxBorder] }
       );
       wait = w;
       intervalRef.current = id;
