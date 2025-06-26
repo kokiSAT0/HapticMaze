@@ -36,9 +36,13 @@ export interface MiniMapProps {
    */
   showAll?: boolean;
   /** 衝突した壁 (縦方向) */
-  hitV?: Set<string>;
+  hitV?: Map<string, number>;
   /** 衝突した壁 (横方向) */
-  hitH?: Set<string>;
+  hitH?: Map<string, number>;
+  /** プレイヤー軌跡長 */
+  playerPathLength?: number;
+  /** 壁表示ターン数 */
+  wallLifetime?: number;
   /**
    * これまでにゴールとして使われたマスの集合
    * "x,y" 形式の文字列で座標を保持する
@@ -59,6 +63,8 @@ export function MiniMap({
   showAll = false,
   hitV,
   hitH,
+  playerPathLength = Infinity,
+  wallLifetime = Infinity,
   visitedGoals,
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
@@ -131,8 +137,12 @@ export function MiniMap({
   // 外周との衝突も同じ座標形式で渡される
   const renderHitWalls = () => {
     const lines = [] as React.JSX.Element[];
-    hitV?.forEach((k) => {
+    hitV?.forEach((life, k) => {
       const [x, y] = k.split(',').map(Number);
+      const op =
+        wallLifetime === Infinity || life === Infinity
+          ? 1
+          : life / wallLifetime;
       lines.push(
         <Line
           key={`hv${k}`}
@@ -140,13 +150,17 @@ export function MiniMap({
           y1={y * cell}
           x2={(x + 1) * cell}
           y2={y * cell + cell}
-          stroke="yellow"
+          stroke={`rgba(255,255,0,${op})`}
           strokeWidth={1}
         />
       );
     });
-    hitH?.forEach((k) => {
+    hitH?.forEach((life, k) => {
       const [x, y] = k.split(',').map(Number);
+      const op =
+        wallLifetime === Infinity || life === Infinity
+          ? 1
+          : life / wallLifetime;
       lines.push(
         <Line
           key={`hh${k}`}
@@ -154,7 +168,7 @@ export function MiniMap({
           y1={(y + 1) * cell}
           x2={x * cell + cell}
           y2={(y + 1) * cell}
-          stroke="yellow"
+          stroke={`rgba(255,255,0,${op})`}
           strokeWidth={1}
         />
       );
@@ -169,17 +183,49 @@ export function MiniMap({
     for (let i = 0; i < path.length - 1; i++) {
       const a = path[i];
       const b = path[i + 1];
-      segments.push(
-        <Line
-          key={`p${i}`}
-          x1={(a.x + 0.5) * cell}
-          y1={(a.y + 0.5) * cell}
-          x2={(b.x + 0.5) * cell}
-          y2={(b.y + 0.5) * cell}
-          stroke="white"
-          strokeWidth={2}
-        />
-      );
+      if (playerPathLength === Infinity) {
+        segments.push(
+          <Line
+            key={`p${i}`}
+            x1={(a.x + 0.5) * cell}
+            y1={(a.y + 0.5) * cell}
+            x2={(b.x + 0.5) * cell}
+            y2={(b.y + 0.5) * cell}
+            stroke="white"
+            strokeWidth={2}
+          />
+        );
+      } else {
+        const id = `pp${i}`;
+        const segs = path.length - 1;
+        const startO = i / segs;
+        const endO = (i + 1) / segs;
+        segments.push(
+          <React.Fragment key={id}>
+            <Defs>
+              <LinearGradient
+                id={id}
+                x1={(a.x + 0.5) * cell}
+                y1={(a.y + 0.5) * cell}
+                x2={(b.x + 0.5) * cell}
+                y2={(b.y + 0.5) * cell}
+                gradientUnits="userSpaceOnUse"
+              >
+                <Stop offset="0" stopColor="white" stopOpacity={startO} />
+                <Stop offset="1" stopColor="white" stopOpacity={endO} />
+              </LinearGradient>
+            </Defs>
+            <Line
+              x1={(a.x + 0.5) * cell}
+              y1={(a.y + 0.5) * cell}
+              x2={(b.x + 0.5) * cell}
+              y2={(b.y + 0.5) * cell}
+              stroke={`url(#${id})`}
+              strokeWidth={2}
+            />
+          </React.Fragment>
+        );
+      }
     }
     return segments;
   };

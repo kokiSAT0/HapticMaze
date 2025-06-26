@@ -11,7 +11,11 @@ export interface LevelConfig {
   /** 出現させる敵の種類と数 */
   enemies: EnemyCounts;
   /** 敵の軌跡を何マス保存するか */
-  pathLength: number;
+  enemyPathLength: number;
+  /** プレイヤー軌跡の長さ */
+  playerPathLength: number;
+  /** 壁表示を維持するターン数 */
+  wallLifetime: number;
 }
 
 /**
@@ -24,20 +28,26 @@ export const LEVELS: LevelConfig[] = [
     name: 'レベル1',
     size: 5,
     enemies: { sense: 0, random: 0, slow: 1, sight: 0, fast: 0 },
-    pathLength: 5,
+    enemyPathLength: 5,
+    playerPathLength: Infinity,
+    wallLifetime: Infinity,
   },
   {
     id: 'level2',
     name: 'レベル2',
     size: 10,
     enemies: { sense: 0, random: 0, slow: 0, sight: 1, fast: 0 },
-    pathLength: 4,
+    enemyPathLength: 4,
+    playerPathLength: 8,
+    wallLifetime: 10,
   },
   {
     id: 'level3',
     name: 'レベル3',
     size: 10,
     enemies: { sense: 0, random: 0, slow: 0, sight: 2, fast: 0 },
-    pathLength: 3,
+    enemyPathLength: 3,
+    playerPathLength: 3,
+    wallLifetime: 5,
   },
 ];
