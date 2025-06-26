@@ -45,9 +45,11 @@ export function clamp(v: number, min: number, max: number): number {
  * borderW は Reanimated の SharedValue<number> です。
  */
 /**
- * applyDistanceFeedback の戻り値型
- * wait: 次回呼び出しまでの待ち時間
- * id:   setInterval から得られるタイマー ID
+ * applyDistanceFeedback の戻り値型です。
+ * wait は次回呼び出しまでの待ち時間、
+ * id は setInterval から返るタイマー ID を表します。
+ * 戻り値をまとめたオブジェクトとして返すことで、
+ * 呼び出し側で扱いやすくしています。
  */
 export interface DistanceFeedbackResult {
   wait: number;
@@ -59,7 +61,7 @@ export function applyDistanceFeedback(
   goal: Vec2,
   borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
-): number {
+): DistanceFeedbackResult {
   // borderRange のデフォルトは [20, 200]。
   // 移動時に表示する枠線の太さが 20px から 200px の範囲で変化します。
   const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [20, 200] } =
