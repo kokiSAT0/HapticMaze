@@ -94,7 +94,8 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
  * ランダムなスタートとゴールを含む MazeData を作成するヘルパー。
  */
 function createFirstStage(base: MazeData, counts: EnemyCounts = {
-  sense: 1,
+  // 起動時の敵数はすべて0にする
+  sense: 0,
   random: 0,
   slow: 0,
   sight: 0,
@@ -212,7 +213,7 @@ function initState(
   finalStage: boolean,
   hitV: Set<string> = new Set(),
   hitH: Set<string> = new Set(),
-  enemyCounts: EnemyCounts = { sense: 1, random: 0, slow: 0, sight: 0, fast: 0 },
+  enemyCounts: EnemyCounts = { sense: 0, random: 0, slow: 0, sight: 0, fast: 0 },
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
