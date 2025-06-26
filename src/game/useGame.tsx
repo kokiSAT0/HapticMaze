@@ -6,6 +6,8 @@ import {
   nextPosition,
   spawnEnemies,
   updateEnemyPaths,
+  updatePlayerPath,
+  decayHitMap,
   randomCell,
   biasedPickGoal,
   allCells,
@@ -103,7 +105,9 @@ function createFirstStage(
     sight: 0,
     fast: 0,
   },
-  pathLength: number = 4,
+  enemyPathLength: number = 4,
+  playerPathLength: number = Infinity,
+  wallLifetime: number = Infinity,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -127,7 +131,9 @@ function createFirstStage(
     undefined,
     undefined,
     counts,
-    pathLength,
+    enemyPathLength,
+    playerPathLength,
+    wallLifetime,
   );
 }
 
@@ -165,8 +171,8 @@ function nextStageState(state: State): State {
   //\u65B0\u305F\u306B\u8A2D\u5B9A\u3059\u308B\u30B4\u30FC\u30EB\u3092\u542B\u3081\u308B\u3068\u5168\u30DE\u30B9\u306E\u5229\u7528\u304C\u7D42\u308F\u308B\u304B\u3092\u5224\u5B9A
   const finalStage = visited.size + 1 === size * size;
   // 壁情報を引き継ぐかどうかを決定
-  const hitV = changeMap ? new Set<string>() : new Set(state.hitV);
-  const hitH = changeMap ? new Set<string>() : new Set(state.hitH);
+  const hitV = changeMap ? new Map<string, number>() : new Map(state.hitV);
+  const hitH = changeMap ? new Map<string, number>() : new Map(state.hitH);
   // ステージ数を +1 した新しい状態を返す
   return initState(
     maze,
@@ -177,6 +183,8 @@ function nextStageState(state: State): State {
     hitH,
     state.enemyCounts,
     state.enemyPathLength,
+    state.playerPathLength,
+    state.wallLifetime,
   );
 }
 
@@ -189,6 +197,8 @@ function restartRun(state: State): State {
     state.mazeRaw,
     state.enemyCounts,
     state.enemyPathLength,
+    state.playerPathLength,
+    state.wallLifetime,
   );
 }
 
@@ -198,8 +208,10 @@ export interface GameState {
   steps: number;
   bumps: number;
   path: Vec2[];
-  hitV: Set<string>;
-  hitH: Set<string>;
+  /** 衝突した縦壁と残りターン数 */
+  hitV: Map<string, number>;
+  /** 衝突した横壁と残りターン数 */
+  hitH: Map<string, number>;
   enemies: Enemy[];
   enemyVisited: Set<string>[];
   enemyPaths: Vec2[][];
@@ -217,6 +229,10 @@ export interface GameState {
   enemyCounts: EnemyCounts;
   /** 敵の軌跡を何マス分残すか */
   enemyPathLength: number;
+  /** プレイヤーの軌跡を何マス分残すか */
+  playerPathLength: number;
+  /** 壁表示を維持するターン数 */
+  wallLifetime: number;
 }
 
 // Provider が保持する全体の状態
@@ -231,10 +247,12 @@ function initState(
   stage: number,
   visitedGoals: Set<string>,
   finalStage: boolean,
-  hitV: Set<string> = new Set(),
-  hitH: Set<string> = new Set(),
+  hitV: Map<string, number> = new Map(),
+  hitH: Map<string, number> = new Map(),
   enemyCounts: EnemyCounts = { sense: 0, random: 0, slow: 0, sight: 0, fast: 0 },
-  pathLength: number = 4,
+  enemyPathLength: number = 4,
+  playerPathLength: number = Infinity,
+  wallLifetime: number = Infinity,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
@@ -257,7 +275,9 @@ function initState(
     finalStage,
     enemyBehavior,
     enemyCounts,
-    enemyPathLength: pathLength,
+    enemyPathLength,
+    playerPathLength,
+    wallLifetime,
   };
 }
 
@@ -265,7 +285,14 @@ function initState(
 type Action =
   | { type: 'reset' }
   | { type: 'move'; dir: Dir }
-  | { type: 'newMaze'; maze: MazeData; counts?: EnemyCounts; pathLength?: number }
+  | {
+      type: 'newMaze';
+      maze: MazeData;
+      counts?: EnemyCounts;
+      enemyPathLength?: number;
+      playerPathLength?: number;
+      wallLifetime?: number;
+    }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
 
@@ -282,13 +309,17 @@ function reducer(state: State, action: Action): State {
         undefined,
         state.enemyCounts,
         state.enemyPathLength,
+        state.playerPathLength,
+        state.wallLifetime,
       );
     case 'newMaze':
       // 新しい迷路で初期化
       return createFirstStage(
         action.maze,
         action.counts ?? state.enemyCounts,
-        action.pathLength ?? state.enemyPathLength,
+        action.enemyPathLength ?? state.enemyPathLength,
+        action.playerPathLength ?? state.playerPathLength,
+        action.wallLifetime ?? state.wallLifetime,
       );
     case 'nextStage':
       return nextStageState(state);
@@ -299,16 +330,16 @@ function reducer(state: State, action: Action): State {
       const next = nextPosition(pos, action.dir);
       let newPos = pos;
       let steps = state.steps;
-      let hitV = state.hitV;
-      let hitH = state.hitH;
+      let hitV = decayHitMap(state.hitV);
+      let hitH = decayHitMap(state.hitH);
       let bumps = state.bumps;
       if (!canMove(pos, action.dir, maze)) {
         const hit = getHitWall(pos, action.dir, maze);
-        hitV = new Set(state.hitV);
-        hitH = new Set(state.hitH);
+        hitV = new Map(hitV);
+        hitH = new Map(hitH);
         if (hit) {
-          if (hit.kind === 'v') hitV.add(hit.key);
-          else hitH.add(hit.key);
+          if (hit.kind === 'v') hitV.set(hit.key, state.wallLifetime);
+          else hitH.set(hit.key, state.wallLifetime);
         }
         bumps += 1;
       } else {
@@ -359,7 +390,10 @@ function reducer(state: State, action: Action): State {
         pos: newPos,
         steps,
         bumps,
-        path: steps !== state.steps ? [...state.path, newPos] : state.path,
+        path:
+          steps !== state.steps
+            ? updatePlayerPath(state.path, newPos, state.playerPathLength)
+            : state.path,
         hitV,
         hitH,
         enemies: movedEnemies,
@@ -381,7 +415,9 @@ const GameContext = createContext<
       newGame: (
         size: number,
         counts?: EnemyCounts,
-        pathLength?: number,
+        enemyPathLength?: number,
+        playerPathLength?: number,
+        wallLifetime?: number,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -406,9 +442,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const newGame = (
     size: number = 10,
     counts?: EnemyCounts,
-    pathLength?: number,
+    enemyPathLength?: number,
+    playerPathLength?: number,
+    wallLifetime?: number,
   ) =>
-    dispatch({ type: 'newMaze', maze: loadMaze(size), counts, pathLength });
+    dispatch({
+      type: 'newMaze',
+      maze: loadMaze(size),
+      counts,
+      enemyPathLength,
+      playerPathLength,
+      wallLifetime,
+    });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
 

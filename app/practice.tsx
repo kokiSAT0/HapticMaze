@@ -16,9 +16,19 @@ export default function PracticeScreen() {
   const [sight, setSight] = React.useState(0);
   // 敵の軌跡を残す長さ。デフォルトは通常プレイと同じ4
   const [pathLen, setPathLen] = React.useState(4);
+  // プレイヤー軌跡の長さ。無限大を表すため Infinity を使用
+  const [playerLen, setPlayerLen] = React.useState<number>(Infinity);
+  // 壁表示ターン数。無限大なら永続表示
+  const [wallLife, setWallLife] = React.useState<number>(Infinity);
 
   const start = (size: number) => {
-    newGame(size, { sense, random, slow, sight, fast: 0 }, pathLen);
+    newGame(
+      size,
+      { sense, random, slow, sight, fast: 0 },
+      pathLen,
+      playerLen,
+      wallLife,
+    );
     router.replace('/play');
   };
 
@@ -31,8 +41,22 @@ export default function PracticeScreen() {
       <EnemyCounter label="等速・ランダム" value={random} setValue={setRandom} />
       <EnemyCounter label="鈍足・視認" value={slow} setValue={setSlow} />
       <EnemyCounter label="等速・視認" value={sight} setValue={setSight} />
-      {/* 軌跡の長さを変更するカウンター */}
-      <EnemyCounter label="軌跡長" value={pathLen} setValue={setPathLen} />
+      {/* 敵の軌跡長 */}
+      <EnemyCounter label="敵軌跡長" value={pathLen} setValue={setPathLen} />
+      {/* プレイヤーの軌跡長。無限大選択を許可 */}
+      <EnemyCounter
+        label="自分軌跡長"
+        value={playerLen}
+        setValue={setPlayerLen}
+        allowInfinity
+      />
+      {/* 壁表示ターン数 */}
+      <EnemyCounter
+        label="壁表示"
+        value={wallLife}
+        setValue={setWallLife}
+        allowInfinity
+      />
       <Button
         title="5×5"
         onPress={() => start(5)}

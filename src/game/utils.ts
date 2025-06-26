@@ -490,6 +490,34 @@ export function updateEnemyPaths(
 }
 
 /**
+ * プレイヤーの移動履歴を更新するヘルパー。
+ * maxLen が無限大 (Infinity) の場合は全て残す。
+ */
+export function updatePlayerPath(
+  path: Vec2[],
+  pos: Vec2,
+  maxLen: number,
+): Vec2[] {
+  const next = [...path, pos];
+  // 指定長より長くなったら古いものから削除
+  while (maxLen !== Infinity && next.length > maxLen) next.shift();
+  return next;
+}
+
+/**
+ * 衝突壁マップの寿命を 1 減らす。
+ * 0 以下になった要素は取り除く。
+ */
+export function decayHitMap(map: Map<string, number>): Map<string, number> {
+  const next = new Map<string, number>();
+  map.forEach((v, k) => {
+    const nv = v === Infinity ? Infinity : v - 1;
+    if (nv > 0 || nv === Infinity) next.set(k, nv);
+  });
+  return next;
+}
+
+/**
  * 盤面サイズからランダムなマス座標を返す関数。
  * rnd を渡すと任意の乱数でテストしやすくなる。
  */

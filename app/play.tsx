@@ -229,6 +229,8 @@ export default function PlayScreen() {
           showAll={debugAll}
           hitV={state.hitV}
           hitH={state.hitH}
+          playerPathLength={state.playerPathLength}
+          wallLifetime={state.wallLifetime}
           // ミニマップを1.5倍のサイズ（240px）で表示する
           size={240}
         />

@@ -16,7 +16,13 @@ export default function TitleScreen() {
   const startLevel = (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
-    newGame(level.size, level.enemies, level.pathLength);
+    newGame(
+      level.size,
+      level.enemies,
+      level.enemyPathLength,
+      level.playerPathLength,
+      level.wallLifetime,
+    );
     router.replace('/play');
   };
   return (
