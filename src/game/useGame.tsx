@@ -93,14 +93,18 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
 /**
  * ランダムなスタートとゴールを含む MazeData を作成するヘルパー。
  */
-function createFirstStage(base: MazeData, counts: EnemyCounts = {
-  // 起動時の敵数はすべて0にする
-  sense: 0,
-  random: 0,
-  slow: 0,
-  sight: 0,
-  fast: 0,
-}): State {
+function createFirstStage(
+  base: MazeData,
+  counts: EnemyCounts = {
+    // 起動時の敵数はすべて0にする
+    sense: 0,
+    random: 0,
+    slow: 0,
+    sight: 0,
+    fast: 0,
+  },
+  pathLength: number = 4,
+): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
   const candidates = allCells(base.size).filter(
@@ -115,7 +119,16 @@ function createFirstStage(base: MazeData, counts: EnemyCounts = {
   //実際にゴールに到達した時に追加されるので
   //現状では visited は空のまま
   const finalStage = visited.size + 1 === base.size * base.size;
-  return initState(maze, 1, visited, finalStage, undefined, undefined, counts);
+  return initState(
+    maze,
+    1,
+    visited,
+    finalStage,
+    undefined,
+    undefined,
+    counts,
+    pathLength,
+  );
 }
 
 /**
@@ -163,6 +176,7 @@ function nextStageState(state: State): State {
     hitV,
     hitH,
     state.enemyCounts,
+    state.enemyPathLength,
   );
 }
 
@@ -171,7 +185,11 @@ function nextStageState(state: State): State {
  * 同じ迷路レイアウトを使って 1 ステージ目を生成する。
  */
 function restartRun(state: State): State {
-  return createFirstStage(state.mazeRaw, state.enemyCounts);
+  return createFirstStage(
+    state.mazeRaw,
+    state.enemyCounts,
+    state.enemyPathLength,
+  );
 }
 
 // ゲーム状態を表す型
@@ -197,6 +215,8 @@ export interface GameState {
   enemyBehavior: EnemyBehavior;
   /** 敵の数設定 */
   enemyCounts: EnemyCounts;
+  /** 敵の軌跡を何マス分残すか */
+  enemyPathLength: number;
 }
 
 // Provider が保持する全体の状態
@@ -214,6 +234,7 @@ function initState(
   hitV: Set<string> = new Set(),
   hitH: Set<string> = new Set(),
   enemyCounts: EnemyCounts = { sense: 0, random: 0, slow: 0, sight: 0, fast: 0 },
+  pathLength: number = 4,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
@@ -236,6 +257,7 @@ function initState(
     finalStage,
     enemyBehavior,
     enemyCounts,
+    enemyPathLength: pathLength,
   };
 }
 
@@ -243,7 +265,7 @@ function initState(
 type Action =
   | { type: 'reset' }
   | { type: 'move'; dir: Dir }
-  | { type: 'newMaze'; maze: MazeData; counts?: EnemyCounts }
+  | { type: 'newMaze'; maze: MazeData; counts?: EnemyCounts; pathLength?: number }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
 
@@ -259,10 +281,15 @@ function reducer(state: State, action: Action): State {
         undefined,
         undefined,
         state.enemyCounts,
+        state.enemyPathLength,
       );
     case 'newMaze':
       // 新しい迷路で初期化
-      return createFirstStage(action.maze, action.counts ?? state.enemyCounts);
+      return createFirstStage(
+        action.maze,
+        action.counts ?? state.enemyCounts,
+        action.pathLength ?? state.enemyPathLength,
+      );
     case 'nextStage':
       return nextStageState(state);
     case 'resetRun':
@@ -313,6 +340,7 @@ function reducer(state: State, action: Action): State {
       const newPaths = updateEnemyPaths(
         state.enemyPaths,
         movedEnemies.map((e) => e.pos),
+        state.enemyPathLength,
       );
 
       const caught = movedEnemies.some((e, i) => {
@@ -350,7 +378,11 @@ const GameContext = createContext<
       move: (dir: Dir) => boolean;
       reset: () => void;
       /** 新しい迷路を読み込んでゲームを開始する。size で迷路の大きさを指定 */
-      newGame: (size: number, counts?: EnemyCounts) => void;
+      newGame: (
+        size: number,
+        counts?: EnemyCounts,
+        pathLength?: number,
+      ) => void;
       nextStage: () => void;
       resetRun: () => void;
       maze: MazeData;
@@ -371,8 +403,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const reset = () => dispatch({ type: 'reset' });
-  const newGame = (size: number = 10, counts?: EnemyCounts) =>
-    dispatch({ type: 'newMaze', maze: loadMaze(size), counts });
+  const newGame = (
+    size: number = 10,
+    counts?: EnemyCounts,
+    pathLength?: number,
+  ) =>
+    dispatch({ type: 'newMaze', maze: loadMaze(size), counts, pathLength });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
 

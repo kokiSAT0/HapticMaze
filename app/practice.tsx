@@ -14,9 +14,11 @@ export default function PracticeScreen() {
   const [random, setRandom] = React.useState(0);
   const [slow, setSlow] = React.useState(0);
   const [sight, setSight] = React.useState(0);
+  // 敵の軌跡を残す長さ。デフォルトは通常プレイと同じ4
+  const [pathLen, setPathLen] = React.useState(4);
 
   const start = (size: number) => {
-    newGame(size, { sense, random, slow, sight, fast: 0 });
+    newGame(size, { sense, random, slow, sight, fast: 0 }, pathLen);
     router.replace('/play');
   };
 
@@ -29,6 +31,8 @@ export default function PracticeScreen() {
       <EnemyCounter label="等速・ランダム" value={random} setValue={setRandom} />
       <EnemyCounter label="鈍足・視認" value={slow} setValue={setSlow} />
       <EnemyCounter label="等速・視認" value={sight} setValue={setSight} />
+      {/* 軌跡の長さを変更するカウンター */}
+      <EnemyCounter label="軌跡長" value={pathLen} setValue={setPathLen} />
       <Button
         title="5×5"
         onPress={() => start(5)}

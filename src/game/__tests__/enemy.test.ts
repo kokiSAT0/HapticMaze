@@ -92,7 +92,7 @@ describe('updateEnemyPaths', () => {
   test('常に最新4点だけを保持する', () => {
     const paths = [[pos(0, 0), pos(1, 0), pos(2, 0), pos(3, 0)]];
     const enemies = [pos(4, 0)];
-    const updated = updateEnemyPaths(paths, enemies);
+    const updated = updateEnemyPaths(paths, enemies, 4);
     expect(updated[0]).toEqual([pos(1, 0), pos(2, 0), pos(3, 0), pos(4, 0)]);
   });
 });
