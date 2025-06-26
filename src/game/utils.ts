@@ -79,8 +79,8 @@ export function applyDistanceFeedback(
   const r = clamp(dist / maxDist, 0, 1);
   const width = lerp(borderRange[0], borderRange[1], 1 - r);
 
-  // 周期 800→200ms を距離に応じて線形補間
-  const period = clamp(lerp(800, 200, 1 - r), 150, 1000);
+  // 周期 600→200ms を距離に応じて線形補間
+  const period = clamp(lerp(600, 200, 1 - r), 150, 1000);
   // デューティ比 0.25→0.75 で枠を表示する時間を決める
   const duty = lerp(0.25, 0.75, 1 - r);
   const showTime = Math.max(period * duty, 30);
@@ -242,7 +242,7 @@ export function spawnEnemies(
   count: number,
   maze: MazeData,
   rnd: () => number = Math.random,
-  exclude: Set<string> = new Set(),
+  exclude: Set<string> = new Set()
 ): Vec2[] {
   const enemies: Vec2[] = [];
   const start = { x: maze.start[0], y: maze.start[1] };
