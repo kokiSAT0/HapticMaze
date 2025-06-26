@@ -23,6 +23,7 @@ export default function RootLayout() {
       <GameProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="practice" options={{ headerShown: false }} />
           <Stack.Screen name="play" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
