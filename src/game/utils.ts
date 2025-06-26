@@ -10,11 +10,13 @@ import type { MazeData, Vec2, Dir } from "@/src/types/maze";
 import type { Enemy } from "@/src/types/enemy";
 
 /**
- * 2点間の直線距離を求めます。
- * Math.hypot はピタゴラスの定理を使って距離を計算する関数です。
+ * 2点間のマンハッタン距離を求めます。
+ * マンハッタン距離とは |x1 - x2| + |y1 - y2| のように
+ * 各軸の差を足し合わせる単純な計算方法です。
+ * Math.abs は絶対値を求める関数を意味します。
  */
 export function distance(a: Vec2, b: Vec2): number {
-  return Math.hypot(b.x - a.x, b.y - a.y);
+  return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
 }
 
 /**
@@ -26,7 +28,7 @@ export function lerp(start: number, end: number, t: number): number {
 }
 
 export interface FeedbackOptions {
-  /** 距離の最大値。デフォルトはゴール座標から計算した距離 */
+  /** 距離の最大値。デフォルトはゴール座標から計算したマンハッタン距離 */
   maxDist?: number;
   /** 枠太さの範囲 [細いとき, 太いとき] */
   borderRange?: [number, number];
@@ -64,8 +66,8 @@ export function applyDistanceFeedback(
 ): DistanceFeedbackResult {
   // borderRange のデフォルトは [20, 200]。
   // 移動時に表示する枠線の太さが 20px から 200px の範囲で変化します。
-  const { maxDist = Math.hypot(goal.x, goal.y), borderRange = [20, 200] } =
-    opts;
+  // maxDist のデフォルトもマンハッタン距離に合わせて計算
+  const { maxDist = goal.x + goal.y, borderRange = [20, 200] } = opts;
 
   const dist = distance(pos, goal);
   // r = 0 がゴール、1 が最遠の正規化値
