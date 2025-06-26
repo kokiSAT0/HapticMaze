@@ -28,7 +28,11 @@ export function lerp(start: number, end: number, t: number): number {
 }
 
 export interface FeedbackOptions {
-  /** 距離の最大値。デフォルトはゴール座標から計算したマンハッタン距離 */
+  /**
+   * 距離の最大値。
+   * デフォルトは `goal.x + goal.y` ですが、
+   * 呼び出し側で盤面サイズから計算した値を渡すのが推奨です。
+   */
   maxDist?: number;
   /** 枠太さの範囲 [細いとき, 太いとき] */
   borderRange?: [number, number];
@@ -66,7 +70,8 @@ export function applyDistanceFeedback(
 ): DistanceFeedbackResult {
   // borderRange のデフォルトは [20, 200]。
   // 移動時に表示する枠線の太さが 20px から 200px の範囲で変化します。
-  // maxDist のデフォルトもマンハッタン距離に合わせて計算
+  // maxDist のデフォルトは goal.x + goal.y
+  // 通常は呼び出し側で盤面サイズから計算した値を渡します
   const { maxDist = goal.x + goal.y, borderRange = [20, 200] } = opts;
 
   const dist = distance(pos, goal);
