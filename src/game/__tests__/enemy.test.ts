@@ -80,16 +80,11 @@ describe('moveEnemySense', () => {
 
 describe('spawnEnemies', () => {
   test('スタートとゴールには配置されない', () => {
-    const rnd = jest
-      .fn()
-      // 最初はスタート座標を返す → 無視される
-      .mockReturnValueOnce(0)
-      .mockReturnValueOnce(0)
-      // 次に有効な座標 (1,2)
-      .mockReturnValueOnce(0.1)
-      .mockReturnValueOnce(0.2);
-    const enemies = spawnEnemies(1, baseMaze, rnd);
-    expect(enemies[0]).toEqual(pos(1, 2));
+    // rnd が常に 0 を返すと候補配列の先頭が選ばれる
+    const enemies = spawnEnemies(1, baseMaze, () => 0);
+    expect(enemies[0]).toEqual(pos(0, 1));
+    expect(enemies[0]).not.toEqual(pos(0, 0));
+    expect(enemies[0]).not.toEqual(pos(9, 9));
   });
 });
 

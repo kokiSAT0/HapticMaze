@@ -233,20 +233,29 @@ export function spawnEnemies(
   count: number,
   maze: MazeData,
   rnd: () => number = Math.random,
-  exclude: Set<string> = new Set()
+  exclude: Set<string> = new Set(),
 ): Vec2[] {
   const enemies: Vec2[] = [];
-  while (enemies.length < count) {
-    const x = Math.floor(rnd() * maze.size);
-    const y = Math.floor(rnd() * maze.size);
-    const key = `${x},${y}`;
-    const dup = exclude.has(key) || enemies.some((e) => e.x === x && e.y === y);
-    if (dup) continue;
-    if (x === maze.start[0] && y === maze.start[1]) continue;
-    if (x === maze.goal[0] && y === maze.goal[1]) continue;
-    enemies.push({ x, y });
+  const start = { x: maze.start[0], y: maze.start[1] };
+  const goal = { x: maze.goal[0], y: maze.goal[1] };
+  const candidates = allCells(maze.size).filter((c) => {
+    const key = `${c.x},${c.y}`;
+    if (exclude.has(key)) return false;
+    if (c.x === start.x && c.y === start.y) return false;
+    if (c.x === goal.x && c.y === goal.y) return false;
+    return true;
+  });
+
+  // 候補マスから一つずつ選び、選ばれる確率はスタートから遠いほど高い
+  while (enemies.length < count && candidates.length > 0) {
+    const cell = biasedPickGoal(start, candidates, rnd);
+    const key = `${cell.x},${cell.y}`;
+    enemies.push(cell);
     exclude.add(key);
+    const idx = candidates.findIndex((c) => c.x === cell.x && c.y === cell.y);
+    if (idx !== -1) candidates.splice(idx, 1);
   }
+
   return enemies;
 }
 
