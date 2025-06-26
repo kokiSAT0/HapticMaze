@@ -344,25 +344,21 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   topEdge: {
-    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
   },
   bottomEdge: {
-    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   leftEdge: {
-    position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
   },
   rightEdge: {
-    position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,
