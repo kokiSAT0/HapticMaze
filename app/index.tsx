@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { EnemyCounter } from '@/components/EnemyCounter';
 
 export default function TitleScreen() {
   const router = useRouter();
@@ -27,73 +28,10 @@ export default function TitleScreen() {
         Haptic Maze
       </ThemedText>
       {/* 敵の数設定欄 */}
-      <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・感知</ThemedText>
-        {/* マイナスボタンで1減らす。最小は0 */}
-        <Button
-          title="-"
-          onPress={() => setSense(Math.max(0, sense - 1))}
-          accessibilityLabel="等速・感知を減らす"
-        />
-        {/* 現在値を表示 */}
-        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
-          {sense}
-        </ThemedText>
-        {/* プラスボタンで1増やす */}
-        <Button
-          title="+"
-          onPress={() => setSense(sense + 1)}
-          accessibilityLabel="等速・感知を増やす"
-        />
-      </View>
-      <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・ランダム</ThemedText>
-        <Button
-          title="-"
-          onPress={() => setRandom(Math.max(0, random - 1))}
-          accessibilityLabel="等速・ランダムを減らす"
-        />
-        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
-          {random}
-        </ThemedText>
-        <Button
-          title="+"
-          onPress={() => setRandom(random + 1)}
-          accessibilityLabel="等速・ランダムを増やす"
-        />
-      </View>
-      <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">鈍足・視認</ThemedText>
-        <Button
-          title="-"
-          onPress={() => setSlow(Math.max(0, slow - 1))}
-          accessibilityLabel="鈍足・視認を減らす"
-        />
-        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
-          {slow}
-        </ThemedText>
-        <Button
-          title="+"
-          onPress={() => setSlow(slow + 1)}
-          accessibilityLabel="鈍足・視認を増やす"
-        />
-      </View>
-      <View style={styles.row}>
-        <ThemedText lightColor="#fff" darkColor="#fff">等速・視認</ThemedText>
-        <Button
-          title="-"
-          onPress={() => setSight(Math.max(0, sight - 1))}
-          accessibilityLabel="等速・視認を減らす"
-        />
-        <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
-          {sight}
-        </ThemedText>
-        <Button
-          title="+"
-          onPress={() => setSight(sight + 1)}
-          accessibilityLabel="等速・視認を増やす"
-        />
-      </View>
+      <EnemyCounter label="等速・感知" value={sense} setValue={setSense} />
+      <EnemyCounter label="等速・ランダム" value={random} setValue={setRandom} />
+      <EnemyCounter label="鈍足・視認" value={slow} setValue={setSlow} />
+      <EnemyCounter label="等速・視認" value={sight} setValue={setSight} />
       {/* 迷路サイズ別のスタートボタン */}
       <Button
         title="5×5"
@@ -133,14 +71,4 @@ export default function TitleScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  // 現在の数値表示用スタイル
-  count: {
-    borderWidth: 1,
-    borderColor: '#888',
-    color: '#fff',
-    paddingHorizontal: 8,
-    minWidth: 32,
-    textAlign: 'center',
-  },
 });
