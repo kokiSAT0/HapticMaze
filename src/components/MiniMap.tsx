@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop, RadialGradient } from 'react-native-svg';
+import Animated, {
+  useAnimatedStyle,
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+  createAnimatedComponent,
+} from 'react-native-reanimated';
+import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { distance } from '@/src/game/utils';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
@@ -73,33 +79,31 @@ export function MiniMap({
     borderWidth: typeof flash === 'number' ? flash : flash.value,
   }));
 
-  // ゴールとの距離に応じて光の強さを変える
-  const orb = useSharedValue(0);
+  // ゴールとの距離から外周線の色を計算する
+  const borderColor = useSharedValue('rgb(255,255,255)');
+  const AnimatedRect = createAnimatedComponent(Rect);
+  const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
   useEffect(() => {
     const maxDist = (maze.size - 1) * 2;
     const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
     const r = Math.min(d / maxDist, 1);
-    // r は遠いほど 1 に近いので 1-r で近いほど濃くする
-    orb.value = withTiming(1 - r, { duration: 200 });
-  }, [pos, maze.goal, maze.size, orb]);
-  const orbStyle = useAnimatedStyle(() => ({ opacity: orb.value }));
+    const g = Math.round(255 * (1 - r));
+    borderColor.value = withTiming(`rgb(${g},${g},${g})`, { duration: 200 });
+  }, [pos, maze.goal, maze.size, borderColor]);
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
     // デバッグオフ時は外周を含む壁を描画しない
     if (!showAll) return null;
     const lines = [] as React.JSX.Element[];
-
-    // 外周の壁
-    // 通常モードでは表示しないが、デバッグ時のみ全体を確認するため描画
+    // 外周を確認しやすくするため白枠を描画
     lines.push(
       <Rect
-        key="border"
+        key="debugBorder"
         x={0}
         y={0}
         width={size}
         height={size}
-        // 背景が黒でも見えるよう白色で枠線を描く
         stroke="white"
         strokeWidth={1}
         fill="none"
@@ -346,42 +350,17 @@ export function MiniMap({
         style,
       ]}
     >
-      {/* ミニマップ上部にマンハッタン距離を示す光の玉を配置 */}
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          {
-            position: 'absolute',
-            left: size / 2 - (size * 0.3) / 2,
-            top: -(size * 0.3) / 2,
-            width: size * 0.3,
-            height: size * 0.3,
-          },
-          orbStyle,
-        ]}
-      >
-        <Svg width={size * 0.3} height={size * 0.3}>
-          <Defs>
-            <RadialGradient
-              id="orb"
-              cx={size * 0.15}
-              cy={size * 0.15}
-              r={size * 0.15}
-              gradientUnits="userSpaceOnUse"
-            >
-              <Stop offset="0" stopColor="white" stopOpacity={1} />
-              <Stop offset="1" stopColor="white" stopOpacity={0} />
-            </RadialGradient>
-          </Defs>
-          <Circle
-            cx={size * 0.15}
-            cy={size * 0.15}
-            r={size * 0.15}
-            fill="url(#orb)"
-          />
-        </Svg>
-      </Animated.View>
       <Svg width={size} height={size}>
+        {/* マンハッタン距離に応じて濃さを変える外周線 */}
+        <AnimatedRect
+          animatedProps={borderProps}
+          x={0}
+          y={0}
+          width={size}
+          height={size}
+          strokeWidth={1}
+          fill="none"
+        />
         {renderWalls()}
         {renderHitWalls()}
         {renderPath()}
