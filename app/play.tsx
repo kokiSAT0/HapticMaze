@@ -180,9 +180,7 @@ export default function PlayScreen() {
       const { wait: w, id } = applyDistanceFeedback(
         next,
         { x: maze.goal[0], y: maze.goal[1] },
-        borderW,
-        // 最大幅を maxBorder とすることでゴール時に画面が埋まる
-        { maxDist, borderRange: [20, maxBorder] }
+        { maxDist }
       );
       wait = w;
       intervalRef.current = id;

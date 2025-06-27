@@ -34,8 +34,6 @@ export interface FeedbackOptions {
    * 呼び出し側で盤面サイズから計算した値を渡すのが推奨です。
    */
   maxDist?: number;
-  /** 枠太さの範囲 [細いとき, 太いとき] */
-  borderRange?: [number, number];
 }
 
 /**
@@ -65,19 +63,14 @@ export interface DistanceFeedbackResult {
 export function applyDistanceFeedback(
   pos: Vec2,
   goal: Vec2,
-  borderW: SharedValue<number>,
   opts: FeedbackOptions = {}
 ): DistanceFeedbackResult {
-  // borderRange のデフォルトは [20, 200]。
-  // 移動時に表示する枠線の太さが 20px から 200px の範囲で変化します。
   // maxDist のデフォルトは goal.x + goal.y
-  // 通常は呼び出し側で盤面サイズから計算した値を渡します
-  const { maxDist = goal.x + goal.y, borderRange = [20, 200] } = opts;
+  const { maxDist = goal.x + goal.y } = opts;
 
   const dist = distance(pos, goal);
   // r = 0 がゴール、1 が最遠の正規化値
   const r = clamp(dist / maxDist, 0, 1);
-  const width = lerp(borderRange[0], borderRange[1], 1 - r);
 
   // 周期 600→200ms を距離に応じて線形補間
   const period = clamp(lerp(600, 200, 1 - r), 150, 1000);
@@ -102,11 +95,6 @@ export function applyDistanceFeedback(
     Haptics.impactAsync(style);
   }, 150);
   setTimeout(() => clearInterval(id), showTime + 300);
-
-  borderW.value = withSequence(
-    withTiming(width, { duration: 150 }),
-    withDelay(showTime, withTiming(0, { duration: 150 }))
-  );
 
   // wait に待ち時間、id にタイマー ID をまとめて返す
   return { wait: period, id };
