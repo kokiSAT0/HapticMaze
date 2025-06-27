@@ -14,6 +14,8 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
+  useDerivedValue,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -66,7 +68,25 @@ export default function PlayScreen() {
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
   // グラデーションの色配列。中心に近いほど透明にする
   // LinearGradient が期待する型に合わせるためタプルにする
-  const gradColors: [string, string] = [borderColor, "transparent"];
+  // 枠線のグラデーション。最初の 20% を完全な色にしてから透明へと変化させる
+  const gradColors: [string, string, string] = [
+    borderColor,
+    borderColor,
+    "transparent",
+  ];
+
+  // 枠線の太さに応じて完全な色の領域を広げる
+  // borderW.value は SharedValue でアニメーション中も値が変わる
+  const gradStops = useDerivedValue<[number, number, number]>(() => {
+    const ratio = Math.min(borderW.value / maxBorder, 1);
+    // 初期 0.2 から ratio に応じて最大 0.7 まで拡大
+    const loc = 0.2 + ratio * 0.5;
+    return [0, loc, 1];
+  });
+  // AnimatedLinearGradient に渡すプロパティ。locations を動的に変更する
+  const gradProps = useAnimatedProps(() => ({
+    locations: gradStops.value,
+  }));
 
   useEffect(() => {
     // 次ステージで迷路が変わるか判定
@@ -184,6 +204,7 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
+        animatedProps={gradProps}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={[styles.edge, styles.topEdge, vertStyle]}
@@ -191,6 +212,7 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
+        animatedProps={gradProps}
         start={{ x: 0.5, y: 1 }}
         end={{ x: 0.5, y: 0 }}
         style={[styles.edge, styles.bottomEdge, vertStyle]}
@@ -198,6 +220,7 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
+        animatedProps={gradProps}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
         style={[styles.edge, styles.leftEdge, horizStyle]}
@@ -205,6 +228,7 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
+        animatedProps={gradProps}
         start={{ x: 1, y: 0.5 }}
         end={{ x: 0, y: 0.5 }}
         style={[styles.edge, styles.rightEdge, horizStyle]}
