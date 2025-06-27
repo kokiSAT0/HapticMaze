@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedProps,
   useSharedValue,
   withTiming,
-  createAnimatedComponent,
 } from 'react-native-reanimated';
 import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { distance } from '@/src/game/utils';
@@ -81,7 +80,7 @@ export function MiniMap({
 
   // ゴールとの距離から外周線の色を計算する
   const borderColor = useSharedValue('rgb(255,255,255)');
-  const AnimatedRect = createAnimatedComponent(Rect);
+  const AnimatedRect = Animated.createAnimatedComponent(Rect);
   const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
   useEffect(() => {
     const maxDist = (maze.size - 1) * 2;
