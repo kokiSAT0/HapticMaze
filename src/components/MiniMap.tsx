@@ -10,6 +10,10 @@ import { distance } from '@/src/game/utils';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy } from '@/src/types/enemy';
 
+// AnimatedRect はコンポーネント外で一度だけ作成しておく
+// これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+
 // 星形ポリゴンの座標文字列を生成するヘルパー
 function starPoints(cx: number, cy: number, r: number): string {
   const points: string[] = [];
@@ -89,7 +93,6 @@ export function MiniMap({
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
 
-  const AnimatedRect = Animated.createAnimatedComponent(Rect);
   const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
 
   // 壁の線をまとめて描画
