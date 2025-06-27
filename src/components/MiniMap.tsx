@@ -1,6 +1,7 @@
-import React from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
+import React, { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop, RadialGradient } from 'react-native-svg';
+import { distance } from '@/src/game/utils';
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy } from '@/src/types/enemy';
@@ -71,6 +72,17 @@ export function MiniMap({
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === 'number' ? flash : flash.value,
   }));
+
+  // ゴールとの距離に応じて光の強さを変える
+  const orb = useSharedValue(0);
+  useEffect(() => {
+    const maxDist = (maze.size - 1) * 2;
+    const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
+    const r = Math.min(d / maxDist, 1);
+    // r は遠いほど 1 に近いので 1-r で近いほど濃くする
+    orb.value = withTiming(1 - r, { duration: 200 });
+  }, [pos, maze.goal, maze.size, orb]);
+  const orbStyle = useAnimatedStyle(() => ({ opacity: orb.value }));
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
@@ -334,6 +346,41 @@ export function MiniMap({
         style,
       ]}
     >
+      {/* ミニマップ上部にマンハッタン距離を示す光の玉を配置 */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          {
+            position: 'absolute',
+            left: size / 2 - (size * 0.3) / 2,
+            top: -(size * 0.3) / 2,
+            width: size * 0.3,
+            height: size * 0.3,
+          },
+          orbStyle,
+        ]}
+      >
+        <Svg width={size * 0.3} height={size * 0.3}>
+          <Defs>
+            <RadialGradient
+              id="orb"
+              cx={size * 0.15}
+              cy={size * 0.15}
+              r={size * 0.15}
+              gradientUnits="userSpaceOnUse"
+            >
+              <Stop offset="0" stopColor="white" stopOpacity={1} />
+              <Stop offset="1" stopColor="white" stopOpacity={0} />
+            </RadialGradient>
+          </Defs>
+          <Circle
+            cx={size * 0.15}
+            cy={size * 0.15}
+            r={size * 0.15}
+            fill="url(#orb)"
+          />
+        </Svg>
+      </Animated.View>
       <Svg width={size} height={size}>
         {renderWalls()}
         {renderHitWalls()}
