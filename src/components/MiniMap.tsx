@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
-  useSharedValue,
-  withTiming,
+  useDerivedValue,
 } from 'react-native-reanimated';
 import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { distance } from '@/src/game/utils';
@@ -78,17 +77,20 @@ export function MiniMap({
     borderWidth: typeof flash === 'number' ? flash : flash.value,
   }));
 
-  // ゴールとの距離から外周線の色を計算する
-  const borderColor = useSharedValue('rgb(255,255,255)');
-  const AnimatedRect = Animated.createAnimatedComponent(Rect);
-  const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
-  useEffect(() => {
+  // ゴールまでのマンハッタン距離から外周線の色を算出する
+  // useDerivedValue を使うことで常に最新の座標に応じた色を計算する
+  const borderColor = useDerivedValue(() => {
+    // 迷路サイズから取り得る最大距離を求める
     const maxDist = (maze.size - 1) * 2;
+    // distance は 2 点間のマンハッタン距離を返す
     const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
     const r = Math.min(d / maxDist, 1);
     const g = Math.round(255 * (1 - r));
-    borderColor.value = withTiming(`rgb(${g},${g},${g})`, { duration: 200 });
-  }, [pos, maze.goal, maze.size, borderColor]);
+    return `rgb(${g},${g},${g})`;
+  }, [pos, maze.goal, maze.size]);
+
+  const AnimatedRect = Animated.createAnimatedComponent(Rect);
+  const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
 
   // 壁の線をまとめて描画
   const renderWalls = () => {
