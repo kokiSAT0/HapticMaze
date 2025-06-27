@@ -127,8 +127,7 @@ export function applyBumpFeedback(
     withDelay(showTime, withTiming(0, { duration: 150 }))
   );
 
-  // フィードバック終了後に色を元へ戻す
-  setTimeout(() => setColor("white"), showTime + 300);
+  // 色のリセットは呼び出し側で行う
   // 次回入力まで待つ時間を返す
   return showTime + 300;
 }
