@@ -150,7 +150,7 @@ export default function PlayScreen() {
     resetRun();
   };
 
-  // Exit to Title 選択時に呼ばれる
+  // タイトルへ戻る処理を共通化
   const handleExit = () => {
     setShowMenu(false);
     setGameOver(false);
@@ -214,6 +214,14 @@ export default function PlayScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* 左上のホームボタン。家アイコンを表示しタイトルへ戻る */}
+      <Pressable
+        style={[styles.homeBtn, { top: insets.top + 10 }]}
+        onPress={handleExit}
+        accessibilityLabel="ホーム画面へ戻る"
+      >
+        <MaterialIcons name="home" size={24} color="#555" />
+      </Pressable>
       {/* 枠線用のオーバーレイ。グラデーションで中央へ行くほど色が薄くなる */}
       <AnimatedLG
         pointerEvents="none"
@@ -255,6 +263,14 @@ export default function PlayScreen() {
         end={{ x: 0, y: 0.5 }}
         style={[styles.edge, styles.rightEdge, horizStyle]}
       />
+      {/* 右上のリセットアイコン。迷路を初期状態に戻す */}
+      <Pressable
+        style={[styles.resetBtn, { top: insets.top + 10 }]}
+        onPress={handleReset}
+        accessibilityLabel="迷路をリセット"
+      >
+        <MaterialIcons name="refresh" size={24} color="#555" />
+      </Pressable>
       {/* 右上のメニューアイコン */}
       <Pressable
         style={[styles.menuBtn, { top: insets.top + 10 }]}
@@ -297,11 +313,6 @@ export default function PlayScreen() {
               title="Reset Maze"
               onPress={handleReset}
               accessibilityLabel="迷路を最初から"
-            />
-            <PlainButton
-              title="Exit to Title"
-              onPress={handleExit}
-              accessibilityLabel="タイトルへ戻る"
             />
             {/* デバッグ用スイッチ */}
             <View style={styles.switchRow}>
@@ -353,6 +364,20 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
+    padding: 4,
+  },
+  // ホームボタン用スタイル。左上に固定表示
+  homeBtn: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    padding: 4,
+  },
+  // 迷路リセットボタン。メニューボタンの左隣に配置
+  resetBtn: {
+    position: "absolute",
+    top: 10,
+    right: 44,
     padding: 4,
   },
   menuOverlay: { flex: 1 },
