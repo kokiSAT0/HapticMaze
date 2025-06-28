@@ -7,6 +7,7 @@ import {
   Pressable,
   Switch,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -33,7 +34,11 @@ import {
 } from "@/src/game/utils";
 
 // LinearGradient を Reanimated 用にラップ
-const AnimatedLG = Animated.createAnimatedComponent(LinearGradient);
+// Web 環境では setAttribute エラーを避けるためアニメーション無し
+const AnimatedLG =
+  Platform.OS === "web"
+    ? LinearGradient
+    : Animated.createAnimatedComponent(LinearGradient);
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -98,10 +103,9 @@ export default function PlayScreen() {
     const loc = 0.2 + ratio * 0.5;
     return [0, loc, 1];
   });
-  // AnimatedLinearGradient に渡すプロパティ。locations を動的に変更する
-  const gradProps = useAnimatedProps(() => ({
-    locations: gradStops.value,
-  }));
+  // AnimatedLinearGradient へ渡すプロパティ。Web では locations のみ固定
+  const gradProps = useAnimatedProps(() => ({ locations: gradStops.value }));
+  const gradLocs = Platform.OS === "web" ? [0, 0.2, 1] : undefined;
 
   useEffect(() => {
     // 次ステージで迷路が変わるか判定
@@ -219,7 +223,9 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
-        animatedProps={gradProps}
+        {...(Platform.OS === "web"
+          ? { locations: gradLocs }
+          : { animatedProps: gradProps })}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={[styles.edge, styles.topEdge, vertStyle]}
@@ -227,7 +233,9 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
-        animatedProps={gradProps}
+        {...(Platform.OS === "web"
+          ? { locations: gradLocs }
+          : { animatedProps: gradProps })}
         start={{ x: 0.5, y: 1 }}
         end={{ x: 0.5, y: 0 }}
         style={[styles.edge, styles.bottomEdge, vertStyle]}
@@ -235,7 +243,9 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
-        animatedProps={gradProps}
+        {...(Platform.OS === "web"
+          ? { locations: gradLocs }
+          : { animatedProps: gradProps })}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
         style={[styles.edge, styles.leftEdge, horizStyle]}
@@ -243,7 +253,9 @@ export default function PlayScreen() {
       <AnimatedLG
         pointerEvents="none"
         colors={gradColors}
-        animatedProps={gradProps}
+        {...(Platform.OS === "web"
+          ? { locations: gradLocs }
+          : { animatedProps: gradProps })}
         start={{ x: 1, y: 0.5 }}
         end={{ x: 0, y: 0.5 }}
         style={[styles.edge, styles.rightEdge, horizStyle]}
