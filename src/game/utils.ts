@@ -16,6 +16,7 @@ import type { Enemy } from "@/src/types/enemy";
  * Math.abs は絶対値を求める関数を意味します。
  */
 export function distance(a: Vec2, b: Vec2): number {
+  'worklet';
   return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
 }
 
