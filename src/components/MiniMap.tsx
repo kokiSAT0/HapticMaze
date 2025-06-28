@@ -241,7 +241,7 @@ export function MiniMap({
             x2={(b.x + 0.5) * cell}
             y2={(b.y + 0.5) * cell}
             stroke="white"
-            strokeWidth={2}
+            strokeWidth={1}
           />
         );
       } else {
@@ -270,7 +270,7 @@ export function MiniMap({
               x2={(b.x + 0.5) * cell}
               y2={(b.y + 0.5) * cell}
               stroke={`url(#${id})`}
-              strokeWidth={2}
+              strokeWidth={1}
             />
           </React.Fragment>
         );
