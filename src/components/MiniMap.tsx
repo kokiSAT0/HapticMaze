@@ -23,11 +23,18 @@ import type { MazeData, Vec2 } from "@/src/types/maze";
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 // 星形ポリゴンの座標文字列を生成するヘルパー
+/**
+ * 16 本のトゲを持つ星形の頂点を計算するヘルパー
+ * cx, cy は中心座標、r は外側の半径
+ * 星形は外側と内側の頂点を交互に並べるので合計 32 点になる
+ */
 function starPoints(cx: number, cy: number, r: number): string {
   const points: string[] = [];
-  const step = Math.PI / 5; // 36度おきに頂点を作る
-  for (let i = 0; i < 10; i++) {
-    const rad = i * step - Math.PI / 2; // 上向きに開始
+  // step は頂点間の角度差。32 点なので 2π / 32 (= π/16)
+  const step = Math.PI / 16;
+  for (let i = 0; i < 32; i++) {
+    // i が偶数のとき外側、奇数のとき内側の半径を使う
+    const rad = i * step - Math.PI / 2; // 上向きから開始
     const len = i % 2 === 0 ? r : r * 0.5;
     const x = cx + len * Math.cos(rad);
     const y = cy + len * Math.sin(rad);
