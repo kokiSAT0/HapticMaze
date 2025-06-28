@@ -1,4 +1,4 @@
-import { randomCell, biasedPickGoal } from '../utils';
+import { randomCell, biasedPickGoal, shouldChangeMap } from '../utils';
 import type { Vec2 } from '@/src/types/maze';
 
 describe('randomCell', () => {
@@ -23,5 +23,17 @@ describe('biasedPickGoal', () => {
   test('大きな乱数では遠い方が選ばれる', () => {
     const rnd = jest.fn().mockReturnValue(0.9); // 0.9*12 = 10.8 >2
     expect(biasedPickGoal(start, cells, rnd)).toEqual(cells[1]);
+  });
+});
+
+describe('shouldChangeMap', () => {
+  test('3 の倍数ステージで迷路を変更する', () => {
+    expect(shouldChangeMap(3)).toBe(true);
+    expect(shouldChangeMap(6)).toBe(true);
+  });
+
+  test('それ以外のステージでは迷路を維持する', () => {
+    expect(shouldChangeMap(1)).toBe(false);
+    expect(shouldChangeMap(2)).toBe(false);
   });
 });

@@ -11,6 +11,7 @@ import {
   randomCell,
   biasedPickGoal,
   allCells,
+  shouldChangeMap,
 } from './utils';
 import { getEnemyMover, selectEnemyBehavior, type EnemyBehavior } from './enemy';
 import { loadMaze } from './loadMaze';
@@ -148,8 +149,8 @@ function createFirstStage(
  */
 function nextStageState(state: State): State {
   const size = state.mazeRaw.size;
-  // size の倍数ステージクリアごとに迷路を変更する
-  const changeMap = state.stage % size === 0;
+  // STAGE_PER_MAP の倍数ステージクリアごとに迷路を変更する
+  const changeMap = shouldChangeMap(state.stage);
   // 迷路を継続する場合は同じレイアウトを使う
   const base = changeMap ? loadMaze(size) : state.mazeRaw;
   // 次のスタート地点は前回ゴールしたマス

@@ -555,3 +555,17 @@ export function allCells(size: number): Vec2[] {
   }
   return cells;
 }
+
+/**
+ * 何ステージごとに新しい迷路を読み込むかを示す定数。
+ * 現在は 3 ステージごとにリセットする仕様です。
+ */
+export const STAGE_PER_MAP = 3;
+
+/**
+ * 現在のステージ番号から迷路を変更すべきか判定します。
+ * stage が STAGE_PER_MAP の倍数なら true を返します。
+ */
+export function shouldChangeMap(stage: number): boolean {
+  return stage % STAGE_PER_MAP === 0;
+}
