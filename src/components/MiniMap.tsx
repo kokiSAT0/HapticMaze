@@ -1,14 +1,22 @@
-import React from 'react';
+import { distance } from "@/src/game/utils";
+import React from "react";
 import Animated, {
-  useAnimatedStyle,
   useAnimatedProps,
+  useAnimatedStyle,
   useDerivedValue,
-} from 'react-native-reanimated';
-import Svg, { Line, Rect, Circle, Polygon, Defs, LinearGradient, Stop } from 'react-native-svg';
-import { distance } from '@/src/game/utils';
+} from "react-native-reanimated";
+import Svg, {
+  Circle,
+  Defs,
+  Line,
+  LinearGradient,
+  Polygon,
+  Rect,
+  Stop,
+} from "react-native-svg";
 
-import type { MazeData, Vec2 } from '@/src/types/maze';
-import type { Enemy } from '@/src/types/enemy';
+import type { Enemy } from "@/src/types/enemy";
+import type { MazeData, Vec2 } from "@/src/types/maze";
 
 // AnimatedRect はコンポーネント外で一度だけ作成しておく
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
@@ -25,7 +33,7 @@ function starPoints(cx: number, cy: number, r: number): string {
     const y = cy + len * Math.sin(rad);
     points.push(`${x},${y}`);
   }
-  return points.join(' ');
+  return points.join(" ");
 }
 
 // MiniMapProps インターフェース
@@ -36,7 +44,7 @@ export interface MiniMapProps {
   pos: Vec2; // 現在の位置
   enemies?: Enemy[]; // 敵の位置一覧
   enemyPaths?: Vec2[][]; // 敵の移動履歴
-  flash?: number | import('react-native-reanimated').SharedValue<number>; // 外枠の太さ
+  flash?: number | import("react-native-reanimated").SharedValue<number>; // 外枠の太さ
   size?: number; // 表示サイズ (デフォルト80px)
   /**
    * デバッグ表示フラグ
@@ -78,7 +86,7 @@ export function MiniMap({
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
   const style = useAnimatedStyle(() => ({
-    borderWidth: typeof flash === 'number' ? flash : flash.value,
+    borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
 
   // ゴールまでのマンハッタン距離から外周線の色を算出する
@@ -158,7 +166,7 @@ export function MiniMap({
   const renderHitWalls = () => {
     const lines = [] as React.JSX.Element[];
     hitV?.forEach((life, k) => {
-      const [x, y] = k.split(',').map(Number);
+      const [x, y] = k.split(",").map(Number);
       const op =
         wallLifetime === Infinity || life === Infinity
           ? 1
@@ -176,7 +184,7 @@ export function MiniMap({
       );
     });
     hitH?.forEach((life, k) => {
-      const [x, y] = k.split(',').map(Number);
+      const [x, y] = k.split(",").map(Number);
       const op =
         wallLifetime === Infinity || life === Infinity
           ? 1
@@ -297,22 +305,22 @@ export function MiniMap({
   const renderEnemies = () => {
     // __DEV__ は React Native が提供する開発判定フラグ
     const colorMap = {
-      random: '#999',
-      sense: '#0ff',
-      slow: '#fa0',
-      sight: '#0f0',
-      fast: '#f0f',
+      random: "#999",
+      sense: "#0ff",
+      slow: "#fa0",
+      sight: "#0f0",
+      fast: "#f0f",
     } as const;
     return enemies.map((e, i) => {
       if (!e.visible && !showAll) return null;
-      const color = __DEV__ ? colorMap[e.kind ?? 'random'] : 'white';
+      const color = __DEV__ ? colorMap[e.kind ?? "random"] : "white";
       return (
         <Polygon
           key={`enemy${i}`}
           points={starPoints(
             (e.pos.x + 0.5) * cell,
             (e.pos.y + 0.5) * cell,
-            cell * 0.35,
+            cell * 0.35
           )}
           fill={color}
         />
@@ -328,7 +336,7 @@ export function MiniMap({
     if (!visitedGoals) return null;
     const rects = [] as React.JSX.Element[];
     visitedGoals.forEach((k) => {
-      const [x, y] = k.split(',').map(Number);
+      const [x, y] = k.split(",").map(Number);
       rects.push(
         <Rect
           key={`vg${k}`}
@@ -339,7 +347,7 @@ export function MiniMap({
           stroke="white"
           strokeWidth={1}
           fill="none"
-        />,
+        />
       );
     });
     return rects;
@@ -349,10 +357,7 @@ export function MiniMap({
     // デバッグ表示の有無にかかわらず外枠は描画しない
     // borderColor を常に transparent にして非表示にする
     <Animated.View
-      style={[
-        { width: size, height: size, borderColor: 'transparent' },
-        style,
-      ]}
+      style={[{ width: size, height: size, borderColor: "transparent" }, style]}
     >
       <Svg width={size} height={size}>
         {/* マンハッタン距離に応じて濃さを変える外周線 */}
@@ -362,7 +367,7 @@ export function MiniMap({
           y={0}
           width={size}
           height={size}
-          strokeWidth={1}
+          strokeWidth={5} // 外周の太さ
           fill="none"
         />
         {renderWalls()}
