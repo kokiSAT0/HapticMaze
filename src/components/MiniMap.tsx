@@ -56,6 +56,8 @@ export interface MiniMapProps {
    * 外枠の色もオレンジに変わる
    */
   showAll?: boolean;
+  /** Result 画面かどうか。VisitedGoal 描画の判定に使用 */
+  showResult?: boolean;
   /** 衝突した壁 (縦方向) */
   hitV?: Map<string, number>;
   /** 衝突した壁 (横方向) */
@@ -82,6 +84,7 @@ export function MiniMap({
   flash = 2,
   size = 80,
   showAll = false,
+  showResult = false,
   hitV,
   hitH,
   playerPathLength = Infinity,
@@ -333,11 +336,9 @@ export function MiniMap({
   };
 
   // 過去にゴールだったマスを枠線のみで描画
-  // これまでにゴールだったマスを常に描画する
-  // showAll フラグに関係なく表示することで
-  // プレイヤーが到達済みの地点を確認できる
+  // showResult または showAll が true のときのみ表示
   const renderVisitedGoals = () => {
-    if (!visitedGoals) return null;
+    if (!visitedGoals || (!showResult && !showAll)) return null;
     const rects = [] as React.JSX.Element[];
     visitedGoals.forEach((k) => {
       const [x, y] = k.split(",").map(Number);
@@ -379,14 +380,16 @@ export function MiniMap({
         {renderPath()}
         {renderEnemyPaths()}
         {renderVisitedGoals()}
-        {/* スタート位置を正方形で表示 */}
-        <Rect
-          x={(maze.start[0] + 0.25) * cell}
-          y={(maze.start[1] + 0.25) * cell}
-          width={cell * 0.5}
-          height={cell * 0.5}
-          fill="white"
-        />
+        {/* スタート位置は showAll 時のみ描画 */}
+        {showAll && (
+          <Rect
+            x={(maze.start[0] + 0.25) * cell}
+            y={(maze.start[1] + 0.25) * cell}
+            width={cell * 0.5}
+            height={cell * 0.5}
+            fill="white"
+          />
+        )}
         {showAll && (
           // ゴール位置はデバッグ時のみ表示
           <Rect
