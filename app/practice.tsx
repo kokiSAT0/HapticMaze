@@ -11,7 +11,6 @@ export default function PracticeScreen() {
   const router = useRouter();
   const { newGame } = useGame();
   // 各敵タイプの数を状態として管理
-  const [sense, setSense] = React.useState(0);
   const [random, setRandom] = React.useState(0);
   const [slow, setSlow] = React.useState(0);
   const [sight, setSight] = React.useState(0);
@@ -25,7 +24,7 @@ export default function PracticeScreen() {
   const start = (size: number) => {
     newGame(
       size,
-      { sense, random, slow, sight, fast: 0 },
+      { random, slow, sight, fast: 0 },
       pathLen,
       playerLen,
       wallLife,
@@ -38,7 +37,6 @@ export default function PracticeScreen() {
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
         練習モード
       </ThemedText>
-      <EnemyCounter label="等速・感知" value={sense} setValue={setSense} />
       <EnemyCounter label="等速・ランダム" value={random} setValue={setRandom} />
       <EnemyCounter label="鈍足・視認" value={slow} setValue={setSlow} />
       <EnemyCounter label="等速・視認" value={sight} setValue={setSight} />

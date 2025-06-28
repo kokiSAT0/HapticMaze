@@ -1,8 +1,8 @@
 /** 敵の行動パターンを表す文字列型 */
-export type EnemyBehavior = 'smart' | 'random' | 'sight' | 'sense';
+export type EnemyBehavior = 'smart' | 'random' | 'sight';
 
 /** 敵の種類を表す文字列型 */
-export type EnemyKind = 'random' | 'sense' | 'slow' | 'sight' | 'fast';
+export type EnemyKind = 'random' | 'slow' | 'sight' | 'fast';
 
 export interface Enemy {
   pos: import('./maze').Vec2;
@@ -25,8 +25,6 @@ export interface Enemy {
 export interface EnemyCounts {
   /** 等速・ランダムの数 */
   random: number;
-  /** 等速・感知の数 */
-  sense: number;
   /** 鈍足・視認の数 */
   slow: number;
   /** 等速・視認の数 */
