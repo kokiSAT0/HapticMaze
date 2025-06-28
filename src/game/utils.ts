@@ -377,7 +377,7 @@ export function moveEnemySmart(
  * 敵からプレイヤーが直線上に見えるかを判定する。
  * range を指定しない場合は無制限で、壁を挟むと視認できない。
  */
-function inSight(
+export function inSight(
   enemy: Vec2,
   player: Vec2,
   maze: MazeData,
