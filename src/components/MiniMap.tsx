@@ -165,7 +165,7 @@ export function MiniMap({
     return lines;
   };
 
-  // 衝突した壁を黄色で描画
+  // 衝突した壁を灰色で描画
   // 外周との衝突も同じ座標形式で渡される
   const renderHitWalls = () => {
     const lines = [] as React.JSX.Element[];
@@ -182,7 +182,8 @@ export function MiniMap({
           y1={y * cell}
           x2={(x + 1) * cell}
           y2={y * cell + cell}
-          stroke={`rgba(255,255,0,${op})`}
+          // 壁に衝突した直後は濃い灰色、その後徐々に薄くなる
+          stroke={`rgba(128,128,128,${op})`}
           strokeWidth={1}
         />
       );
@@ -200,7 +201,8 @@ export function MiniMap({
           y1={(y + 1) * cell}
           x2={x * cell + cell}
           y2={(y + 1) * cell}
-          stroke={`rgba(255,255,0,${op})`}
+          // 横方向の衝突壁も同様に灰色で描画する
+          stroke={`rgba(128,128,128,${op})`}
           strokeWidth={1}
         />
       );
