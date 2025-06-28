@@ -219,7 +219,8 @@ export interface GameState {
   /** 衝突した横壁と残りターン数 */
   hitH: Map<string, number>;
   enemies: Enemy[];
-  enemyVisited: Set<string>[];
+  /** 各敵が踏んだマスの回数を記録する */
+  enemyVisited: Map<string, number>[];
   enemyPaths: Vec2[][];
   /** 敵に捕まったとき true になる */
   caught: boolean;
@@ -273,7 +274,9 @@ function initState(
     hitV,
     hitH,
     enemies,
-    enemyVisited: enemies.map((e) => new Set([`${e.pos.x},${e.pos.y}`])),
+    enemyVisited: enemies.map(
+      (e) => new Map([[`${e.pos.x},${e.pos.y}`, 1]])
+    ),
     enemyPaths: enemies.map((e) => [{ ...e.pos }]),
     caught: false,
     stage,
@@ -353,10 +356,10 @@ function reducer(state: State, action: Action): State {
         steps += 1;
       }
 
-      const newVisited: Set<string>[] = [];
+      const newVisited: Map<string, number>[] = [];
       const movedEnemies = enemies.map((e, i) => {
         const mover = getEnemyMover(e.behavior ?? state.enemyBehavior);
-        const visited = new Set(state.enemyVisited[i]);
+        const visited = new Map(state.enemyVisited[i]);
         if (e.cooldown > 0) {
           newVisited.push(visited);
           return { ...e, cooldown: e.cooldown - 1 };
@@ -364,7 +367,8 @@ function reducer(state: State, action: Action): State {
         let current = e;
         for (let r = 0; r < e.repeat; r++) {
           current = mover(current, maze, visited, newPos);
-          visited.add(`${current.pos.x},${current.pos.y}`);
+          const key = `${current.pos.x},${current.pos.y}`;
+          visited.set(key, (visited.get(key) ?? 0) + 1);
         }
         newVisited.push(visited);
         return {

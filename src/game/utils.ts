@@ -266,7 +266,7 @@ export function spawnEnemies(
 export function moveEnemyRandom(
   enemy: Enemy,
   maze: MazeData,
-  _visited?: Set<string>,
+  _visited?: Map<string, number>,
   _player?: Vec2,
   rnd: () => number = Math.random
 ): Enemy {
@@ -285,20 +285,31 @@ export function moveEnemyRandom(
 export function moveEnemyBasic(
   enemy: Enemy,
   maze: MazeData,
-  visited: Set<string>,
+  visited: Map<string, number>,
   rnd: () => number = Math.random
 ): Enemy {
   const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
     canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
-  const unvisited = dirs.filter((d) => {
+
+  // 各方向の到達回数を調べ、最も少ないものを選ぶ
+  let bestDirs: Dir[] = [];
+  let bestCount = Infinity;
+  for (const d of dirs) {
     const next = nextPosition(enemy.pos, d);
-    return !visited.has(`${next.x},${next.y}`);
-  });
-  const choices = unvisited.length > 0 ? unvisited : dirs;
-  const idx = Math.floor(rnd() * choices.length);
-  return { ...enemy, pos: nextPosition(enemy.pos, choices[idx]) };
+    const key = `${next.x},${next.y}`;
+    const count = visited.get(key) ?? 0;
+    if (count < bestCount) {
+      bestCount = count;
+      bestDirs = [d];
+    } else if (count === bestCount) {
+      bestDirs.push(d);
+    }
+  }
+
+  const idx = Math.floor(rnd() * bestDirs.length);
+  return { ...enemy, pos: nextPosition(enemy.pos, bestDirs[idx]) };
 }
 
 /**
@@ -336,13 +347,13 @@ export function shortestStep(
 /**
  * 壁を考慮した最短経路で距離を測り、
  * 2 マス以内ならプレイヤーへ向かう敵 AI。
- * それ以外では未踏マスを優先して移動します。
- * visited にはその敵がこれまでに踏んだマスの集合を渡します。
+ * それ以外では未踏回数が少ない方向へ進みます。
+ * visited にはその敵がこれまでに踏んだマスの回数表を渡します。
  */
 export function moveEnemySmart(
   enemy: Enemy,
   maze: MazeData,
-  visited: Set<string>,
+  visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random
 ): Enemy {
@@ -401,7 +412,7 @@ function inSight(
 export function moveEnemySight(
   enemy: Enemy,
   maze: MazeData,
-  visited: Set<string>,
+  visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
   range: number = Infinity
@@ -430,7 +441,7 @@ export function moveEnemySight(
 export function moveEnemySense(
   enemy: Enemy,
   maze: MazeData,
-  visited: Set<string>,
+  visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
   range: number = 3

@@ -6,7 +6,7 @@ import { moveEnemyRandom, moveEnemySmart, moveEnemySight, moveEnemySense } from 
 export type EnemyMover = (
   enemy: Enemy,
   maze: MazeData,
-  visited: Set<string>,
+  visited: Map<string, number>,
   player: Vec2,
   rnd?: () => number,
 ) => Enemy;
@@ -26,7 +26,7 @@ export function getEnemyMover(behavior: EnemyBehavior): EnemyMover {
       return (
         e: Enemy,
         maze: MazeData,
-        _v: Set<string>,
+        _v: Map<string, number>,
         _p: Vec2,
         rnd: () => number = Math.random,
       ) => moveEnemyRandom(e, maze, _v, _p, rnd);

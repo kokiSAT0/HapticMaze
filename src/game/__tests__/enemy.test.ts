@@ -33,14 +33,14 @@ const wallMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
 describe('moveEnemySmart', () => {
   test('プレイヤーが近いときは接近する', () => {
     const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
-    const visited = new Set<string>();
+    const visited = new Map<string, number>();
     const moved = moveEnemySmart(e, baseMaze, visited, pos(2, 0), () => 0);
     expect(moved.pos).toEqual(pos(1, 0));
   });
 
   test('壁を避けてでも距離2以内なら接近する', () => {
     const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
-    const visited = new Set<string>();
+    const visited = new Map<string, number>();
     // プレイヤーは (1,1)。直線では近いが壁により回り道で2歩
     const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 1), () => 0);
     expect(moved.pos).toEqual(pos(0, 1));
@@ -48,7 +48,7 @@ describe('moveEnemySmart', () => {
 
   test('壁で遠回りになる場合は接近しない', () => {
     const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
-    const visited = new Set<string>();
+    const visited = new Map<string, number>();
     // プレイヤーは (1,0) だが壁のせいで最短距離は3歩
     const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 0), () => 0);
     expect(moved.pos).not.toEqual(pos(0, 1));
@@ -56,7 +56,11 @@ describe('moveEnemySmart', () => {
 
   test('未踏マスを優先して進む', () => {
     const e = { pos: pos(1, 1), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
-    const visited = new Set<string>(['2,1', '1,0', '1,2']);
+    const visited = new Map<string, number>([
+      ['2,1', 1],
+      ['1,0', 1],
+      ['1,2', 1],
+    ]);
     const moved = moveEnemySmart(e, baseMaze, visited, pos(9, 9), () => 0);
     expect(moved.pos).toEqual(pos(0, 1));
   });
@@ -65,14 +69,18 @@ describe('moveEnemySmart', () => {
 describe('moveEnemySense', () => {
   test('感知範囲内ならプレイヤーへ近づく', () => {
     const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, behavior: 'sense' };
-    const visited = new Set<string>();
+    const visited = new Map<string, number>();
     const moved = moveEnemySense(e, baseMaze, visited, pos(2, 1), () => 0, 3);
     expect(moved.pos).toEqual(pos(0, 1));
   });
 
   test('範囲外では未踏マスを優先', () => {
     const e = { pos: pos(1, 1), visible: true, interval: 1, repeat: 1, cooldown: 0, behavior: 'sense' };
-    const visited = new Set<string>(['2,1', '1,0', '1,2']);
+    const visited = new Map<string, number>([
+      ['2,1', 1],
+      ['1,0', 1],
+      ['1,2', 1],
+    ]);
     const moved = moveEnemySense(e, baseMaze, visited, pos(9, 9), () => 0, 3);
     expect(moved.pos).toEqual(pos(0, 1));
   });
