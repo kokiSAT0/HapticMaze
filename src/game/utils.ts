@@ -106,34 +106,40 @@ export function applyDistanceFeedback(
  * 200ms 間繰り返して振動させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
+export interface BumpFeedbackOptions extends FeedbackOptions {
+  /** 枠線の太さ (px)。未指定なら 50 */
+  width?: number;
+  /** 表示時間 (ms)。未指定なら 100 */
+  showTime?: number;
+}
+
 export function applyBumpFeedback(
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
-  opts: FeedbackOptions = {}
+  opts: BumpFeedbackOptions = {}
 ): number {
-  // 暫定実装として太さ 50px、表示時間 100ms に固定
-  // showTime は枠線が表示される総時間を表す
-  const width = 50;
-  const showTime = 100;
+  // 枠線の太さと表示時間。デフォルト値を用意して分かりやすくする
+  const width = opts.width ?? 50;
+  const showTime = opts.showTime ?? 100;
 
   // 枠線を赤く変更する
   setColor("red");
 
-  // 100ms だけ Heavy スタイルで振動させる
+  // 指定時間だけ Heavy スタイルで振動させる
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);
-  setTimeout(() => clearInterval(id), 100);
+  setTimeout(() => clearInterval(id), showTime);
 
   // 枠線を表示 → すぐ非表示とするため 50ms ずつアニメーション
   borderW.value = withSequence(
-    withTiming(width, { duration: 50 }),
-    withTiming(0, { duration: 50 })
+    withTiming(width, { duration: showTime / 2 }),
+    withTiming(0, { duration: showTime / 2 })
   );
 
   // 色のリセットは呼び出し側で行う
-  // 呼び出し元へ待ち時間を返す（ここでは100ms）
+  // 呼び出し元へ待ち時間を返す
   return showTime;
 }
 
