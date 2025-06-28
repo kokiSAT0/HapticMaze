@@ -102,7 +102,7 @@ export function applyDistanceFeedback(
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * 太さ 50px の赤枠を 200ms 表示し、
+ * 太さ 50px の赤枠を 100ms 表示し、
  * Haptics.ImpactFeedbackStyle.Heavy を
  * 200ms 間繰り返して振動させます。
  * setColor には枠線の色を変更する関数を渡します。
@@ -112,28 +112,28 @@ export function applyBumpFeedback(
   setColor: (color: string) => void,
   opts: FeedbackOptions = {}
 ): number {
-  // 暫定実装として太さ 50px、表示時間 200ms に固定
+  // 暫定実装として太さ 50px、表示時間 100ms に固定
   const width = 50;
-  const showTime = 200;
+  const showTime = 100;
 
   // 枠線を赤く変更
   setColor("red");
 
-  // Haptics.impactAsync を使って 200ms 振動させる
+  // Haptics.impactAsync を使って 100ms 振動させる
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);
-  setTimeout(() => clearInterval(id), 200);
+  setTimeout(() => clearInterval(id), 100);
 
   borderW.value = withSequence(
-    withTiming(width, { duration: 150 }),
-    withDelay(showTime, withTiming(0, { duration: 150 }))
+    withTiming(width, { duration: 100 }),
+    withDelay(showTime, withTiming(0, { duration: 100 }))
   );
 
   // 色のリセットは呼び出し側で行う
   // 次回入力まで待つ時間を返す
-  return showTime + 300;
+  return showTime + 100;
 }
 
 /**
