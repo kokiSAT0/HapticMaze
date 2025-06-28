@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { PlainButton } from '@/components/PlainButton';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
 
@@ -37,20 +38,18 @@ export default function TitleScreen() {
         Haptic Maze
       </ThemedText>
       {/* 練習モードへの遷移 */}
-      <Button
+      <PlainButton
         title="練習モード"
         onPress={() => router.push('/practice')}
         accessibilityLabel="練習モードを開く"
-        color="#fff"
       />
       {/* プリセットレベルの開始ボタン */}
       {LEVELS.map((lv) => (
-        <Button
+        <PlainButton
           key={lv.id}
           title={lv.name}
           onPress={() => startLevel(lv.id)}
           accessibilityLabel={`${lv.name}を開始`}
-          color="#fff"
         />
       ))}
     </ThemedView>
