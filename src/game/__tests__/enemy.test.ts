@@ -1,9 +1,9 @@
-// spawnEnemies と moveEnemySmart のテスト
+// spawnEnemies と moveEnemySight のテスト
 // 初心者向けに分かりやすく記述
 
 import {
   spawnEnemies,
-  moveEnemySmart,
+  moveEnemySight,
   wallSet,
   updateEnemyPaths,
 } from '../utils';
@@ -22,45 +22,35 @@ const baseMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
 
 const pos = (x: number, y: number): Vec2 => ({ x, y });
 
-// 敵とプレイヤーの間に壁がある迷路
-const wallMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
-  ...baseMaze,
-  v_walls: wallSet([[0, 0]]), // (0,0)-(1,0) の間に壁
-  h_walls: wallSet([]),
-};
 
-describe('moveEnemySmart', () => {
-  test('プレイヤーが近いときは接近する', () => {
-    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
+describe('moveEnemySight', () => {
+  test('視界に入ったプレイヤーを追跡する', () => {
+    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'sight' };
     const visited = new Map<string, number>();
-    const moved = moveEnemySmart(e, baseMaze, visited, pos(2, 0), () => 0);
+    const moved = moveEnemySight(e, baseMaze, visited, pos(2, 0), () => 0);
     expect(moved.pos).toEqual(pos(1, 0));
   });
 
-  test('壁を避けてでも距離2以内なら接近する', () => {
-    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
+  test('一度見失っても最後に見た場所へ向かう', () => {
+    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'sight' };
     const visited = new Map<string, number>();
-    // プレイヤーは (1,1)。直線では近いが壁により回り道で2歩
-    const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 1), () => 0);
-    expect(moved.pos).toEqual(pos(0, 1));
+    const first = moveEnemySight(e, baseMaze, visited, pos(0, 2), () => 0);
+    // プレイヤーを曲がった位置へ移動させて視界から外す
+    const second = moveEnemySight(first, baseMaze, visited, pos(1, 2), () => 0);
+    expect(second.pos).toEqual(pos(0, 1));
+    // さらに追跡して最終的に (0,2) へ到達する
+    const third = moveEnemySight(second, baseMaze, visited, pos(1, 2), () => 0);
+    expect(third.pos).toEqual(pos(0, 2));
   });
 
-  test('壁で遠回りになる場合は接近しない', () => {
-    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
-    const visited = new Map<string, number>();
-    // プレイヤーは (1,0) だが壁のせいで最短距離は3歩
-    const moved = moveEnemySmart(e, wallMaze, visited, pos(1, 0), () => 0);
-    expect(moved.pos).not.toEqual(pos(0, 1));
-  });
-
-  test('未踏マスを優先して進む', () => {
-    const e = { pos: pos(1, 1), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'smart' };
+  test('視界外では未踏マスを優先する', () => {
+    const e = { pos: pos(1, 1), visible: true, interval: 1, repeat: 1, cooldown: 0, target: null, behavior: 'sight' };
     const visited = new Map<string, number>([
       ['2,1', 1],
       ['1,0', 1],
       ['1,2', 1],
     ]);
-    const moved = moveEnemySmart(e, baseMaze, visited, pos(9, 9), () => 0);
+    const moved = moveEnemySight(e, baseMaze, visited, pos(9, 9), () => 0);
     expect(moved.pos).toEqual(pos(0, 1));
   });
 });

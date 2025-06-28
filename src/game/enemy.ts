@@ -1,6 +1,6 @@
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy, EnemyBehavior } from '@/src/types/enemy';
-import { moveEnemyBasic, moveEnemySmart, moveEnemySight } from './utils';
+import { moveEnemyBasic, moveEnemySight } from './utils';
 
 /** 敵を1ターン移動させる関数の型 */
 export type EnemyMover = (
@@ -15,7 +15,8 @@ export type EnemyMover = (
 export function getEnemyMover(behavior: EnemyBehavior): EnemyMover {
   switch (behavior) {
     case 'smart':
-      return moveEnemySmart;
+      // smart も視認追跡と同じ挙動とする
+      return moveEnemySight;
     case 'sight':
       return moveEnemySight;
     case 'random':
