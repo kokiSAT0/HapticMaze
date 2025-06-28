@@ -223,7 +223,9 @@ export default function PlayScreen() {
   };
 
   const dpadTop = height * (2 / 3);
-  const mapTop = height / 3;
+  // ミニマップを画面上1/3の位置から少し上へずらす
+  // 今回は40pxだけ上に移動させる
+  const mapTop = height / 3 - 40;
   // リザルト表示位置。ミニマップより少し下へ配置する
   const resultTop = mapTop + 260;
 
@@ -399,7 +401,7 @@ const styles = StyleSheet.create({
     gap: 10,
     width: 250,
   },
-  // ミニマップを画面上 1/3 の位置に中央揃えで配置
+  // ミニマップを画面上 1/3 より40px上の位置に中央揃えで配置
   miniMapWrapper: {
     position: "absolute",
     left: 0,
