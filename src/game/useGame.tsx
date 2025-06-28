@@ -331,7 +331,9 @@ function reducer(state: State, action: Action): State {
         action.enemyPathLength ?? state.enemyPathLength,
         action.playerPathLength ?? state.playerPathLength,
         action.wallLifetime ?? state.wallLifetime,
-        action.enemyCountsFn ?? state.enemyCountsFn,
+        // 練習モードでは前回レベルの設定を引き継がないよう
+        // 明示的に undefined を渡す
+        action.enemyCountsFn,
       );
     case 'nextStage':
       return nextStageState(state);
