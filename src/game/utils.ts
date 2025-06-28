@@ -36,6 +36,27 @@ export interface FeedbackOptions {
 }
 
 /**
+ * 衝突時の枠線フィードバックに関する設定です。
+ */
+export interface BumpFeedbackOptions extends FeedbackOptions {
+  /** 枠線の太さ(px) */
+  borderWidth?: number;
+  /** 枠線を表示する時間(ms) */
+  showTime?: number;
+}
+
+/**
+ * 枠線フィードバックのデフォルト太さ(px)
+ * 必要に応じてここの値を変更してください。
+ */
+export const DEFAULT_BUMP_WIDTH = 50;
+/**
+ * 枠線を表示するデフォルト時間(ms)
+ * 長くすると振動も長く続きます。
+ */
+export const DEFAULT_BUMP_TIME = 100;
+
+/**
  * 値を一定範囲に収める簡単な clamp 関数。
  */
 export function clamp(v: number, min: number, max: number): number {
@@ -101,39 +122,37 @@ export function applyDistanceFeedback(
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * 太さ 50px の赤枠を 100ms 表示し、
- * Haptics.ImpactFeedbackStyle.Heavy を
- * 200ms 間繰り返して振動させます。
+ * 赤い枠線を一時的に表示し振動させます。
+ * 太さや表示時間は DEFAULT_BUMP_WIDTH / DEFAULT_BUMP_TIME を変更します。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export function applyBumpFeedback(
   borderW: SharedValue<number>,
   setColor: (color: string) => void,
-  opts: FeedbackOptions = {}
+  opts: BumpFeedbackOptions = {}
 ): number {
-  // 暫定実装として太さ 50px、表示時間 100ms に固定
-  // showTime は枠線が表示される総時間を表す
-  const width = 50;
-  const showTime = 100;
+  // 枠線の太さと表示時間をオプションから受け取る
+  const width = opts.borderWidth ?? DEFAULT_BUMP_WIDTH;
+  const showTime = opts.showTime ?? DEFAULT_BUMP_TIME;
 
   // 枠線を赤く変更する
   setColor("red");
 
-  // 100ms だけ Heavy スタイルで振動させる
+  // Heavy スタイルで一定時間振動させる
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);
-  setTimeout(() => clearInterval(id), 100);
+  setTimeout(() => clearInterval(id), showTime);
 
   // 枠線を表示 → すぐ非表示とするため 50ms ずつアニメーション
   borderW.value = withSequence(
-    withTiming(width, { duration: 50 }),
-    withTiming(0, { duration: 50 })
+    withTiming(width, { duration: showTime / 2 }),
+    withTiming(0, { duration: showTime / 2 })
   );
 
   // 色のリセットは呼び出し側で行う
-  // 呼び出し元へ待ち時間を返す（ここでは100ms）
+  // 呼び出し元へ待ち時間を返す
   return showTime;
 }
 
