@@ -37,7 +37,9 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
   spawnEnemies(counts.random, maze, Math.random, exclude).forEach((p) => {
     enemies.push({
       pos: p,
-      visible: false,
+      // ミニマップで見えるようデフォルトで true にする
+      // プレイヤーが追跡できるようにするため
+      visible: true,
       interval: 1,
       repeat: 1,
       cooldown: 0,
