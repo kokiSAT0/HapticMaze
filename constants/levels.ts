@@ -55,6 +55,7 @@ export const LEVELS: LevelConfig[] = [
     name: 'レベル4',
     size: 10,
     enemies: { sense: 0, random: 0, slow: 1, sight: 1, fast: 0 },
-    pathLength: 4,
+    // プレイヤーの軌跡表示は 4 マス分だけ残す
+    playerPathLength: 4,
   },
 ];
