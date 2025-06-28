@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { PlainButton } from '@/components/PlainButton';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
 import { ThemedText } from '@/components/ThemedText';
@@ -57,17 +58,15 @@ export default function PracticeScreen() {
         setValue={setWallLife}
         allowInfinity
       />
-      <Button
+      <PlainButton
         title="5×5"
         onPress={() => start(5)}
         accessibilityLabel="5マス迷路を開始"
-        color="#fff"
       />
-      <Button
+      <PlainButton
         title="10×10"
         onPress={() => start(10)}
         accessibilityLabel="10マス迷路を開始"
-        color="#fff"
       />
     </ThemedView>
   );

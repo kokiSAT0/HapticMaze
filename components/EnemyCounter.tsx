@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { PlainButton } from '@/components/PlainButton';
 
 import { ThemedText } from '@/components/ThemedText';
 
@@ -30,7 +31,7 @@ export function EnemyCounter({
       {/* ラベル表示 */}
       <ThemedText lightColor="#fff" darkColor="#fff">{label}</ThemedText>
       {/* マイナスボタンで1減らす。最小0 */}
-      <Button
+      <PlainButton
         title="-"
         onPress={() =>
           setValue((v) => {
@@ -45,7 +46,7 @@ export function EnemyCounter({
         {display}
       </ThemedText>
       {/* プラスボタンで1増やす */}
-      <Button
+      <PlainButton
         title="+"
         onPress={() =>
           setValue((v) => {

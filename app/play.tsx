@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import {
-  Button,
   Modal,
   StyleSheet,
   View,
@@ -23,6 +22,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { DPad } from "@/components/DPad";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { PlainButton } from "@/components/PlainButton";
 import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView, Dir } from "@/src/types/maze";
 import { useGame } from "@/src/game/useGame";
@@ -297,12 +297,12 @@ export default function PlayScreen() {
           onPress={() => setShowMenu(false)}
         >
           <View style={[styles.menuContent, { top: insets.top + 40 }]}>
-            <Button
+            <PlainButton
               title="Reset Maze"
               onPress={handleReset}
               accessibilityLabel="迷路を最初から"
             />
-            <Button
+            <PlainButton
               title="Exit to Title"
               onPress={handleExit}
               accessibilityLabel="タイトルへ戻る"
@@ -332,7 +332,7 @@ export default function PlayScreen() {
             <ThemedText>
               Stage: {state.stage}/{totalStages}
             </ThemedText>
-            <Button
+            <PlainButton
               title="OK"
               onPress={handleOk}
               accessibilityLabel="タイトルへ戻る"
