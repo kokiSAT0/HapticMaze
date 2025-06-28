@@ -36,6 +36,10 @@ function starPoints(cx: number, cy: number, r: number): string {
   return points.join(" ");
 }
 
+// 壁を描画するときの色
+// "gray" という文字列を渡すと薄い灰色になる
+const WALL_COLOR = "gray";
+
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
 export interface MiniMapProps {
@@ -133,8 +137,8 @@ export function MiniMap({
           y1={py}
           x2={px}
           y2={py + cell}
-          // 縦壁も白で描画する
-          stroke="white"
+          // 縦壁を灰色で描画する
+          stroke={WALL_COLOR}
           strokeWidth={1}
         />
       );
@@ -151,8 +155,8 @@ export function MiniMap({
           y1={py}
           x2={px + cell}
           y2={py}
-          // 横壁も白で描画する
-          stroke="white"
+          // 横壁を灰色で描画する
+          stroke={WALL_COLOR}
           strokeWidth={1}
         />
       );
