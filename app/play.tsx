@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Modal,
   StyleSheet,
@@ -29,7 +29,6 @@ import { useGame } from "@/src/game/useGame";
 import {
   applyBumpFeedback,
   applyDistanceFeedback,
-  distance,
   nextPosition,
 } from "@/src/game/utils";
 
@@ -70,22 +69,6 @@ export default function PlayScreen() {
   // applyDistanceFeedback で使う setInterval の ID を保持
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 現在位置からゴールまでのマンハッタン距離に応じた色を求める
-  const calcBorderColor = useCallback(
-    (p: { x: number; y: number }): string => {
-      const maxDist = (maze.size - 1) * 2;
-      const d = distance(p, { x: maze.goal[0], y: maze.goal[1] });
-      const r = Math.min(d / maxDist, 1);
-      const g = Math.round(255 * (1 - r));
-      return `rgb(${g},${g},${g})`;
-    },
-    [maze.goal, maze.size]
-  );
-
-  useEffect(() => {
-    // 移動後は常に距離に応じた色へ更新する
-    setBorderColor(calcBorderColor(state.pos));
-  }, [state.pos, calcBorderColor]);
   // 枠の太さを共通化するため縦横で別々の AnimatedStyle を用意
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
@@ -203,8 +186,8 @@ export default function PlayScreen() {
     let wait: number;
     if (!move(dir)) {
       wait = applyBumpFeedback(borderW, setBorderColor);
-      // 衝突後は元の距離色に戻す
-      setTimeout(() => setBorderColor(calcBorderColor(state.pos)), wait);
+      // 衝突後は枠線の色を元に戻す
+      setTimeout(() => setBorderColor("white"), wait);
     } else {
       // 盤面サイズから求めた最大マンハッタン距離 (例: 10×10 なら 18)
       const maxDist = (maze.size - 1) * 2;
