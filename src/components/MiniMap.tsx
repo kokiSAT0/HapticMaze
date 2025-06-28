@@ -24,17 +24,19 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 // 星形ポリゴンの座標文字列を生成するヘルパー
 /**
- * 16 本のトゲを持つ星形の頂点を計算するヘルパー
+
+ * 10 本のトゲを持つ星形の頂点を計算する関数
  * cx, cy は中心座標、r は外側の半径
- * 星形は外側と内側の頂点を交互に並べるので合計 32 点になる
+ * 星形は外側頂点と内側頂点を交互に並べるので合計 20 点になる
  */
 function starPoints(cx: number, cy: number, r: number): string {
   const points: string[] = [];
-  // step は頂点間の角度差。32 点なので 2π / 32 (= π/16)
-  const step = Math.PI / 16;
-  for (let i = 0; i < 32; i++) {
-    // i が偶数のとき外側、奇数のとき内側の半径を使う
-    const rad = i * step - Math.PI / 2; // 上向きから開始
+  // 頂点間の角度差。20 点なので 2π / 20 (= π/10)
+  const step = Math.PI / 10;
+  for (let i = 0; i < 20; i++) {
+    // 偶数は外側、奇数は内側の半径を使う
+    const rad = i * step - Math.PI / 2; // 上方向を基準に開始
+
     const len = i % 2 === 0 ? r : r * 0.5;
     const x = cx + len * Math.cos(rad);
     const y = cy + len * Math.sin(rad);
