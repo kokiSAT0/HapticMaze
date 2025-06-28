@@ -1,7 +1,6 @@
 import * as Haptics from "expo-haptics";
 import {
   withTiming,
-  withDelay,
   withSequence,
   SharedValue,
 } from "react-native-reanimated";
@@ -113,27 +112,29 @@ export function applyBumpFeedback(
   opts: FeedbackOptions = {}
 ): number {
   // 暫定実装として太さ 50px、表示時間 100ms に固定
+  // showTime は枠線が表示される総時間を表す
   const width = 50;
   const showTime = 100;
 
-  // 枠線を赤く変更
+  // 枠線を赤く変更する
   setColor("red");
 
-  // Haptics.impactAsync を使って 100ms 振動させる
+  // 100ms だけ Heavy スタイルで振動させる
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);
   setTimeout(() => clearInterval(id), 100);
 
+  // 枠線を表示 → すぐ非表示とするため 50ms ずつアニメーション
   borderW.value = withSequence(
-    withTiming(width, { duration: 100 }),
-    withDelay(showTime, withTiming(0, { duration: 100 }))
+    withTiming(width, { duration: 50 }),
+    withTiming(0, { duration: 50 })
   );
 
   // 色のリセットは呼び出し側で行う
-  // 次回入力まで待つ時間を返す
-  return showTime + 100;
+  // 呼び出し元へ待ち時間を返す（ここでは100ms）
+  return showTime;
 }
 
 /**
