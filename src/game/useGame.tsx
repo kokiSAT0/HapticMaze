@@ -103,6 +103,7 @@ function createFirstStage(
   enemyPathLength: number = 4,
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
+  enemyCountsFn?: (stage: number) => EnemyCounts,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -118,6 +119,7 @@ function createFirstStage(
   //実際にゴールに到達した時に追加されるので
   //現状では visited は空のまま
   const finalStage = visited.size + 1 === base.size * base.size;
+  const stageCounts = enemyCountsFn ? enemyCountsFn(1) : counts;
   return initState(
     maze,
     1,
@@ -125,10 +127,11 @@ function createFirstStage(
     finalStage,
     undefined,
     undefined,
-    counts,
+    stageCounts,
     enemyPathLength,
     playerPathLength,
     wallLifetime,
+    enemyCountsFn,
   );
 }
 
@@ -176,10 +179,13 @@ function nextStageState(state: State): State {
     finalStage,
     hitV,
     hitH,
-    state.enemyCounts,
+    state.enemyCountsFn
+      ? state.enemyCountsFn(state.stage + 1)
+      : state.enemyCounts,
     state.enemyPathLength,
     state.playerPathLength,
     state.wallLifetime,
+    state.enemyCountsFn,
   );
 }
 
@@ -190,10 +196,11 @@ function nextStageState(state: State): State {
 function restartRun(state: State): State {
   return createFirstStage(
     state.mazeRaw,
-    state.enemyCounts,
+    state.enemyCountsFn ? state.enemyCountsFn(1) : state.enemyCounts,
     state.enemyPathLength,
     state.playerPathLength,
     state.wallLifetime,
+    state.enemyCountsFn,
   );
 }
 
@@ -223,6 +230,8 @@ export interface GameState {
   enemyBehavior: EnemyBehavior;
   /** 敵の数設定 */
   enemyCounts: EnemyCounts;
+  /** ステージごとの敵数を決める関数 */
+  enemyCountsFn?: (stage: number) => EnemyCounts;
   /** 敵の軌跡を何マス分残すか */
   enemyPathLength: number;
   /** プレイヤーの軌跡を何マス分残すか */
@@ -249,6 +258,7 @@ function initState(
   enemyPathLength: number = 4,
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
+  enemyCountsFn?: (stage: number) => EnemyCounts,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze);
@@ -273,6 +283,7 @@ function initState(
     finalStage,
     enemyBehavior,
     enemyCounts,
+    enemyCountsFn,
     enemyPathLength,
     playerPathLength,
     wallLifetime,
@@ -290,6 +301,7 @@ type Action =
       enemyPathLength?: number;
       playerPathLength?: number;
       wallLifetime?: number;
+      enemyCountsFn?: (stage: number) => EnemyCounts;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
@@ -309,6 +321,7 @@ function reducer(state: State, action: Action): State {
         state.enemyPathLength,
         state.playerPathLength,
         state.wallLifetime,
+        state.enemyCountsFn,
       );
     case 'newMaze':
       // 新しい迷路で初期化
@@ -318,6 +331,7 @@ function reducer(state: State, action: Action): State {
         action.enemyPathLength ?? state.enemyPathLength,
         action.playerPathLength ?? state.playerPathLength,
         action.wallLifetime ?? state.wallLifetime,
+        action.enemyCountsFn ?? state.enemyCountsFn,
       );
     case 'nextStage':
       return nextStageState(state);
@@ -417,6 +431,7 @@ const GameContext = createContext<
         enemyPathLength?: number,
         playerPathLength?: number,
         wallLifetime?: number,
+        enemyCountsFn?: (stage: number) => EnemyCounts,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -444,6 +459,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     enemyPathLength?: number,
     playerPathLength?: number,
     wallLifetime?: number,
+    enemyCountsFn?: (stage: number) => EnemyCounts,
   ) =>
     dispatch({
       type: 'newMaze',
@@ -452,6 +468,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       enemyPathLength,
       playerPathLength,
       wallLifetime,
+      enemyCountsFn,
     });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
