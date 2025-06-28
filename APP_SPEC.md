@@ -146,15 +146,17 @@ _(Set<string> で常時  O(1) 判定)_
 
 ### 6.3 フィードバックマッピング
 
-```ts
-const maxDist = Math.hypot(9, 9);
-const dist = Math.hypot(goal.x - x, goal.y - y);
-const t = dist / maxDist; // 0–1
-const borderW = lerp(2, 80, 1 - t); // 2→80px
-```
+マンハッタン距離に応じて振動スタイルと時間を以下のように固定する。
 
-- 振動: `Haptics.impactAsync(style)` ※ style は距離に応じて Light → Medium → Heavy を切り替え
-- 枠: Reanimated `withTiming(borderW, {duration:150})`
+| 距離 | 強度   | 時間   |
+| --- | --- | --- |
+| 1   | Heavy  | 0.6 秒 |
+| 2   | Heavy  | 0.3 秒 |
+| 3   | Medium | 0.3 秒 |
+| 4   | Medium | 0.15 秒 |
+| 5+  | Light  | 0.15 秒 |
+
+振動終了から 0.05 秒後に次の入力を受け付ける。
 
 ---
 
