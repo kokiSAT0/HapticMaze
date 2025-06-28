@@ -45,8 +45,8 @@ export function clamp(v: number, min: number, max: number): number {
 }
 
 /**
- * ゴールとの距離に応じて枠アニメーションを表示し、
- * 同じ時間だけ impactAsync を繰り返して振動します。
+ * ゴールまでのマンハッタン距離に応じて
+ * 3 段階の振動を発生させます。
  * borderW は Reanimated の SharedValue<number> です。
  */
 /**
@@ -66,39 +66,39 @@ export function applyDistanceFeedback(
   goal: Vec2,
   opts: FeedbackOptions = {}
 ): DistanceFeedbackResult {
-  // maxDist のデフォルトは goal.x + goal.y
-  const { maxDist = goal.x + goal.y } = opts;
-
+  // opts は互換性のために保持しているが現在は未使用
+  // ゴールまでのマンハッタン距離を計算
   const dist = distance(pos, goal);
-  // r = 0 がゴール、1 が最遠の正規化値
-  const r = clamp(dist / maxDist, 0, 1);
 
-  // 周期 600→200ms を距離に応じて線形補間
-  const period = clamp(lerp(600, 200, 1 - r), 150, 1000);
-  // デューティ比 0.25→0.75 で枠を表示する時間を決める
-  const duty = lerp(0.25, 0.75, 1 - r);
-  const showTime = Math.max(period * duty, 30);
+  // 距離に応じて振動スタイルと継続時間を決定
+  let style: Haptics.ImpactFeedbackStyle;
+  let duration: number;
+  if (dist === 1) {
+    style = Haptics.ImpactFeedbackStyle.Heavy;
+    duration = 600;
+  } else if (dist === 2) {
+    style = Haptics.ImpactFeedbackStyle.Heavy;
+    duration = 300;
+  } else if (dist === 3) {
+    style = Haptics.ImpactFeedbackStyle.Medium;
+    duration = 300;
+  } else if (dist === 4) {
+    style = Haptics.ImpactFeedbackStyle.Medium;
+    duration = 150;
+  } else {
+    style = Haptics.ImpactFeedbackStyle.Light;
+    duration = 150;
+  }
 
-  // r が遠いほど弱く、近いほど強く振動
-  // 0.66 より遠い → Light
-  // 0.33 より遠い → Medium
-  // それ以外 → Heavy
-  const style =
-    r > 0.66
-      ? Haptics.ImpactFeedbackStyle.Light
-      : r > 0.33
-      ? Haptics.ImpactFeedbackStyle.Medium
-      : Haptics.ImpactFeedbackStyle.Heavy;
-
+  // まず 1 回振動させ、150ms 間隔で duration いっぱいまで繰り返す
   Haptics.impactAsync(style);
-  // 枠が表示されている間 (showTime + 300ms) は短い振動を繰り返す
   const id = setInterval(() => {
     Haptics.impactAsync(style);
   }, 150);
-  setTimeout(() => clearInterval(id), showTime + 300);
+  setTimeout(() => clearInterval(id), duration);
 
-  // wait に待ち時間、id にタイマー ID をまとめて返す
-  return { wait: period, id };
+  // 待ち時間として振動継続時間を返す
+  return { wait: duration, id };
 }
 
 /**
