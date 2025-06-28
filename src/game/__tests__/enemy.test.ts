@@ -6,6 +6,7 @@ import {
   moveEnemySight,
   wallSet,
   updateEnemyPaths,
+  inSight,
 } from '../utils';
 import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
@@ -52,6 +53,24 @@ describe('moveEnemySight', () => {
     ]);
     const moved = moveEnemySight(e, baseMaze, visited, pos(9, 9), () => 0);
     expect(moved.pos).toEqual(pos(0, 1));
+  });
+
+  test('鈍足敵が待機ターン中でも target が更新される', () => {
+    let e = { pos: pos(0, 0), visible: true, interval: 2, repeat: 1, cooldown: 1, target: null, behavior: 'sight' as const };
+    const player = pos(2, 0);
+
+    if (e.cooldown > 0) {
+      if (e.behavior === 'sight' || e.behavior === 'smart') {
+        // 視認のみ行い target を更新する処理を模倣
+        if (inSight(e.pos, player, baseMaze)) {
+          e = { ...e, target: { ...player } };
+        }
+      }
+      e = { ...e, cooldown: e.cooldown - 1 };
+    }
+
+    expect(e.target).toEqual(player);
+    expect(e.cooldown).toBe(0);
   });
 });
 

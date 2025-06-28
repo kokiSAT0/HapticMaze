@@ -11,6 +11,7 @@ import {
   randomCell,
   biasedPickGoal,
   allCells,
+  inSight,
   shouldChangeMap,
 } from './utils';
 import { getEnemyMover, selectEnemyBehavior, type EnemyBehavior } from './enemy';
@@ -366,8 +367,15 @@ function reducer(state: State, action: Action): State {
         const mover = getEnemyMover(e.behavior ?? state.enemyBehavior);
         const visited = new Map(state.enemyVisited[i]);
         if (e.cooldown > 0) {
+          let targetEnemy = e;
+          if (e.behavior === 'sight' || e.behavior === 'smart') {
+            // 視認のみ行って target を更新する
+            if (inSight(e.pos, newPos, maze)) {
+              targetEnemy = { ...e, target: { ...newPos } };
+            }
+          }
           newVisited.push(visited);
-          return { ...e, cooldown: e.cooldown - 1 };
+          return { ...targetEnemy, cooldown: e.cooldown - 1 };
         }
         let current = e;
         for (let r = 0; r < e.repeat; r++) {
