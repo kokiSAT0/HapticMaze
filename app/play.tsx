@@ -71,13 +71,16 @@ export default function PlayScreen() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 現在位置からゴールまでのマンハッタン距離に応じた色を求める
-  const calcBorderColor = useCallback((p: { x: number; y: number }): string => {
-    const maxDist = (maze.size - 1) * 2;
-    const d = distance(p, { x: maze.goal[0], y: maze.goal[1] });
-    const r = Math.min(d / maxDist, 1);
-    const g = Math.round(255 * (1 - r));
-    return `rgb(${g},${g},${g})`;
-  }, [maze.goal, maze.size]);
+  const calcBorderColor = useCallback(
+    (p: { x: number; y: number }): string => {
+      const maxDist = (maze.size - 1) * 2;
+      const d = distance(p, { x: maze.goal[0], y: maze.goal[1] });
+      const r = Math.min(d / maxDist, 1);
+      const g = Math.round(255 * (1 - r));
+      return `rgb(${g},${g},${g})`;
+    },
+    [maze.goal, maze.size]
+  );
 
   useEffect(() => {
     // 移動後は常に距離に応じた色へ更新する
@@ -126,7 +129,14 @@ export default function PlayScreen() {
       setShowResult(true);
       setDebugAll(true);
     }
-  }, [state.pos, state.caught, maze.goal, state.finalStage, state.stage, maze.size]);
+  }, [
+    state.pos,
+    state.caught,
+    maze.goal,
+    state.finalStage,
+    state.stage,
+    maze.size,
+  ]);
 
   const handleOk = () => {
     // 結果モーダルを閉じるのみ
@@ -207,9 +217,9 @@ export default function PlayScreen() {
       intervalRef.current = id;
     }
 
-    // フィードバック終了から 50ms 後にロック解除
+    // フィードバック終了から 10ms 後にロック解除
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setLocked(false), wait + 50);
+    timerRef.current = setTimeout(() => setLocked(false), wait + 10);
   };
 
   const dpadTop = height * (2 / 3);
@@ -282,8 +292,8 @@ export default function PlayScreen() {
           hitH={state.hitH}
           playerPathLength={state.playerPathLength}
           wallLifetime={state.wallLifetime}
-          // ミニマップを1.5倍のサイズ（240px）で表示する
-          size={240}
+          // ミニマップを300pxで表示する
+          size={300}
         />
       </View>
       <View style={[styles.dpadWrapper, { top: dpadTop }]}>
@@ -323,7 +333,11 @@ export default function PlayScreen() {
         <View style={styles.modalWrapper}>
           <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
             <ThemedText type="title">
-              {gameClear ? "ゲームクリア" : gameOver ? "ゲームオーバー" : "ゴール！"}
+              {gameClear
+                ? "ゲームクリア"
+                : gameOver
+                ? "ゲームオーバー"
+                : "ゴール！"}
             </ThemedText>
             <ThemedText>Steps: {state.steps}</ThemedText>
             <ThemedText>Bumps: {state.bumps}</ThemedText>

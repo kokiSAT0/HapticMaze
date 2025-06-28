@@ -16,7 +16,7 @@ import type { Enemy } from "@/src/types/enemy";
  * Math.abs は絶対値を求める関数を意味します。
  */
 export function distance(a: Vec2, b: Vec2): number {
-  'worklet';
+  "worklet";
   return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
 }
 
@@ -75,26 +75,26 @@ export function applyDistanceFeedback(
   let duration: number;
   if (dist === 1) {
     style = Haptics.ImpactFeedbackStyle.Heavy;
-    duration = 600;
+    duration = 400;
   } else if (dist === 2) {
     style = Haptics.ImpactFeedbackStyle.Heavy;
-    duration = 300;
+    duration = 200;
   } else if (dist === 3) {
     style = Haptics.ImpactFeedbackStyle.Medium;
-    duration = 300;
+    duration = 100;
   } else if (dist === 4) {
     style = Haptics.ImpactFeedbackStyle.Medium;
-    duration = 150;
+    duration = 100;
   } else {
     style = Haptics.ImpactFeedbackStyle.Light;
-    duration = 150;
+    duration = 100;
   }
 
-  // まず 1 回振動させ、150ms 間隔で duration いっぱいまで繰り返す
+  // まず 1 回振動させ、50ms 間隔で duration いっぱいまで繰り返す
   Haptics.impactAsync(style);
   const id = setInterval(() => {
     Haptics.impactAsync(style);
-  }, 150);
+  }, 50);
   setTimeout(() => clearInterval(id), duration);
 
   // 待ち時間として振動継続時間を返す
@@ -466,7 +466,7 @@ export function moveEnemySense(
 export function updateEnemyPaths(
   paths: Vec2[][],
   enemies: Vec2[],
-  maxLen: number,
+  maxLen: number
 ): Vec2[][] {
   return enemies.map((e, i) => {
     const prev = paths[i] ?? [];
@@ -484,7 +484,7 @@ export function updateEnemyPaths(
 export function updatePlayerPath(
   path: Vec2[],
   pos: Vec2,
-  maxLen: number,
+  maxLen: number
 ): Vec2[] {
   const next = [...path, pos];
   // 指定長より長くなったら古いものから削除
