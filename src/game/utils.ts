@@ -407,10 +407,10 @@ function inSight(
 }
 
 /**
- * 直線視野でプレイヤーを追う敵 AI。
- * range は視認距離で、指定しないと無制限。
- * プレイヤーが視界にいない間は moveEnemySmart と同じ動きをします。
- * 視界外になったときは最後に確認したマスへ向かいます。
+ * 直線上にプレイヤーが見える場合のみ追跡する敵 AI。
+ * range は視認距離を表し、省略時は無制限です。
+ * 視認できなくなったら最後に見たマスまで移動し、
+ * それ以外では未踏マス優先の移動を行います。
  */
 export function moveEnemySight(
   enemy: Enemy,
@@ -433,7 +433,7 @@ export function moveEnemySight(
     }
     target = null;
   }
-  const moved = moveEnemySmart(enemy, maze, visited, player, rnd);
+  const moved = moveEnemyBasic(enemy, maze, visited, rnd);
   return { ...moved, target };
 }
 
