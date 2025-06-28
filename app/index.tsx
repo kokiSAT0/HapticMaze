@@ -23,6 +23,7 @@ export default function TitleScreen() {
       level.enemyPathLength,
       level.playerPathLength,
       level.wallLifetime,
+      level.enemyCountsFn,
     );
     router.replace('/play');
   };

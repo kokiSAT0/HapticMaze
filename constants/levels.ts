@@ -1,4 +1,5 @@
 import type { EnemyCounts } from '@/src/types/enemy';
+import { level1EnemyCounts } from '@/src/game/level1';
 
 // 各レベルの設定をまとめた型
 export interface LevelConfig {
@@ -16,6 +17,8 @@ export interface LevelConfig {
   playerPathLength: number;
   /** 壁表示を維持するターン数 */
   wallLifetime: number;
+  /** ステージ番号から敵数を決める関数。未指定なら enemies を使う */
+  enemyCountsFn?: (stage: number) => EnemyCounts;
 }
 
 /**
@@ -26,11 +29,16 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 'level1',
     name: 'レベル1',
-    size: 5,
-    enemies: { random: 0, slow: 1, sight: 0, fast: 0 },
+    // 10×10 マップを使用
+    size: 10,
+    // 初回は関数から得た設定を使うため 0 で初期化
+    enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,
-    playerPathLength: Infinity,
+    // 自分軌跡は 7 マス表示
+    playerPathLength: 7,
+    // 壁表示は無限大
     wallLifetime: Infinity,
+    enemyCountsFn: level1EnemyCounts,
   },
   {
     id: 'level2',
