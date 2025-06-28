@@ -34,18 +34,6 @@ function prepMaze(m: MazeData): MazeSets {
 function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
   const enemies: Enemy[] = [];
   const exclude = new Set<string>();
-  spawnEnemies(counts.sense, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({
-      pos: p,
-      visible: true,
-      interval: 1,
-      repeat: 1,
-      cooldown: 0,
-      target: null,
-      behavior: 'sense',
-      kind: 'sense',
-    });
-  });
   spawnEnemies(counts.random, maze, Math.random, exclude).forEach((p) => {
     enemies.push({
       pos: p,
@@ -105,7 +93,6 @@ function createFirstStage(
   base: MazeData,
   counts: EnemyCounts = {
     // 起動時の敵数はすべて0にする
-    sense: 0,
     random: 0,
     slow: 0,
     sight: 0,
@@ -256,7 +243,7 @@ function initState(
   finalStage: boolean,
   hitV: Map<string, number> = new Map(),
   hitH: Map<string, number> = new Map(),
-  enemyCounts: EnemyCounts = { sense: 0, random: 0, slow: 0, sight: 0, fast: 0 },
+  enemyCounts: EnemyCounts = { random: 0, slow: 0, sight: 0, fast: 0 },
   enemyPathLength: number = 4,
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,

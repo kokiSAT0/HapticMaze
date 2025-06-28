@@ -4,7 +4,6 @@
 import {
   spawnEnemies,
   moveEnemySmart,
-  moveEnemySense,
   wallSet,
   updateEnemyPaths,
 } from '../utils';
@@ -66,25 +65,6 @@ describe('moveEnemySmart', () => {
   });
 });
 
-describe('moveEnemySense', () => {
-  test('感知範囲内ならプレイヤーへ近づく', () => {
-    const e = { pos: pos(0, 0), visible: true, interval: 1, repeat: 1, cooldown: 0, behavior: 'sense' };
-    const visited = new Map<string, number>();
-    const moved = moveEnemySense(e, baseMaze, visited, pos(2, 1), () => 0, 3);
-    expect(moved.pos).toEqual(pos(0, 1));
-  });
-
-  test('範囲外では未踏マスを優先', () => {
-    const e = { pos: pos(1, 1), visible: true, interval: 1, repeat: 1, cooldown: 0, behavior: 'sense' };
-    const visited = new Map<string, number>([
-      ['2,1', 1],
-      ['1,0', 1],
-      ['1,2', 1],
-    ]);
-    const moved = moveEnemySense(e, baseMaze, visited, pos(9, 9), () => 0, 3);
-    expect(moved.pos).toEqual(pos(0, 1));
-  });
-});
 
 describe('spawnEnemies', () => {
   test('スタートとゴールには配置されない', () => {

@@ -10,7 +10,6 @@ import Svg, {
   Defs,
   Line,
   LinearGradient,
-  Polygon,
   Rect,
   Stop,
 } from "react-native-svg";
@@ -22,27 +21,31 @@ import type { MazeData, Vec2 } from "@/src/types/maze";
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-// 星形ポリゴンの座標文字列を生成するヘルパー
-/**
 
- * 10 本のトゲを持つ星形の頂点を計算する関数
- * cx, cy は中心座標、r は外側の半径
- * 星形は外側頂点と内側頂点を交互に並べるので合計 20 点になる
- */
-function starPoints(cx: number, cy: number, r: number): string {
-  const points: string[] = [];
-  // 頂点間の角度差。20 点なので 2π / 20 (= π/10)
-  const step = Math.PI / 10;
-  for (let i = 0; i < 20; i++) {
-    // 偶数は外側、奇数は内側の半径を使う
-    const rad = i * step - Math.PI / 2; // 上方向を基準に開始
-
-    const len = i % 2 === 0 ? r : r * 0.5;
-    const x = cx + len * Math.cos(rad);
-    const y = cy + len * Math.sin(rad);
-    points.push(`${x},${y}`);
+// 中心から放射状に線を描くヘルパー
+function enemyLines(
+  cx: number,
+  cy: number,
+  r: number,
+  count: number,
+): React.JSX.Element[] {
+  const lines: React.JSX.Element[] = [];
+  const step = (2 * Math.PI) / count;
+  for (let i = 0; i < count; i++) {
+    const rad = i * step - Math.PI / 2; // 12時方向から開始
+    lines.push(
+      <Line
+        key={`l${i}`}
+        x1={cx}
+        y1={cy}
+        x2={cx + r * Math.cos(rad)}
+        y2={cy + r * Math.sin(rad)}
+        stroke="white"
+        strokeWidth={1}
+      />,
+    );
   }
-  return points.join(" ");
+  return lines;
 }
 
 // 壁を描画するときの色
@@ -319,29 +322,19 @@ export function MiniMap({
     return lines;
   };
 
-  // 敵を星形で描画
+  // 敵を放射線デザインで描画
   const renderEnemies = () => {
-    // __DEV__ は React Native が提供する開発判定フラグ
-    const colorMap = {
-      random: "#999",
-      sense: "#0ff",
-      slow: "#fa0",
-      sight: "#0f0",
-      fast: "#f0f",
-    } as const;
+    const lineMap = { random: 4, slow: 6, sight: 24, fast: 12 } as const;
     return enemies.map((e, i) => {
       if (!e.visible && !showAll) return null;
-      const color = __DEV__ ? colorMap[e.kind ?? "random"] : "white";
+      const cx = (e.pos.x + 0.5) * cell;
+      const cy = (e.pos.y + 0.5) * cell;
+      const lines = enemyLines(cx, cy, cell * 0.35, lineMap[e.kind ?? 'random']);
       return (
-        <Polygon
-          key={`enemy${i}`}
-          points={starPoints(
-            (e.pos.x + 0.5) * cell,
-            (e.pos.y + 0.5) * cell,
-            cell * 0.35
-          )}
-          fill={color}
-        />
+        <React.Fragment key={`enemy${i}`}> 
+          <Circle cx={cx} cy={cy} r={cell * 0.1} fill="white" />
+          {lines}
+        </React.Fragment>
       );
     });
   };
