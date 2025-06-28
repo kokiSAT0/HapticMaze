@@ -1,9 +1,5 @@
 import * as Haptics from "expo-haptics";
-import {
-  withTiming,
-  withSequence,
-  SharedValue,
-} from "react-native-reanimated";
+import { withTiming, withSequence, SharedValue } from "react-native-reanimated";
 import type { MazeData, Vec2, Dir } from "@/src/types/maze";
 import type { Enemy } from "@/src/types/enemy";
 
@@ -120,7 +116,7 @@ export function applyBumpFeedback(
 ): number {
   // 枠線の太さと表示時間。デフォルト値を用意して分かりやすくする
   const width = opts.width ?? 50;
-  const showTime = opts.showTime ?? 100;
+  const showTime = opts.showTime ?? 300;
 
   // 枠線を赤く変更する
   setColor("red");
