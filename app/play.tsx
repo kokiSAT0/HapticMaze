@@ -18,7 +18,8 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { Audio } from "expo-av";
+// expo-av が SDK54 で廃止されるため expo-audio を利用
+import { Audio } from "expo-audio";
 
 import { DPad } from "@/components/DPad";
 import { ThemedText } from "@/components/ThemedText";
