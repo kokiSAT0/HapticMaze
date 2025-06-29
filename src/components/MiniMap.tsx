@@ -384,24 +384,26 @@ export function MiniMap({
         {renderPath()}
         {renderEnemyPaths()}
         {renderVisitedGoals()}
-        {/* スタート位置は showAll 時のみ描画 */}
+        {/* スタート位置は枠線のみで表示する */}
         {showAll && (
           <Rect
             x={(maze.start[0] + 0.25) * cell}
             y={(maze.start[1] + 0.25) * cell}
             width={cell * 0.5}
             height={cell * 0.5}
-            fill="white"
+            stroke="white" // 枠線の色
+            strokeWidth={1} // 枠線の太さ
+            fill="none" // 塗りつぶさず透明にする
           />
         )}
         {showAll && (
-          // ゴール位置はデバッグ時のみ表示
+          // ゴール位置は塗りつぶし四角で表示する
           <Rect
             x={(maze.goal[0] + 0.25) * cell}
             y={(maze.goal[1] + 0.25) * cell}
             width={cell * 0.5}
             height={cell * 0.5}
-            fill="white"
+            fill="white" // 塗りつぶし
           />
         )}
         {/* 現在位置を円で表示 */}

@@ -78,7 +78,7 @@ describe('moveEnemySight', () => {
 describe('spawnEnemies', () => {
   test('スタートとゴールには配置されない', () => {
     // rnd が常に 0 を返すと候補配列の先頭が選ばれる
-    const enemies = spawnEnemies(1, baseMaze, () => 0);
+    const enemies = spawnEnemies(1, baseMaze, () => 0, undefined, true);
     expect(enemies[0]).toEqual(pos(0, 1));
     expect(enemies[0]).not.toEqual(pos(0, 0));
     expect(enemies[0]).not.toEqual(pos(9, 9));
