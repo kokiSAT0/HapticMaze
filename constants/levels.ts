@@ -19,6 +19,8 @@ export interface LevelConfig {
   wallLifetime: number;
   /** ステージ番号から敵数を決める関数。未指定なら enemies を使う */
   enemyCountsFn?: (stage: number) => EnemyCounts;
+  /** 敵スポーン位置をスタートから遠い場所に偏らせるか */
+  biasedSpawn?: boolean;
 }
 
 /**
@@ -39,15 +41,18 @@ export const LEVELS: LevelConfig[] = [
     // 壁表示は無限大
     wallLifetime: Infinity,
     enemyCountsFn: level1EnemyCounts,
+    biasedSpawn: false,
   },
   {
     id: 'level2',
     name: 'レベル2',
     size: 10,
-    enemies: { random: 0, slow: 0, sight: 1, fast: 0 },
-    enemyPathLength: 4,
-    playerPathLength: 8,
-    wallLifetime: 10,
+    enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength: 5,
+    playerPathLength: 7,
+    wallLifetime: Infinity,
+    enemyCountsFn: level1EnemyCounts,
+    biasedSpawn: true,
   },
   {
     id: 'level3',
@@ -57,6 +62,7 @@ export const LEVELS: LevelConfig[] = [
     enemyPathLength: 3,
     playerPathLength: 3,
     wallLifetime: 5,
+    biasedSpawn: true,
   },
   {
     id: 'level4',
@@ -65,5 +71,6 @@ export const LEVELS: LevelConfig[] = [
     enemies: { random: 0, slow: 1, sight: 1, fast: 0 },
     // プレイヤーの軌跡表示は 4 マス分だけ残す
     playerPathLength: 4,
+    biasedSpawn: true,
   },
 ];

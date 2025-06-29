@@ -32,12 +32,17 @@ function prepMaze(m: MazeData): MazeSets {
 }
 
 // EnemyCounts から Enemy 配列を生成するヘルパー
-function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
+function createEnemies(
+  counts: EnemyCounts,
+  maze: MazeData,
+  biasedSpawn: boolean,
+): Enemy[] {
   const enemies: Enemy[] = [];
   const exclude = new Set<string>();
-  spawnEnemies(counts.random, maze, Math.random, exclude).forEach((p) => {
-    enemies.push({
-      pos: p,
+  spawnEnemies(counts.random, maze, Math.random, exclude, biasedSpawn).forEach(
+    (p) => {
+      enemies.push({
+        pos: p,
       // ミニマップで見えるようデフォルトで true にする
       // プレイヤーが追跡できるようにするため
       visible: true,
@@ -49,7 +54,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       kind: 'random',
     });
   });
-  spawnEnemies(counts.slow, maze, Math.random, exclude).forEach((p) => {
+  spawnEnemies(counts.slow, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
@@ -62,7 +67,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       kind: 'slow',
     });
   });
-  spawnEnemies(counts.sight, maze, Math.random, exclude).forEach((p) => {
+  spawnEnemies(counts.sight, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
@@ -74,7 +79,7 @@ function createEnemies(counts: EnemyCounts, maze: MazeData): Enemy[] {
       kind: 'sight',
     });
   });
-  spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude).forEach((p) => {
+  spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
@@ -105,6 +110,7 @@ function createFirstStage(
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
   enemyCountsFn?: (stage: number) => EnemyCounts,
+  biasedSpawn: boolean = true,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -133,6 +139,7 @@ function createFirstStage(
     playerPathLength,
     wallLifetime,
     enemyCountsFn,
+    biasedSpawn,
   );
 }
 
@@ -187,6 +194,7 @@ function nextStageState(state: State): State {
     state.playerPathLength,
     state.wallLifetime,
     state.enemyCountsFn,
+    state.biasedSpawn,
   );
 }
 
@@ -202,6 +210,7 @@ function restartRun(state: State): State {
     state.playerPathLength,
     state.wallLifetime,
     state.enemyCountsFn,
+    state.biasedSpawn,
   );
 }
 
@@ -239,6 +248,8 @@ export interface GameState {
   playerPathLength: number;
   /** 壁表示を維持するターン数 */
   wallLifetime: number;
+  /** スポーン位置をスタートから遠い場所に偏らせるか */
+  biasedSpawn: boolean;
 }
 
 // Provider が保持する全体の状態
@@ -260,9 +271,10 @@ function initState(
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
   enemyCountsFn?: (stage: number) => EnemyCounts,
+  biasedSpawn: boolean = true,
 ): State {
   const maze = prepMaze(m);
-  const enemies = createEnemies(enemyCounts, maze);
+  const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
   const enemyBehavior = selectEnemyBehavior(m.size, finalStage);
   return {
     mazeRaw: m,
@@ -288,6 +300,7 @@ function initState(
     enemyPathLength,
     playerPathLength,
     wallLifetime,
+    biasedSpawn,
   };
 }
 
@@ -303,6 +316,7 @@ type Action =
       playerPathLength?: number;
       wallLifetime?: number;
       enemyCountsFn?: (stage: number) => EnemyCounts;
+      biasedSpawn?: boolean;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
@@ -323,6 +337,7 @@ function reducer(state: State, action: Action): State {
         state.playerPathLength,
         state.wallLifetime,
         state.enemyCountsFn,
+        state.biasedSpawn,
       );
     case 'newMaze':
       // 新しい迷路で初期化
@@ -335,6 +350,7 @@ function reducer(state: State, action: Action): State {
         // 練習モードでは前回レベルの設定を引き継がないよう
         // 明示的に undefined を渡す
         action.enemyCountsFn,
+        action.biasedSpawn ?? state.biasedSpawn,
       );
     case 'nextStage':
       return nextStageState(state);
@@ -442,6 +458,7 @@ const GameContext = createContext<
         playerPathLength?: number,
         wallLifetime?: number,
         enemyCountsFn?: (stage: number) => EnemyCounts,
+        biasedSpawn?: boolean,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -470,6 +487,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     playerPathLength?: number,
     wallLifetime?: number,
     enemyCountsFn?: (stage: number) => EnemyCounts,
+    biasedSpawn?: boolean,
   ) =>
     dispatch({
       type: 'newMaze',
@@ -479,6 +497,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerPathLength,
       wallLifetime,
       enemyCountsFn,
+      biasedSpawn,
     });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
