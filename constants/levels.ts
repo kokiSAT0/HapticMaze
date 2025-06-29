@@ -26,6 +26,7 @@ export interface LevelConfig {
 /**
  * レベル定義一覧。
  * 今後の追加や調整が容易になるよう配列で管理する。
+ * レベル3・レベル4は仕様変更により削除済み。
  */
 export const LEVELS: LevelConfig[] = [
   {
@@ -52,25 +53,6 @@ export const LEVELS: LevelConfig[] = [
     playerPathLength: 7,
     wallLifetime: Infinity,
     enemyCountsFn: level1EnemyCounts,
-    biasedSpawn: true,
-  },
-  {
-    id: 'level3',
-    name: 'レベル3',
-    size: 10,
-    enemies: { random: 0, slow: 0, sight: 2, fast: 0 },
-    enemyPathLength: 3,
-    playerPathLength: 3,
-    wallLifetime: 5,
-    biasedSpawn: true,
-  },
-  {
-    id: 'level4',
-    name: 'レベル4',
-    size: 10,
-    enemies: { random: 0, slow: 1, sight: 1, fast: 0 },
-    // プレイヤーの軌跡表示は 4 マス分だけ残す
-    playerPathLength: 4,
     biasedSpawn: true,
   },
 ];
