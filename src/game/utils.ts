@@ -236,7 +236,8 @@ export function spawnEnemies(
   count: number,
   maze: MazeData,
   rnd: () => number = Math.random,
-  exclude: Set<string> = new Set()
+  exclude: Set<string> = new Set(),
+  biased: boolean = true
 ): Vec2[] {
   const enemies: Vec2[] = [];
   const start = { x: maze.start[0], y: maze.start[1] };
@@ -249,9 +250,12 @@ export function spawnEnemies(
     return true;
   });
 
-  // 候補マスから一つずつ選び、選ばれる確率はスタートから遠いほど高い
+  // 候補マスから一つずつ選ぶ。biased が true の場合はスタートから遠いほど
+  // 選ばれやすくする
   while (enemies.length < count && candidates.length > 0) {
-    const cell = biasedPickGoal(start, candidates, rnd);
+    const cell = biased
+      ? biasedPickGoal(start, candidates, rnd)
+      : candidates[Math.floor(rnd() * candidates.length)];
     const key = `${cell.x},${cell.y}`;
     enemies.push(cell);
     exclude.add(key);

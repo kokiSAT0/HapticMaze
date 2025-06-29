@@ -29,6 +29,7 @@ export default function PracticeScreen() {
       playerLen,
       wallLife,
       undefined,
+      true,
     );
     router.replace('/play');
   };
