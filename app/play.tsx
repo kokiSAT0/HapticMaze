@@ -18,6 +18,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { Audio } from "expo-av";
 
 import { DPad } from "@/components/DPad";
 import { ThemedText } from "@/components/ThemedText";
@@ -68,6 +69,9 @@ export default function PlayScreen() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   // applyDistanceFeedback で使う setInterval の ID を保持
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // BGM と効果音用サウンドオブジェクトを保持
+  const bgmRef = useRef<Audio.Sound | null>(null);
+  const moveRef = useRef<Audio.Sound | null>(null);
 
   // 枠の太さを共通化するため縦横で別々の AnimatedStyle を用意
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
@@ -92,6 +96,27 @@ export default function PlayScreen() {
   // AnimatedLinearGradient へ渡すプロパティ。Web では locations のみ固定
   const gradProps = useAnimatedProps(() => ({ locations: gradStops.value }));
   const gradLocs = Platform.OS === "web" ? [0, 0.2, 1] : undefined;
+
+  // BGM と効果音を読み込み、BGM はループ再生する
+  useEffect(() => {
+    (async () => {
+      // サイレントモードでも再生されるよう設定
+      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+      const bgm = new Audio.Sound();
+      await bgm.loadAsync(require("../assets/sounds/タタリ.mp3"));
+      await bgm.setIsLoopingAsync(true);
+      await bgm.playAsync();
+      bgmRef.current = bgm;
+
+      const mv = new Audio.Sound();
+      await mv.loadAsync(require("../assets/sounds/歩く音200ms_2.mp3"));
+      moveRef.current = mv;
+    })();
+    return () => {
+      bgmRef.current?.unloadAsync();
+      moveRef.current?.unloadAsync();
+    };
+  }, []);
 
   useEffect(() => {
     // 次ステージで迷路が変わるか判定
@@ -189,6 +214,8 @@ export default function PlayScreen() {
       // 衝突表示が終わったら色を戻す
       setTimeout(() => setBorderColor("transparent"), wait);
     } else {
+      // 移動成功時は歩行音を再生
+      moveRef.current?.replayAsync();
       // 盤面サイズから求めた最大マンハッタン距離 (例: 10×10 なら 18)
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
