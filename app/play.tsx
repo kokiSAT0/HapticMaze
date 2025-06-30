@@ -35,6 +35,12 @@ import {
 } from "@/src/game/utils";
 // インタースティシャル広告表示用関数
 import { showInterstitial } from "@/src/ads/interstitial";
+import {
+  loadHighScore,
+  saveHighScore,
+  isBetterScore,
+  type HighScore,
+} from "@/src/game/highScore";
 
 // LinearGradient を Reanimated 用にラップ
 // Web 環境では setAttribute エラーを避けるためアニメーション無し
@@ -57,6 +63,8 @@ export default function PlayScreen() {
   const [gameOver, setGameOver] = useState(false);
   const [stageClear, setStageClear] = useState(false);
   const [gameClear, setGameClear] = useState(false);
+  // 保存済みハイスコア
+  const [highScore, setHighScore] = useState<HighScore | null>(null);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
@@ -121,6 +129,15 @@ export default function PlayScreen() {
     };
   }, []);
 
+  // レベルが切り替わったとき保存済みハイスコアを読み込む
+  useEffect(() => {
+    if (!state.levelId) return;
+    (async () => {
+      const hs = await loadHighScore(state.levelId!);
+      setHighScore(hs);
+    })();
+  }, [state.levelId]);
+
   useEffect(() => {
     // 次ステージで迷路が変わるか判定
     // ステージ番号が迷路サイズの倍数なら新しいマップを読み込む
@@ -133,12 +150,46 @@ export default function PlayScreen() {
       setShowResult(true);
       // 次ステージが同じマップなら全体表示しない
       setDebugAll(willChangeMap);
+      // クリア時はハイスコアを更新
+      if (state.levelId) {
+        const current: HighScore = {
+          stage: state.stage,
+          steps: state.steps,
+          bumps: state.bumps,
+        };
+        (async () => {
+          const old = await loadHighScore(state.levelId!);
+          if (isBetterScore(old, current)) {
+            await saveHighScore(state.levelId!, current);
+            setHighScore(current);
+          } else {
+            setHighScore(old);
+          }
+        })();
+      }
     } else if (state.caught) {
       // 敵に捕まったときは常に全てを可視化
       setGameOver(true);
       setStageClear(false);
       setShowResult(true);
       setDebugAll(true);
+      // ゲームオーバー時のハイスコア判定
+      if (state.levelId) {
+        const current: HighScore = {
+          stage: state.stage - 1,
+          steps: state.steps,
+          bumps: state.bumps,
+        };
+        (async () => {
+          const old = await loadHighScore(state.levelId!);
+          if (isBetterScore(old, current)) {
+            await saveHighScore(state.levelId!, current);
+            setHighScore(current);
+          } else {
+            setHighScore(old);
+          }
+        })();
+      }
     }
   }, [
     state.pos,
@@ -379,6 +430,12 @@ export default function PlayScreen() {
             <ThemedText>
               Stage: {state.stage}/{totalStages}
             </ThemedText>
+            {highScore && (
+              <ThemedText>
+                Best: {highScore.stage}ステージ / {highScore.steps}
+                steps / {highScore.bumps} bumps
+              </ThemedText>
+            )}
             <PlainButton
               title="OK"
               onPress={handleOk}
