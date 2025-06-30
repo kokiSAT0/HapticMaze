@@ -37,6 +37,7 @@ Expo SDK53以降では `react-native-google-mobile-ads` を利用します。イ
 1. テストビルドでは `react-native-google-mobile-ads` が提供するテスト ID を自動使用。
 2. 本番ビルド時に `EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID` を設定するとその値を使用します。
 広告 SDK 連携には `ANDROID_ADMOB_APP_ID` と `IOS_ADMOB_APP_ID` を app.config.js で参照します。
+これらの変数はプロジェクト直下の `.env` に記載します。ひな形として `.env.example` を用意しているのでコピーして利用してください。テスト広告のみで動作確認する場合は `EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID` を設定しないままにします。
 
 ### 本番ビルド例
 
