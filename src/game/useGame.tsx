@@ -110,6 +110,7 @@ function createFirstStage(
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
   enemyCountsFn?: (stage: number) => EnemyCounts,
+  wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
 ): State {
   const visited = new Set<string>();
@@ -139,6 +140,7 @@ function createFirstStage(
     playerPathLength,
     wallLifetime,
     enemyCountsFn,
+    wallLifetimeFn,
     biasedSpawn,
   );
 }
@@ -180,6 +182,8 @@ function nextStageState(state: State): State {
   const hitV = changeMap ? new Map<string, number>() : new Map(state.hitV);
   const hitH = changeMap ? new Map<string, number>() : new Map(state.hitH);
   // ステージ数を +1 した新しい状態を返す
+  const nextWallLife =
+    state.wallLifetimeFn?.(state.stage + 1) ?? state.wallLifetime;
   return initState(
     maze,
     state.stage + 1,
@@ -192,8 +196,9 @@ function nextStageState(state: State): State {
       : state.enemyCounts,
     state.enemyPathLength,
     state.playerPathLength,
-    state.wallLifetime,
+    nextWallLife,
     state.enemyCountsFn,
+    state.wallLifetimeFn,
     state.biasedSpawn,
   );
 }
@@ -210,6 +215,7 @@ function restartRun(state: State): State {
     state.playerPathLength,
     state.wallLifetime,
     state.enemyCountsFn,
+    state.wallLifetimeFn,
     state.biasedSpawn,
   );
 }
@@ -248,6 +254,8 @@ export interface GameState {
   playerPathLength: number;
   /** 壁表示を維持するターン数 */
   wallLifetime: number;
+  /** ステージ番号から壁寿命を決める関数 */
+  wallLifetimeFn?: (stage: number) => number;
   /** スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn: boolean;
 }
@@ -271,11 +279,13 @@ function initState(
   playerPathLength: number = Infinity,
   wallLifetime: number = Infinity,
   enemyCountsFn?: (stage: number) => EnemyCounts,
+  wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
   const enemyBehavior = selectEnemyBehavior(m.size, finalStage);
+  const life = wallLifetimeFn ? wallLifetimeFn(stage) : wallLifetime;
   return {
     mazeRaw: m,
     maze,
@@ -299,7 +309,8 @@ function initState(
     enemyCountsFn,
     enemyPathLength,
     playerPathLength,
-    wallLifetime,
+    wallLifetime: life,
+    wallLifetimeFn,
     biasedSpawn,
   };
 }
@@ -316,6 +327,7 @@ type Action =
       playerPathLength?: number;
       wallLifetime?: number;
       enemyCountsFn?: (stage: number) => EnemyCounts;
+      wallLifetimeFn?: (stage: number) => number;
       biasedSpawn?: boolean;
     }
   | { type: 'nextStage' }
@@ -337,6 +349,7 @@ function reducer(state: State, action: Action): State {
         state.playerPathLength,
         state.wallLifetime,
         state.enemyCountsFn,
+        state.wallLifetimeFn,
         state.biasedSpawn,
       );
     case 'newMaze':
@@ -350,6 +363,7 @@ function reducer(state: State, action: Action): State {
         // 練習モードでは前回レベルの設定を引き継がないよう
         // 明示的に undefined を渡す
         action.enemyCountsFn,
+        action.wallLifetimeFn,
         action.biasedSpawn ?? state.biasedSpawn,
       );
     case 'nextStage':
@@ -458,6 +472,7 @@ const GameContext = createContext<
         playerPathLength?: number,
         wallLifetime?: number,
         enemyCountsFn?: (stage: number) => EnemyCounts,
+        wallLifetimeFn?: (stage: number) => number,
         biasedSpawn?: boolean,
       ) => void;
       nextStage: () => void;
@@ -487,6 +502,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     playerPathLength?: number,
     wallLifetime?: number,
     enemyCountsFn?: (stage: number) => EnemyCounts,
+    wallLifetimeFn?: (stage: number) => number,
     biasedSpawn?: boolean,
   ) =>
     dispatch({
@@ -497,6 +513,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerPathLength,
       wallLifetime,
       enemyCountsFn,
+      wallLifetimeFn,
       biasedSpawn,
     });
   const nextStage = () => dispatch({ type: 'nextStage' });

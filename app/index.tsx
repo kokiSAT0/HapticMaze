@@ -24,6 +24,7 @@ export default function TitleScreen() {
       level.playerPathLength,
       level.wallLifetime,
       level.enemyCountsFn,
+      level.wallLifetimeFn,
       level.biasedSpawn,
     );
     router.replace('/play');
