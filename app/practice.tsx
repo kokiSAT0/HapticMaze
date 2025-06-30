@@ -31,6 +31,7 @@ export default function PracticeScreen() {
       undefined,
       undefined,
       true,
+      'practice',
     );
     router.replace('/play');
   };

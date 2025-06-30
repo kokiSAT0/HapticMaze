@@ -112,6 +112,7 @@ function createFirstStage(
   enemyCountsFn?: (stage: number) => EnemyCounts,
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
+  levelId?: string,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -142,6 +143,7 @@ function createFirstStage(
     enemyCountsFn,
     wallLifetimeFn,
     biasedSpawn,
+    levelId,
   );
 }
 
@@ -200,6 +202,7 @@ function nextStageState(state: State): State {
     state.enemyCountsFn,
     state.wallLifetimeFn,
     state.biasedSpawn,
+    state.levelId,
   );
 }
 
@@ -217,6 +220,7 @@ function restartRun(state: State): State {
     state.enemyCountsFn,
     state.wallLifetimeFn,
     state.biasedSpawn,
+    state.levelId,
   );
 }
 
@@ -258,6 +262,8 @@ export interface GameState {
   wallLifetimeFn?: (stage: number) => number;
   /** スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn: boolean;
+  /** 現在のレベル識別子。練習モードは undefined */
+  levelId?: string;
 }
 
 // Provider が保持する全体の状態
@@ -312,6 +318,7 @@ function initState(
     wallLifetime: life,
     wallLifetimeFn,
     biasedSpawn,
+    levelId,
   };
 }
 
@@ -329,6 +336,7 @@ type Action =
       enemyCountsFn?: (stage: number) => EnemyCounts;
       wallLifetimeFn?: (stage: number) => number;
       biasedSpawn?: boolean;
+      levelId?: string;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
@@ -351,6 +359,7 @@ function reducer(state: State, action: Action): State {
         state.enemyCountsFn,
         state.wallLifetimeFn,
         state.biasedSpawn,
+        state.levelId,
       );
     case 'newMaze':
       // 新しい迷路で初期化
@@ -365,6 +374,7 @@ function reducer(state: State, action: Action): State {
         action.enemyCountsFn,
         action.wallLifetimeFn,
         action.biasedSpawn ?? state.biasedSpawn,
+        action.levelId,
       );
     case 'nextStage':
       return nextStageState(state);
@@ -474,6 +484,7 @@ const GameContext = createContext<
         enemyCountsFn?: (stage: number) => EnemyCounts,
         wallLifetimeFn?: (stage: number) => number,
         biasedSpawn?: boolean,
+        levelId?: string,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -504,6 +515,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     enemyCountsFn?: (stage: number) => EnemyCounts,
     wallLifetimeFn?: (stage: number) => number,
     biasedSpawn?: boolean,
+    levelId?: string,
   ) =>
     dispatch({
       type: 'newMaze',
@@ -515,6 +527,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       enemyCountsFn,
       wallLifetimeFn,
       biasedSpawn,
+      levelId,
     });
   const nextStage = () => dispatch({ type: 'nextStage' });
   const resetRun = () => dispatch({ type: 'resetRun' });
