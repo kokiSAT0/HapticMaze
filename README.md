@@ -31,11 +31,12 @@
 
 ## AdMob 広告について
 
-本リポジトリではレベルモードで一定ステージクリアごとにインタースティシャル広告を表示します。
-テスト用広告 ID と本番用広告 ID を環境変数で切り替えられる仕組みを用意しています。
+Expo SDK53以降では `react-native-google-mobile-ads` を利用します。インタースティシャル広告の
+テスト用 ID と本番用 ID を環境変数で切り替えられます。
 
-1. テストビルドではデフォルトのテスト ID `ca-app-pub-3940256099942544/4411468910` が利用されます。
-2. 本番ビルド時に `EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID` 環境変数を設定すると、その値が広告 ID として使われます。
+1. テストビルドでは `react-native-google-mobile-ads` が提供するテスト ID を自動使用。
+2. 本番ビルド時に `EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID` を設定するとその値を使用します。
+広告 SDK 連携には `ANDROID_ADMOB_APP_ID` と `IOS_ADMOB_APP_ID` を app.config.js で参照します。
 
 ### 本番ビルド例
 
