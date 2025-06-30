@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { PlainButton } from '@/components/PlainButton';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
+import { useLocale } from '@/src/locale/LocaleContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { EnemyCounter } from '@/components/EnemyCounter';
@@ -10,6 +11,7 @@ import { EnemyCounter } from '@/components/EnemyCounter';
 export default function PracticeScreen() {
   const router = useRouter();
   const { newGame } = useGame();
+  const { t } = useLocale();
   // 各敵タイプの数を状態として管理
   const [random, setRandom] = React.useState(0);
   const [slow, setSlow] = React.useState(0);
@@ -39,23 +41,23 @@ export default function PracticeScreen() {
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-        練習モード
+        {t('practiceMode')}
       </ThemedText>
-      <EnemyCounter label="等速・ランダム" value={random} setValue={setRandom} />
-      <EnemyCounter label="鈍足・視認" value={slow} setValue={setSlow} />
-      <EnemyCounter label="等速・視認" value={sight} setValue={setSight} />
+      <EnemyCounter label={t('enemyRandom')} value={random} setValue={setRandom} />
+      <EnemyCounter label={t('enemySlow')} value={slow} setValue={setSlow} />
+      <EnemyCounter label={t('enemySight')} value={sight} setValue={setSight} />
       {/* 敵の軌跡長 */}
-      <EnemyCounter label="敵軌跡長" value={pathLen} setValue={setPathLen} />
+      <EnemyCounter label={t('enemyPathLen')} value={pathLen} setValue={setPathLen} />
       {/* プレイヤーの軌跡長。無限大選択を許可 */}
       <EnemyCounter
-        label="自分軌跡長"
+        label={t('playerPathLen')}
         value={playerLen}
         setValue={setPlayerLen}
         allowInfinity
       />
       {/* 壁表示ターン数 */}
       <EnemyCounter
-        label="壁表示"
+        label={t('wallDuration')}
         value={wallLife}
         setValue={setWallLife}
         allowInfinity
@@ -63,12 +65,12 @@ export default function PracticeScreen() {
       <PlainButton
         title="5×5"
         onPress={() => start(5)}
-        accessibilityLabel="5マス迷路を開始"
+        accessibilityLabel={t('startMazeSize', { size: 5 })}
       />
       <PlainButton
         title="10×10"
         onPress={() => start(10)}
-        accessibilityLabel="10マス迷路を開始"
+        accessibilityLabel={t('startMazeSize', { size: 10 })}
       />
     </ThemedView>
   );

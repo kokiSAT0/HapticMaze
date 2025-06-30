@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import { PlainButton } from '@/components/PlainButton';
 import { useRouter } from 'expo-router';
 import { useGame } from '@/src/game/useGame';
+import { useLocale, type Lang, type MessageKey } from '@/src/locale/LocaleContext';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -12,6 +13,19 @@ export default function TitleScreen() {
   const router = useRouter();
   // GameProvider から新しい迷路を読み込む関数を取得
   const { newGame } = useGame();
+  // 言語関連のフックを取得
+  const { t, firstLaunch, changeLang } = useLocale();
+  const [showLang, setShowLang] = React.useState(false);
+
+  // 初回起動時は言語選択モーダルを表示する
+  React.useEffect(() => {
+    if (firstLaunch) setShowLang(true);
+  }, [firstLaunch]);
+
+  const select = (lang: Lang) => {
+    changeLang(lang);
+    setShowLang(false);
+  };
 
   // 定義済みレベルの設定を使ってゲームを開始する
   const startLevel = (id: string) => {
@@ -43,23 +57,58 @@ export default function TitleScreen() {
       </ThemedText>
       {/* 練習モードへの遷移 */}
       <PlainButton
-        title="練習モード"
+        title={t('practiceMode')}
         onPress={() => router.push('/practice')}
-        accessibilityLabel="練習モードを開く"
+        accessibilityLabel={t('openPractice')}
       />
       {/* プリセットレベルの開始ボタン */}
       {LEVELS.map((lv) => (
         <PlainButton
           key={lv.id}
-          title={lv.name}
+          title={t(lv.id as MessageKey)}
           onPress={() => startLevel(lv.id)}
-          accessibilityLabel={`${lv.name}を開始`}
+          accessibilityLabel={t('startLevel', { name: t(lv.id as MessageKey) })}
         />
       ))}
+      {/* 言語切り替え用ボタン */}
+      <PlainButton
+        title={t('changeLang')}
+        onPress={() => setShowLang(true)}
+        accessibilityLabel={t('changeLang')}
+      />
+      {/* 言語選択モーダル */}
+      <Modal transparent visible={showLang} animationType="fade">
+        <View style={styles.modalWrapper}>
+          <ThemedView style={styles.modalContent}>
+            <ThemedText type="title">{t('selectLang')}</ThemedText>
+            <PlainButton
+              title={t('japanese')}
+              onPress={() => select('ja')}
+              accessibilityLabel={t('japanese')}
+            />
+            <PlainButton
+              title={t('english')}
+              onPress={() => select('en')}
+              accessibilityLabel={t('english')}
+            />
+          </ThemedView>
+        </View>
+      </Modal>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  modalWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    gap: 16,
+    padding: 24,
+    backgroundColor: '#000',
+  },
 });

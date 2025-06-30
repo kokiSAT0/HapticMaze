@@ -28,6 +28,7 @@ import { PlainButton } from "@/components/PlainButton";
 import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView, Dir } from "@/src/types/maze";
 import { useGame } from "@/src/game/useGame";
+import { useLocale } from "@/src/locale/LocaleContext";
 import {
   applyBumpFeedback,
   applyDistanceFeedback,
@@ -51,6 +52,7 @@ const AnimatedLG =
 
 export default function PlayScreen() {
   const router = useRouter();
+  const { t } = useLocale();
   // SafeArea 用の余白情報を取得
   const insets = useSafeAreaInsets();
   // 画面サイズを取得。useWindowDimensions は画面回転にも追従する
@@ -397,17 +399,17 @@ export default function PlayScreen() {
         >
           <View style={[styles.menuContent, { top: insets.top + 40 }]}>
             <PlainButton
-              title="Reset Maze"
+              title={t('resetMaze')}
               onPress={handleReset}
-              accessibilityLabel="迷路を最初から"
+              accessibilityLabel={t('resetMazeLabel')}
             />
             {/* デバッグ用スイッチ */}
             <View style={styles.switchRow}>
-              <ThemedText>全てを可視化</ThemedText>
+              <ThemedText>{t('showAll')}</ThemedText>
               <Switch
                 value={debugAll}
                 onValueChange={setDebugAll}
-                accessibilityLabel="迷路を全て表示"
+                accessibilityLabel={t('showMazeAll')}
               />
             </View>
           </View>
@@ -418,28 +420,29 @@ export default function PlayScreen() {
           <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
             <ThemedText type="title">
               {gameClear
-                ? "ゲームクリア"
+                ? t('gameClear')
                 : gameOver
-                ? "ゲームオーバー"
-                : "ゴール！"}
+                ? t('gameOver')
+                : t('goal')}
             </ThemedText>
-            <ThemedText>Steps: {state.steps}</ThemedText>
-            <ThemedText>Bumps: {state.bumps}</ThemedText>
+            <ThemedText>{t('steps', { count: state.steps })}</ThemedText>
+            <ThemedText>{t('bumps', { count: state.bumps })}</ThemedText>
             {/* 現在クリアしたステージ数と総ステージ数を表示 */}
             {/* totalStages は maze.size × maze.size で計算した結果 */}
-            <ThemedText>
-              Stage: {state.stage}/{totalStages}
-            </ThemedText>
+            <ThemedText>{t('stage', { current: state.stage, total: totalStages })}</ThemedText>
             {highScore && (
               <ThemedText>
-                Best: {highScore.stage}ステージ / {highScore.steps}
-                steps / {highScore.bumps} bumps
+                {t('best', {
+                  stage: highScore.stage,
+                  steps: highScore.steps,
+                  bumps: highScore.bumps,
+                })}
               </ThemedText>
             )}
             <PlainButton
-              title="OK"
+              title={t('ok')}
               onPress={handleOk}
-              accessibilityLabel="タイトルへ戻る"
+              accessibilityLabel={t('backToTitle')}
             />
           </ThemedView>
         </View>
