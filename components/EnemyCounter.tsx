@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { PlainButton } from '@/components/PlainButton';
 
 import { ThemedText } from '@/components/ThemedText';
+import { useLocale } from '@/src/locale/LocaleContext';
 
 /**
  * 敵の数を増減させる共通コンポーネント
@@ -25,6 +26,7 @@ export function EnemyCounter({
   max?: number;
   allowInfinity?: boolean;
 }) {
+  const { t } = useLocale();
   const display = allowInfinity && value === Infinity ? '∞' : value;
   return (
     <View style={styles.row}>
@@ -39,7 +41,7 @@ export function EnemyCounter({
             return Math.max(min, v - 1);
           })
         }
-        accessibilityLabel={`${label}を減らす`}
+        accessibilityLabel={t('decrease', { label })}
       />
       {/* 現在値表示 */}
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.count}>
@@ -55,7 +57,7 @@ export function EnemyCounter({
             return Math.min(max, next);
           })
         }
-        accessibilityLabel={`${label}を増やす`}
+        accessibilityLabel={t('increase', { label })}
       />
     </View>
   );

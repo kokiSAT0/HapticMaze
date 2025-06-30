@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
+import { LocaleProvider } from '@/src/locale/LocaleContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -20,14 +21,16 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <GameProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="practice" options={{ headerShown: false }} />
-          <Stack.Screen name="play" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </GameProvider>
+      <LocaleProvider>
+        <GameProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="practice" options={{ headerShown: false }} />
+            <Stack.Screen name="play" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </GameProvider>
+      </LocaleProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
