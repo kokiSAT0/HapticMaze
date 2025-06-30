@@ -1,5 +1,5 @@
 import type { EnemyCounts } from '@/src/types/enemy';
-import { level1EnemyCounts } from '@/src/game/level1';
+import { level1EnemyCounts, levelWallLifetime } from '@/src/game/level1';
 
 // 各レベルの設定をまとめた型
 export interface LevelConfig {
@@ -17,6 +17,8 @@ export interface LevelConfig {
   playerPathLength: number;
   /** 壁表示を維持するターン数 */
   wallLifetime: number;
+  /** ステージ番号から壁寿命を計算する関数。未指定なら wallLifetime を使う */
+  wallLifetimeFn?: (stage: number) => number;
   /** ステージ番号から敵数を決める関数。未指定なら enemies を使う */
   enemyCountsFn?: (stage: number) => EnemyCounts;
   /** 敵スポーン位置をスタートから遠い場所に偏らせるか */
@@ -41,6 +43,7 @@ export const LEVELS: LevelConfig[] = [
     playerPathLength: 7,
     // 壁表示は無限大
     wallLifetime: Infinity,
+    wallLifetimeFn: levelWallLifetime,
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: false,
   },
@@ -52,6 +55,7 @@ export const LEVELS: LevelConfig[] = [
     enemyPathLength: 5,
     playerPathLength: 7,
     wallLifetime: Infinity,
+    wallLifetimeFn: levelWallLifetime,
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
   },

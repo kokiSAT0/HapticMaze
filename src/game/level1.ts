@@ -48,3 +48,12 @@ export function level1EnemyCounts(stage: number): EnemyCounts {
   }
   return { random: 1, slow: 0, sight: 0, fast: 0 };
 }
+
+/**
+ * レベル1・2 共通の壁寿命設定を返します。
+ * ステージ91〜100では壁の表示が10ターンで消えます。
+ * それ以外では無限大 (Infinity) を返します。
+ */
+export function levelWallLifetime(stage: number): number {
+  return stage >= 91 && stage <= 100 ? 10 : Infinity;
+}
