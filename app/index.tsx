@@ -70,6 +70,12 @@ export default function TitleScreen() {
           accessibilityLabel={t('startLevel', { name: t(lv.id as MessageKey) })}
         />
       ))}
+      {/* ハイスコア画面への遷移ボタン */}
+      <PlainButton
+        title={t('highScores')}
+        onPress={() => router.push('/scores')}
+        accessibilityLabel={t('openHighScores')}
+      />
       {/* 言語切り替え用ボタン */}
       <PlainButton
         title={t('changeLang')}
