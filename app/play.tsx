@@ -33,6 +33,8 @@ import {
   applyDistanceFeedback,
   nextPosition,
 } from "@/src/game/utils";
+// インタースティシャル広告表示用関数
+import { showInterstitial } from "@/src/ads/interstitial";
 
 // LinearGradient を Reanimated 用にラップ
 // Web 環境では setAttribute エラーを避けるためアニメーション無し
@@ -147,7 +149,9 @@ export default function PlayScreen() {
     maze.size,
   ]);
 
-  const handleOk = () => {
+  // リザルトモーダルのOKボタン処理
+  // 広告表示が必要なときはここでインタースティシャルを挿入する
+  const handleOk = async () => {
     // 結果モーダルを閉じるのみ
     setShowResult(false);
     setGameOver(false);
@@ -163,6 +167,10 @@ export default function PlayScreen() {
       router.replace("/");
     } else if (stageClear) {
       // 通常クリアで次のステージへ
+      // 9ステージごとに広告を表示してから進む
+      if (state.stage % 9 === 0) {
+        await showInterstitial();
+      }
       nextStage();
     }
   };
