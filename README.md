@@ -29,6 +29,23 @@
    pnpm lint
    ```
 
+## AdMob 広告について
+
+本リポジトリではレベルモードで一定ステージクリアごとにインタースティシャル広告を表示します。
+テスト用広告 ID と本番用広告 ID を環境変数で切り替えられる仕組みを用意しています。
+
+1. テストビルドではデフォルトのテスト ID `ca-app-pub-3940256099942544/4411468910` が利用されます。
+2. 本番ビルド時に `EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID` 環境変数を設定すると、その値が広告 ID として使われます。
+
+### 本番ビルド例
+
+```bash
+EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID="ca-app-pub-xxxxxxxxxxxxxxxx/nnnnnnnnnn" \
+  expo export --public-url https://example.com
+```
+
+Expo のビルドサービスを利用する場合は `eas.json` の `env` セクションに同名の変数を追加してください。
+
 ## ゲーム内容
 
 - 起動時はデフォルトで 10×10 迷路を読み込みます
