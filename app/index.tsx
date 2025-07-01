@@ -86,7 +86,10 @@ export default function TitleScreen() {
       <Modal transparent visible={showLang} animationType="fade">
         <View style={styles.modalWrapper}>
           <ThemedView style={styles.modalContent}>
-            <ThemedText type="title">{t('selectLang')}</ThemedText>
+          {/* モーダル内では背景が黒なので、文字色を白に固定して読みやすくする */}
+          <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+            {t('selectLang')}
+          </ThemedText>
             <PlainButton
               title={t('japanese')}
               onPress={() => select('ja')}
