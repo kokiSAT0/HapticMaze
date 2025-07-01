@@ -37,6 +37,44 @@ describe('applyDistanceFeedback', () => {
     jest.advanceTimersByTime(result.wait);
     expect(clearSpy).toHaveBeenCalledWith(fakeId);
   });
+
+  test('maxDist を渡すと段階計算が変わる', () => {
+    const intervalSpy = jest.spyOn(global, 'setInterval');
+    const fakeId = {} as NodeJS.Timeout;
+    intervalSpy.mockReturnValue(fakeId);
+
+    // 距離8で maxDist も8 の場合は scaled が4になり Medium 振動
+    const result = applyDistanceFeedback(
+      { x: 0, y: 0 },
+      { x: 0, y: 8 },
+      { maxDist: 8 }
+    );
+
+    expect(result.wait).toBe(100);
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(
+      Haptics.ImpactFeedbackStyle.Medium
+    );
+    expect(intervalSpy).toHaveBeenCalledWith(expect.any(Function), 50);
+  });
+
+  test('距離が maxDist を超えると Light 振動になる', () => {
+    const intervalSpy = jest.spyOn(global, 'setInterval');
+    const fakeId = {} as NodeJS.Timeout;
+    intervalSpy.mockReturnValue(fakeId);
+
+    // maxDist 8 に対し距離9なので Light 振動
+    const result = applyDistanceFeedback(
+      { x: 0, y: 0 },
+      { x: 0, y: 9 },
+      { maxDist: 8 }
+    );
+
+    expect(result.wait).toBe(100);
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(
+      Haptics.ImpactFeedbackStyle.Light
+    );
+    expect(intervalSpy).toHaveBeenCalledWith(expect.any(Function), 50);
+  });
 });
 
 describe('applyBumpFeedback', () => {
