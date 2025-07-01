@@ -4,3 +4,4 @@ export type { GameState, State } from './core';
 export { createFirstStage, nextStageState, restartRun } from './stage';
 export { reducer } from './reducer';
 export type { Action } from './reducer';
+export type { NewGameOptions } from './stage';

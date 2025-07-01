@@ -4,18 +4,46 @@ import type { MazeData } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';
 import { initState, State } from './core';
 
+/**
+ * newGame 関数で使用するオプションをまとめた型
+ * 初心者でも分かりやすいようにコメントを入れている
+ */
+export interface NewGameOptions {
+  /** 迷路サイズを指定します */
+  size: number;
+  /** 各敵の出現数。未指定なら全て 0 */
+  counts?: EnemyCounts;
+  /** 敵の軌跡を残す長さ。未指定で 4 マス */
+  enemyPathLength?: number;
+  /** プレイヤー軌跡の長さ。未指定なら無限大 */
+  playerPathLength?: number;
+  /** 壁表示を維持するターン数。未指定なら無限大 */
+  wallLifetime?: number;
+  /** ステージごとの敵数計算関数 */
+  enemyCountsFn?: (stage: number) => EnemyCounts;
+  /** ステージごとの壁寿命計算関数 */
+  wallLifetimeFn?: (stage: number) => number;
+  /** スポーン位置をスタートから遠ざけるか */
+  biasedSpawn?: boolean;
+  /** レベル識別子。練習モードなどで使用 */
+  levelId?: string;
+}
+
 // ランダムなスタートとゴールを含む MazeData を作成するヘルパー
 export function createFirstStage(
   base: MazeData,
-  counts: EnemyCounts = { random: 0, slow: 0, sight: 0, fast: 0 },
-  enemyPathLength: number = 4,
-  playerPathLength: number = Infinity,
-  wallLifetime: number = Infinity,
-  enemyCountsFn?: (stage: number) => EnemyCounts,
-  wallLifetimeFn?: (stage: number) => number,
-  biasedSpawn: boolean = true,
-  levelId?: string,
+  options: NewGameOptions = { size: base.size },
 ): State {
+  const {
+    counts = { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength = 4,
+    playerPathLength = Infinity,
+    wallLifetime = Infinity,
+    enemyCountsFn,
+    wallLifetimeFn,
+    biasedSpawn = true,
+    levelId,
+  } = options;
   const visited = new Set<string>();
   const start = randomCell(base.size);
   const candidates = allCells(base.size).filter(
@@ -94,15 +122,15 @@ export function nextStageState(state: State): State {
 
 // ゲームオーバー時に最初からやり直す処理
 export function restartRun(state: State): State {
-  return createFirstStage(
-    state.mazeRaw,
-    state.enemyCountsFn ? state.enemyCountsFn(1) : state.enemyCounts,
-    state.enemyPathLength,
-    state.playerPathLength,
-    state.wallLifetime,
-    state.enemyCountsFn,
-    state.wallLifetimeFn,
-    state.biasedSpawn,
-    state.levelId,
-  );
+  return createFirstStage(state.mazeRaw, {
+    size: state.mazeRaw.size,
+    counts: state.enemyCountsFn ? state.enemyCountsFn(1) : state.enemyCounts,
+    enemyPathLength: state.enemyPathLength,
+    playerPathLength: state.playerPathLength,
+    wallLifetime: state.wallLifetime,
+    enemyCountsFn: state.enemyCountsFn,
+    wallLifetimeFn: state.wallLifetimeFn,
+    biasedSpawn: state.biasedSpawn,
+    levelId: state.levelId,
+  });
 }

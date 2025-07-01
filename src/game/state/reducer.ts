@@ -1,9 +1,8 @@
 import { canMove, getHitWall, nextPosition, updateEnemyPaths, updatePlayerPath, decayHitMap, inSight } from '../utils';
 import { getEnemyMover } from '../enemy';
 import type { Dir, MazeData } from '@/src/types/maze';
-import type { EnemyCounts } from '@/src/types/enemy';
 import { initState, State } from './core';
-import { createFirstStage, nextStageState, restartRun } from './stage';
+import { createFirstStage, nextStageState, restartRun, type NewGameOptions } from './stage';
 
 // Reducer で使うアクション型
 export type Action =
@@ -12,14 +11,7 @@ export type Action =
   | {
       type: 'newMaze';
       maze: MazeData;
-      counts?: EnemyCounts;
-      enemyPathLength?: number;
-      playerPathLength?: number;
-      wallLifetime?: number;
-      enemyCountsFn?: (stage: number) => EnemyCounts;
-      wallLifetimeFn?: (stage: number) => number;
-      biasedSpawn?: boolean;
-      levelId?: string;
+      options: NewGameOptions;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' };
@@ -44,17 +36,17 @@ export function reducer(state: State, action: Action): State {
         state.levelId,
       );
     case 'newMaze':
-      return createFirstStage(
-        action.maze,
-        action.counts ?? state.enemyCounts,
-        action.enemyPathLength ?? state.enemyPathLength,
-        action.playerPathLength ?? state.playerPathLength,
-        action.wallLifetime ?? state.wallLifetime,
-        action.enemyCountsFn,
-        action.wallLifetimeFn,
-        action.biasedSpawn ?? state.biasedSpawn,
-        action.levelId,
-      );
+      return createFirstStage(action.maze, {
+        size: action.options.size,
+        counts: action.options.counts ?? state.enemyCounts,
+        enemyPathLength: action.options.enemyPathLength ?? state.enemyPathLength,
+        playerPathLength: action.options.playerPathLength ?? state.playerPathLength,
+        wallLifetime: action.options.wallLifetime ?? state.wallLifetime,
+        enemyCountsFn: action.options.enemyCountsFn,
+        wallLifetimeFn: action.options.wallLifetimeFn,
+        biasedSpawn: action.options.biasedSpawn ?? state.biasedSpawn,
+        levelId: action.options.levelId,
+      });
     case 'nextStage':
       return nextStageState(state);
     case 'resetRun':

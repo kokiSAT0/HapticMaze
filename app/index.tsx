@@ -35,17 +35,17 @@ export default function TitleScreen() {
   const startLevel = (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
-    newGame(
-      level.size,
-      level.enemies,
-      level.enemyPathLength,
-      level.playerPathLength,
-      level.wallLifetime,
-      level.enemyCountsFn,
-      level.wallLifetimeFn,
-      level.biasedSpawn,
-      level.id
-    );
+    newGame({
+      size: level.size,
+      counts: level.enemies,
+      enemyPathLength: level.enemyPathLength,
+      playerPathLength: level.playerPathLength,
+      wallLifetime: level.wallLifetime,
+      enemyCountsFn: level.enemyCountsFn,
+      wallLifetimeFn: level.wallLifetimeFn,
+      biasedSpawn: level.biasedSpawn,
+      levelId: level.id,
+    });
     router.replace("/play");
   };
   return (
