@@ -69,3 +69,14 @@ mazesense/
 ```
 
 迷路 JSON の形式や詳細な仕様は `APP_SPEC.md` を参照してください。
+
+## 迷路データの更新手順
+
+`assets/mazes` フォルダに迷路 JSON を配置した状態で `pnpm start` などの起動
+コマンドを実行すると、`scripts/update-maze-import.js` が自動的に走り
+`src/game/mazeAsset.ts` が生成されます。これにより迷路セットが最新の内容に
+置き換わります。手動で更新したい場合は以下を実行してください。
+
+```bash
+pnpm exec node scripts/update-maze-import.js
+```

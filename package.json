@@ -10,6 +10,7 @@
     "android": "expo start --android",
     "preios": "node ./scripts/update-maze-import.js",
     "ios": "expo start --ios",
+    "preweb": "node ./scripts/update-maze-import.js",
     "web": "expo start --web",
     "lint": "expo lint"
   },

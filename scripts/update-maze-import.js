@@ -9,22 +9,46 @@ const mazesDir = path.join(rootDir, 'assets', 'mazes');
 // assets/mazes 内の JSON ファイルを検索
 const mazeFiles = fs
   .readdirSync(mazesDir)
-  .filter((name) => name.endsWith('.json') && fs.statSync(path.join(mazesDir, name)).isFile());
+  .filter(
+    (name) => name.endsWith('.json') && fs.statSync(path.join(mazesDir, name)).isFile()
+  );
 
 if (mazeFiles.length === 0) {
   console.error('assets/mazes に JSON ファイルがありません');
   process.exit(1);
 }
 
-// 複数ある場合でも先頭のみ使用する (通常は 1 つのみの想定)
-const mazeFile = mazeFiles[0];
+// 迷路サイズごとに import を生成
+const importLines = [];
+const exportLines = [];
+
+// サイズ順に並べ替え
+mazeFiles
+  .slice()
+  .sort((a, b) => {
+    const aNum = parseInt(a.match(/(\d+)/)?.[1] ?? '0', 10);
+    const bNum = parseInt(b.match(/(\d+)/)?.[1] ?? '0', 10);
+    return aNum - bNum;
+  })
+  .forEach((file) => {
+    const basename = path.basename(file, '.json');
+    // ファイル名から数字を抽出してサイズに利用
+    const sizeMatch = basename.match(/(\d+)/);
+    if (!sizeMatch) return; // サイズを特定できないファイルは無視
+    const size = sizeMatch[1];
+    importLines.push(`import maze${size} from '@/assets/mazes/${file}';`);
+    exportLines.push(`export const mazeSet${size} = maze${size};`);
+  });
 
 const outputPath = path.join(rootDir, 'src', 'game', 'mazeAsset.ts');
-const content = `// 自動生成: assets/mazes 内の唯一の JSON を参照する\n` +
+const content =
+  `// 自動生成: assets/mazes 内の迷路をサイズ別にエクスポート\n` +
   `// ${new Date().toISOString()}\n` +
-  `import mazeData from '@/assets/mazes/${mazeFile}';\n` +
-  `export default mazeData;\n`;
+  importLines.join('\n') +
+  '\n\n' +
+  exportLines.join('\n') +
+  '\n';
 
 fs.writeFileSync(outputPath, content);
-console.log(`mazeAsset.ts updated with ${mazeFile}`);
+console.log(`mazeAsset.ts updated with ${mazeFiles.join(', ')}`);
 
