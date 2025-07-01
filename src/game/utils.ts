@@ -4,6 +4,12 @@ import type { MazeData, Vec2, Dir } from "@/src/types/maze";
 import type { Enemy } from "@/src/types/enemy";
 
 /**
+ * 振動の繰り返し間隔 (ms)。
+ * 50ms 間隔で振動を続けるために使います。
+ */
+const VIBRATE_INTERVAL_MS = 50;
+
+/**
  * 2点間のマンハッタン距離を求めます。
  * マンハッタン距離とは |x1 - x2| + |y1 - y2| のように
  * 各軸の差を足し合わせる単純な計算方法です。
@@ -89,11 +95,11 @@ export function applyDistanceFeedback(
     duration = 100;
   }
 
-  // まず 1 回振動させ、50ms 間隔で duration いっぱいまで繰り返す
+  // まず 1 回振動させ、VIBRATE_INTERVAL_MS ごとに duration いっぱいまで繰り返す
   Haptics.impactAsync(style);
   const id = setInterval(() => {
     Haptics.impactAsync(style);
-  }, 50);
+  }, VIBRATE_INTERVAL_MS);
   setTimeout(() => clearInterval(id), duration);
 
   // 待ち時間として振動継続時間を返す
@@ -130,7 +136,7 @@ export function applyBumpFeedback(
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  }, 50);
+  }, VIBRATE_INTERVAL_MS);
   setTimeout(() => clearInterval(id), showTime);
 
   // 枠線を表示 → すぐ非表示とするため 50ms ずつアニメーション
