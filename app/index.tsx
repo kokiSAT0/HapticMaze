@@ -1,13 +1,17 @@
-import React from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
-import { PlainButton } from '@/components/PlainButton';
-import { useRouter } from 'expo-router';
-import { useGame } from '@/src/game/useGame';
-import { useLocale, type Lang, type MessageKey } from '@/src/locale/LocaleContext';
+import React from "react";
+import { Modal, StyleSheet, View } from "react-native";
+import { PlainButton } from "@/components/PlainButton";
+import { useRouter } from "expo-router";
+import { useGame } from "@/src/game/useGame";
+import {
+  useLocale,
+  type Lang,
+  type MessageKey,
+} from "@/src/locale/LocaleContext";
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { LEVELS } from '@/constants/levels';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { LEVELS } from "@/constants/levels";
 
 export default function TitleScreen() {
   const router = useRouter();
@@ -40,9 +44,9 @@ export default function TitleScreen() {
       level.enemyCountsFn,
       level.wallLifetimeFn,
       level.biasedSpawn,
-      level.id,
+      level.id
     );
-    router.replace('/play');
+    router.replace("/play");
   };
   return (
     <ThemedView
@@ -53,13 +57,13 @@ export default function TitleScreen() {
     >
       {/* アプリタイトル。文字色を白にして視認性を高める */}
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-        Haptic Maze
+        Maze Sense
       </ThemedText>
       {/* 練習モードへの遷移 */}
       <PlainButton
-        title={t('practiceMode')}
-        onPress={() => router.push('/practice')}
-        accessibilityLabel={t('openPractice')}
+        title={t("practiceMode")}
+        onPress={() => router.push("/practice")}
+        accessibilityLabel={t("openPractice")}
       />
       {/* プリセットレベルの開始ボタン */}
       {LEVELS.map((lv) => (
@@ -67,20 +71,20 @@ export default function TitleScreen() {
           key={lv.id}
           title={t(lv.id as MessageKey)}
           onPress={() => startLevel(lv.id)}
-          accessibilityLabel={t('startLevel', { name: t(lv.id as MessageKey) })}
+          accessibilityLabel={t("startLevel", { name: t(lv.id as MessageKey) })}
         />
       ))}
       {/* ハイスコア画面への遷移ボタン */}
       <PlainButton
-        title={t('highScores')}
-        onPress={() => router.push('/scores')}
-        accessibilityLabel={t('openHighScores')}
+        title={t("highScores")}
+        onPress={() => router.push("/scores")}
+        accessibilityLabel={t("openHighScores")}
       />
       {/* 言語切り替え用ボタン */}
       <PlainButton
-        title={t('changeLang')}
+        title={t("changeLang")}
         onPress={() => setShowLang(true)}
-        accessibilityLabel={t('changeLang')}
+        accessibilityLabel={t("changeLang")}
       />
       {/* 言語選択モーダル */}
       <Modal transparent visible={showLang} animationType="fade">
@@ -90,19 +94,19 @@ export default function TitleScreen() {
           accessibilityLabel="言語選択オーバーレイ"
         >
           <ThemedView style={styles.modalContent}>
-          {/* モーダル内では背景が黒なので、文字色を白に固定して読みやすくする */}
-          <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-            {t('selectLang')}
-          </ThemedText>
+            {/* モーダル内では背景が黒なので、文字色を白に固定して読みやすくする */}
+            <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+              {t("selectLang")}
+            </ThemedText>
             <PlainButton
-              title={t('japanese')}
-              onPress={() => select('ja')}
-              accessibilityLabel={t('japanese')}
+              title={t("japanese")}
+              onPress={() => select("ja")}
+              accessibilityLabel={t("japanese")}
             />
             <PlainButton
-              title={t('english')}
-              onPress={() => select('en')}
-              accessibilityLabel={t('english')}
+              title={t("english")}
+              onPress={() => select("en")}
+              accessibilityLabel={t("english")}
             />
           </ThemedView>
         </View>
@@ -112,17 +116,22 @@ export default function TitleScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 20,
+  },
   modalWrapper: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // 背景を不透明にして背後が透けないようにする
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   modalContent: {
     gap: 16,
     padding: 24,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
 });

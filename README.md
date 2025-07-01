@@ -1,6 +1,6 @@
-# Haptic Maze α
+# Maze Sense α
 
-このリポジトリは Expo SDK 53 を用いた触覚迷路ゲーム「Haptic Maze」の α 版です。
+このリポジトリは Expo SDK 53 を用いた触覚迷路ゲーム「Maze Sense」の α 版です。
 ホーム画面から 5×5 または 10×10 の迷路を選んでプレイできます。
 
 ## 必要環境
