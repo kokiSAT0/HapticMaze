@@ -84,7 +84,11 @@ export default function TitleScreen() {
       />
       {/* 言語選択モーダル */}
       <Modal transparent visible={showLang} animationType="fade">
-        <View style={styles.modalWrapper}>
+        <View
+          style={styles.modalWrapper}
+          accessible
+          accessibilityLabel="言語選択オーバーレイ"
+        >
           <ThemedView style={styles.modalContent}>
           {/* モーダル内では背景が黒なので、文字色を白に固定して読みやすくする */}
           <ThemedText type="title" lightColor="#fff" darkColor="#fff">
