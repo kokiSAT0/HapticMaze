@@ -7,12 +7,12 @@ export default ({ config }) => ({
 
   ios: {
     ...(appJson.expo.ios ?? {}),
-    bundleIdentifier: "com.kurohyou3.hapticmaze", // ⾃由に決定（Apple Dev 上でも登録）
+    bundleIdentifier: "com.kokisato.mazesense", // ⾃由に決定（Apple Dev 上でも登録）
     supportsTablet: true,
   },
   android: {
     ...(appJson.expo.android ?? {}),
-    package: "com.kurohyou3.hapticmaze", // 重複しない reverse-DNS 形式
+    package: "com.kokisato.mazesense", // 重複しない reverse-DNS 形式
     edgeToEdgeEnabled: true,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",

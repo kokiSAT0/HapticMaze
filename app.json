@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HapticMaze",
-    "slug": "HapticMaze",
+    "name": "mazesense",
+    "slug": "mazesense",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,12 +10,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
-    "scheme": "hapticmaze",
+    "scheme": "mazesense",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kurohyou3.hapticmaze",
+      "bundleIdentifier": "com.kokisato.mazesense",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -50,9 +50,7 @@
     },
     "extra": {
       "router": {},
-      "eas": {
-        "projectId": "8afd3108-7df6-4686-a92c-e88551334537"
-      }
+      "eas": {}
     }
   }
 }
