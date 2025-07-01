@@ -44,6 +44,9 @@ const messages = {
     selectLang: '言語を選択してください',
     japanese: '日本語',
     english: 'English',
+    volumeSetting: '音量設定',
+    bgmVolume: 'BGM 音量',
+    seVolume: 'SE 音量',
     backToTitle: 'タイトルへ戻る',
   },
   en: {
@@ -82,6 +85,9 @@ const messages = {
     selectLang: 'Select language',
     japanese: 'Japanese',
     english: 'English',
+    volumeSetting: 'Sound Volume',
+    bgmVolume: 'BGM Volume',
+    seVolume: 'SE Volume',
     backToTitle: 'Back to title',
   },
 } as const;

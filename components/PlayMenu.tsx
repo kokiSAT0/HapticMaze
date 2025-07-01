@@ -17,6 +17,8 @@ export function PlayMenu({
   labelResetAcc,
   labelShowAll,
   labelShowMaze,
+  onVolume,
+  labelVolume,
 }: {
   visible: boolean;
   top: number;
@@ -28,6 +30,8 @@ export function PlayMenu({
   labelResetAcc: string;
   labelShowAll: string;
   labelShowMaze: string;
+  onVolume: () => void;
+  labelVolume: string;
 }) {
   return (
     <Modal transparent visible={visible} animationType="fade">
@@ -51,6 +55,12 @@ export function PlayMenu({
               accessibilityLabel={labelShowMaze}
             />
           </View>
+          {/* 音量設定サブメニューを開くボタン */}
+          <PlainButton
+            title={labelVolume}
+            onPress={onVolume}
+            accessibilityLabel={labelVolume}
+          />
         </View>
       </Pressable>
     </Modal>
