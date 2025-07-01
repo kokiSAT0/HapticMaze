@@ -5,7 +5,11 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "ANDROID_ADMOB_APP_ID": "${ANDROID_ADMOB_APP_ID}",
+        "IOS_ADMOB_APP_ID": "${IOS_ADMOB_APP_ID}"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -14,6 +18,10 @@
       },
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "ANDROID_ADMOB_APP_ID": "${ANDROID_ADMOB_APP_ID}",
+        "IOS_ADMOB_APP_ID": "${IOS_ADMOB_APP_ID}"
       }
     }
   }
