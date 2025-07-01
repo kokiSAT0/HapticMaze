@@ -205,12 +205,6 @@ export default function PlayScreen() {
   // リザルトモーダルのOKボタン処理
   // 広告表示が必要なときはここでインタースティシャルを挿入する
   const handleOk = async () => {
-    // 結果モーダルを閉じるのみ
-    setShowResult(false);
-    setGameOver(false);
-    setDebugAll(false);
-    setStageClear(false);
-    setGameClear(false);
     if (gameOver) {
       // ゲームオーバー時は1ステージ目から再開
       resetRun();
@@ -226,6 +220,12 @@ export default function PlayScreen() {
       }
       nextStage();
     }
+    // モーダルは最後に閉じて副作用をまとめて処理する
+    setShowResult(false);
+    setGameOver(false);
+    setDebugAll(false);
+    setStageClear(false);
+    setGameClear(false);
   };
 
   // Reset Maze 選択時に呼ばれる
