@@ -21,13 +21,12 @@ import type { MazeData, Vec2 } from "@/src/types/maze";
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-
 // 中心から放射状に線を描くヘルパー
 function enemyLines(
   cx: number,
   cy: number,
   r: number,
-  count: number,
+  count: number
 ): React.JSX.Element[] {
   const lines: React.JSX.Element[] = [];
   const step = (2 * Math.PI) / count;
@@ -42,7 +41,7 @@ function enemyLines(
         y2={cy + r * Math.sin(rad)}
         stroke="white"
         strokeWidth={1}
-      />,
+      />
     );
   }
   return lines;
@@ -329,9 +328,14 @@ export function MiniMap({
       if (!e.visible && !showAll) return null;
       const cx = (e.pos.x + 0.5) * cell;
       const cy = (e.pos.y + 0.5) * cell;
-      const lines = enemyLines(cx, cy, cell * 0.35, lineMap[e.kind ?? 'random']);
+      const lines = enemyLines(
+        cx,
+        cy,
+        cell * 0.35,
+        lineMap[e.kind ?? "random"]
+      );
       return (
-        <React.Fragment key={`enemy${i}`}> 
+        <React.Fragment key={`enemy${i}`}>
           <Circle cx={cx} cy={cy} r={cell * 0.1} fill="white" />
           {lines}
         </React.Fragment>
@@ -376,7 +380,7 @@ export function MiniMap({
           y={0}
           width={size}
           height={size}
-          strokeWidth={5} // 外周の太さ
+          strokeWidth={10} // 外周の太さ
           fill="none"
         />
         {renderWalls()}
