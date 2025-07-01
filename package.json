@@ -12,7 +12,8 @@
     "ios": "expo start --ios",
     "preweb": "node ./scripts/update-maze-import.js",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "jest"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

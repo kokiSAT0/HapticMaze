@@ -29,6 +29,14 @@
    pnpm lint
    ```
 
+4. ユニットテスト
+
+   Jest を使ったユニットテストが含まれています。次のコマンドで実行できます。
+
+   ```bash
+   pnpm test
+   ```
+
 ## AdMob 広告について
 
 Expo SDK53 以降では `react-native-google-mobile-ads` を利用します。インタースティシャル広告の
