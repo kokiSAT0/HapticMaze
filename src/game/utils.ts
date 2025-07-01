@@ -60,26 +60,31 @@ export function applyDistanceFeedback(
   goal: Vec2,
   opts: FeedbackOptions = {}
 ): DistanceFeedbackResult {
-  // opts は互換性のために保持しているが現在は未使用
+  // 追加: 迷路の大きさに応じた最大距離を指定できるようにする
+  const maxDist = opts.maxDist ?? 4;
   // ゴールまでのマンハッタン距離を計算
   const dist = distance(pos, goal);
+  // 距離を 4 段階に正規化する。
+  // maxDist と同じ距離で 4、0 に近いほど 1 に近づくイメージ
+  const scaled = Math.max(1, Math.ceil((dist / maxDist) * 4));
 
-  // 距離に応じて振動スタイルと継続時間を決定
+  // 距離段階に応じて振動スタイルと継続時間を決定
   let style: Haptics.ImpactFeedbackStyle;
   let duration: number;
-  if (dist === 1) {
+  if (scaled === 1) {
     style = Haptics.ImpactFeedbackStyle.Heavy;
     duration = 400;
-  } else if (dist === 2) {
+  } else if (scaled === 2) {
     style = Haptics.ImpactFeedbackStyle.Heavy;
     duration = 200;
-  } else if (dist === 3) {
+  } else if (scaled === 3) {
     style = Haptics.ImpactFeedbackStyle.Medium;
     duration = 100;
-  } else if (dist === 4) {
+  } else if (scaled === 4) {
     style = Haptics.ImpactFeedbackStyle.Medium;
     duration = 100;
   } else {
+    // scaled が 5 以上の場合はかなり遠いとみなし最弱振動
     style = Haptics.ImpactFeedbackStyle.Light;
     duration = 100;
   }
