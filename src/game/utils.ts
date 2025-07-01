@@ -97,15 +97,15 @@ export function applyDistanceFeedback(
 
 /**
  * 壁に衝突したときのフィードバックを出します。
- * 太さ 50px の赤枠を 100ms 表示し、
+ * 太さ 50px の赤枠を 300ms 表示し、
  * Haptics.ImpactFeedbackStyle.Heavy を
- * 200ms 間繰り返して振動させます。
+ * 同じく 300ms 繰り返して振動させます。
  * setColor には枠線の色を変更する関数を渡します。
  */
 export interface BumpFeedbackOptions extends FeedbackOptions {
   /** 枠線の太さ (px)。未指定なら 50 */
   width?: number;
-  /** 表示時間 (ms)。未指定なら 100 */
+  /** 表示時間 (ms)。未指定なら 300 */
   showTime?: number;
 }
 
