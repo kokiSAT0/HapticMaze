@@ -49,12 +49,7 @@ export default function TitleScreen() {
     router.replace("/play");
   };
   return (
-    <ThemedView
-      /* 背景色を黒に固定。light/dark ともに同じ色を指定する */
-      lightColor="#000"
-      darkColor="#000"
-      style={styles.container}
-    >
+    <ThemedView lightColor="#fff" darkColor="#000" style={styles.container}>
       {/* アプリタイトル。文字色を白にして視認性を高める */}
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
         Maze Sense

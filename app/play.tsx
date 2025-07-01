@@ -12,6 +12,9 @@ import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { PlayMenu } from "@/components/PlayMenu";
 import { ResultModal } from "@/components/ResultModal";
 import { VolumeMenu } from "@/components/VolumeMenu";
+import { DisplayMenu } from "@/components/DisplayMenu";
+import { ThemedView } from "@/components/ThemedView";
+import { useAppColorScheme } from "@/src/theme/ColorSchemeContext";
 
 // LinearGradient を Reanimated 用にラップ
 // Web 環境では setAttribute エラーを避けるためアニメーション無し
@@ -52,6 +55,8 @@ export default function PlayScreen() {
     handleExit,
   } = usePlayLogic();
   const [showVolume, setShowVolume] = React.useState(false);
+  const [showDisplay, setShowDisplay] = React.useState(false);
+  const { scheme, toggleScheme } = useAppColorScheme();
 
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
@@ -69,7 +74,11 @@ export default function PlayScreen() {
   const resultTop = mapTop + 260;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <ThemedView
+      lightColor="#fff"
+      darkColor="#000"
+      style={[styles.container, { paddingTop: insets.top }]}
+    >
       {/* 左上のホームボタン。家アイコンを表示しタイトルへ戻る */}
       <Pressable
         style={[styles.homeBtn, { top: insets.top + 10 }]}
@@ -179,6 +188,8 @@ export default function PlayScreen() {
         labelShowMaze={t('showMazeAll')}
         onVolume={() => setShowVolume(true)}
         labelVolume={t('volumeSetting')}
+        onDisplay={() => setShowDisplay(true)}
+        labelDisplay={t('displaySetting')}
       />
       <VolumeMenu
         visible={showVolume}
@@ -206,14 +217,23 @@ export default function PlayScreen() {
         okLabel={t('ok')}
         accLabel={t('backToTitle')}
       />
-    </View>
+      <DisplayMenu
+        visible={showDisplay}
+        top={insets.top + 120}
+        onClose={() => setShowDisplay(false)}
+        scheme={scheme}
+        toggleScheme={toggleScheme}
+        labelLight={t('lightMode')}
+        labelClose={t('ok')}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    // 背景色は ThemedView 側で指定する
   },
   menuBtn: {
     position: "absolute",
