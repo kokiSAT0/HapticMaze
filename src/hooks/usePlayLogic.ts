@@ -42,6 +42,9 @@ export function usePlayLogic() {
   const [debugAll, setDebugAll] = useState(false);
   // 再生中を視覚化するためのフラグ
   const [audioReady, setAudioReady] = useState(false);
+  // 音量設定。BGM は控えめに、効果音はやや大きめに初期化
+  const [bgmVol, setBgmVol] = useState(3);
+  const [seVol, setSeVol] = useState(7);
 
   // 枠線色は壁衝突時のみ赤に変更する
   const [borderColor, setBorderColor] = useState('transparent');
@@ -54,31 +57,39 @@ export function usePlayLogic() {
   const bgmRef = useRef<AudioPlayer | null>(null);
   const moveRef = useRef<AudioPlayer | null>(null);
 
-  // BGM と効果音を読み込む。コンポーネント初期化時に一度だけ実行
+  // BGM と効果音を読み込み、音量も設定する
   useEffect(() => {
     (async () => {
-      // サイレントモードでも再生できるように設定
-      await setAudioModeAsync({ playsInSilentMode: true });
+      if (!bgmRef.current) {
+        // サイレントモードでも再生できるように設定
+        await setAudioModeAsync({ playsInSilentMode: true });
 
-      // BGM を読み込みループ再生開始
-      // createAudioPlayer は音声再生オブジェクトを生成する関数
-      const bgm = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
-      bgm.loop = true;
-      bgm.play();
-      bgmRef.current = bgm;
-      // BGM の再生開始を合図
-      setAudioReady(true);
+        // BGM を読み込みループ再生開始
+        const bgm = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
+        bgm.loop = true;
+        bgm.play();
+        bgmRef.current = bgm;
 
-      // 移動時効果音を読み込み
-      const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
-      moveRef.current = mv;
+        // 効果音も読み込み
+        const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
+        moveRef.current = mv;
+
+        // BGM の再生開始を合図
+        setAudioReady(true);
+      }
+
+      // 既に存在する場合は音量だけ更新
+      if (bgmRef.current) bgmRef.current.volume = bgmVol / 10;
+      if (moveRef.current) moveRef.current.volume = seVol / 10;
     })();
     return () => {
       bgmRef.current?.remove();
       moveRef.current?.remove();
       setAudioReady(false);
     };
-  }, []);
+  }, [bgmVol, seVol]);
+
+
 
   // 選択したレベルが変わったらハイスコアを読み込み直す
   useEffect(() => {
@@ -264,6 +275,10 @@ export function usePlayLogic() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    bgmVol,
+    setBgmVol,
+    seVol,
+    setSeVol,
     audioReady,
     borderColor,
     borderW,

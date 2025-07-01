@@ -11,6 +11,7 @@ import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { PlayMenu } from "@/components/PlayMenu";
 import { ResultModal } from "@/components/ResultModal";
+import { VolumeMenu } from "@/components/VolumeMenu";
 
 // LinearGradient を Reanimated 用にラップ
 // Web 環境では setAttribute エラーを避けるためアニメーション無し
@@ -36,6 +37,10 @@ export default function PlayScreen() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    bgmVol,
+    setBgmVol,
+    seVol,
+    setSeVol,
     audioReady,
     borderColor,
     borderW,
@@ -46,6 +51,7 @@ export default function PlayScreen() {
     handleReset,
     handleExit,
   } = usePlayLogic();
+  const [showVolume, setShowVolume] = React.useState(false);
 
   const vertStyle = useAnimatedStyle(() => ({ height: borderW.value }));
   const horizStyle = useAnimatedStyle(() => ({ width: borderW.value }));
@@ -171,6 +177,21 @@ export default function PlayScreen() {
         labelResetAcc={t('resetMazeLabel')}
         labelShowAll={t('showAll')}
         labelShowMaze={t('showMazeAll')}
+        onVolume={() => setShowVolume(true)}
+        labelVolume={t('volumeSetting')}
+      />
+      <VolumeMenu
+        visible={showVolume}
+        top={insets.top + 80}
+        onClose={() => setShowVolume(false)}
+        bgm={bgmVol}
+        setBgm={setBgmVol}
+        se={seVol}
+        setSe={setSeVol}
+        labelTitle={t('volumeSetting')}
+        labelBgm={t('bgmVolume')}
+        labelSe={t('seVolume')}
+        labelClose={t('ok')}
       />
       <ResultModal
         visible={showResult}
