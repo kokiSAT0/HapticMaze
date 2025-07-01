@@ -20,25 +20,30 @@ export async function showInterstitial() {
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
 
   return new Promise<void>((resolve) => {
-    let timeoutId: NodeJS.Timeout;
+    // React Native 環境の setTimeout は number を返すため ReturnType で受け取る
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    // v6 以降の API では addAdEventsListener を利用する
+    // 広告イベントを監視し、読み込み完了で表示、閉じるかエラーで終了
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
       if (type === AdEventType.LOADED) {
         ad.show();
       }
+      if (type === AdEventType.OPENED) {
+        // 表示されたらフェイルセーフ用タイマーを解除
+        if (timeoutId) clearTimeout(timeoutId);
+      }
       if (type === AdEventType.CLOSED || type === AdEventType.ERROR) {
-        clearTimeout(timeoutId);
+        if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
         resolve();
       }
     });
 
-    // 一定時間表示されない場合でも解決するようタイマーを設定
+    // 読み込みに 10 秒以上かかった場合はあきらめて終了
     timeoutId = setTimeout(() => {
       unsubscribe();
       resolve();
-    }, 3000);
+    }, 10000);
 
     ad.load();
   });
