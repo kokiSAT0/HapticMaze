@@ -67,6 +67,8 @@ export default function PlayScreen() {
   const [gameClear, setGameClear] = useState(false);
   // 保存済みハイスコア
   const [highScore, setHighScore] = useState<HighScore | null>(null);
+  // ハイスコアを更新したかどうか
+  const [newRecord, setNewRecord] = useState(false);
   // メニュー表示フラグ。true のときサブメニューを表示
   const [showMenu, setShowMenu] = useState(false);
   // 全てを可視化するかのフラグ。デフォルトはオフ
@@ -137,6 +139,7 @@ export default function PlayScreen() {
     (async () => {
       const hs = await loadHighScore(state.levelId!);
       setHighScore(hs);
+      setNewRecord(false);
     })();
   }, [state.levelId]);
 
@@ -152,7 +155,7 @@ export default function PlayScreen() {
       setShowResult(true);
       // 次ステージが同じマップなら全体表示しない
       setDebugAll(willChangeMap);
-      // クリア時はハイスコアを更新
+      // クリア時はハイスコアを更新する
       if (state.levelId) {
         const current: HighScore = {
           stage: state.stage,
@@ -161,13 +164,18 @@ export default function PlayScreen() {
         };
         (async () => {
           const old = await loadHighScore(state.levelId!);
-          if (isBetterScore(old, current)) {
+          const better = isBetterScore(old, current);
+          if (better) {
             await saveHighScore(state.levelId!, current);
             setHighScore(current);
           } else {
             setHighScore(old);
           }
+          // 最終ステージのみ記録更新を表示する
+          setNewRecord(better && state.finalStage);
         })();
+      } else {
+        setNewRecord(false);
       }
     } else if (state.caught) {
       // 敵に捕まったときは常に全てを可視化
@@ -184,13 +192,17 @@ export default function PlayScreen() {
         };
         (async () => {
           const old = await loadHighScore(state.levelId!);
-          if (isBetterScore(old, current)) {
+          const better = isBetterScore(old, current);
+          if (better) {
             await saveHighScore(state.levelId!, current);
             setHighScore(current);
           } else {
             setHighScore(old);
           }
+          setNewRecord(better);
         })();
+      } else {
+        setNewRecord(false);
       }
     }
   }, [
@@ -226,6 +238,7 @@ export default function PlayScreen() {
     setDebugAll(false);
     setStageClear(false);
     setGameClear(false);
+    setNewRecord(false);
   };
 
   // Reset Maze 選択時に呼ばれる
@@ -234,6 +247,7 @@ export default function PlayScreen() {
     setGameOver(false);
     setStageClear(false);
     setGameClear(false);
+    setNewRecord(false);
     resetRun();
   };
 
@@ -243,6 +257,7 @@ export default function PlayScreen() {
     setGameOver(false);
     setStageClear(false);
     setGameClear(false);
+    setNewRecord(false);
     resetRun();
     router.replace("/");
   };
@@ -430,7 +445,7 @@ export default function PlayScreen() {
             {/* 現在クリアしたステージ数と総ステージ数を表示 */}
             {/* totalStages は maze.size × maze.size で計算した結果 */}
             <ThemedText>{t('stage', { current: state.stage, total: totalStages })}</ThemedText>
-            {highScore && (
+            {highScore && (gameClear || gameOver) && (
               <ThemedText>
                 {t('best', {
                   stage: highScore.stage,
@@ -438,6 +453,9 @@ export default function PlayScreen() {
                   bumps: highScore.bumps,
                 })}
               </ThemedText>
+            )}
+            {newRecord && (gameClear || gameOver) && (
+              <ThemedText>{t('newRecord')}</ThemedText>
             )}
             <PlainButton
               title={t('ok')}
