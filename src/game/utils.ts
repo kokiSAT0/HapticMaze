@@ -1,6 +1,7 @@
 import * as Haptics from "expo-haptics";
 import { withTiming, withSequence, SharedValue } from "react-native-reanimated";
 import type { MazeData, Vec2, Dir } from "@/src/types/maze";
+import { DIRECTIONS } from "@/src/types/maze";
 import type { Enemy } from "@/src/types/enemy";
 
 /**
@@ -282,7 +283,7 @@ export function moveEnemyRandom(
   _player?: Vec2,
   rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+  const dirs: Dir[] = DIRECTIONS.filter((d) =>
     canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
@@ -300,7 +301,7 @@ export function moveEnemyBasic(
   visited: Map<string, number>,
   rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+  const dirs: Dir[] = DIRECTIONS.filter((d) =>
     canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
@@ -344,7 +345,7 @@ export function shortestStep(
       return { next: first ?? pos, dist };
     }
 
-    for (const dir of ["Up", "Down", "Left", "Right"] as const) {
+    for (const dir of DIRECTIONS) {
       if (!canMove(pos, dir, maze)) continue;
       const nxt = nextPosition(pos, dir);
       const key = `${nxt.x},${nxt.y}`;
@@ -369,7 +370,7 @@ export function moveEnemySmart(
   player: Vec2,
   rnd: () => number = Math.random
 ): Enemy {
-  const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+  const dirs: Dir[] = DIRECTIONS.filter((d) =>
     canMove(enemy.pos, d, maze)
   );
   if (dirs.length === 0) return enemy;
@@ -461,7 +462,7 @@ export function moveEnemySense(
   const manhattan =
     Math.abs(enemy.pos.x - player.x) + Math.abs(enemy.pos.y - player.y);
   if (manhattan <= range) {
-    const dirs: Dir[] = ["Up", "Down", "Left", "Right"].filter((d) =>
+    const dirs: Dir[] = DIRECTIONS.filter((d) =>
       canMove(enemy.pos, d, maze)
     );
     if (dirs.length === 0) return enemy;

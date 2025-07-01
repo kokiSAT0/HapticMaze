@@ -17,3 +17,7 @@ export interface Vec2 {
 
 export type Dir = 'Up' | 'Down' | 'Left' | 'Right';
 
+// よく使う進行方向を配列でまとめた定数です
+// as const を付けると、要素が文字列リテラル型として扱われます
+export const DIRECTIONS = ['Up', 'Down', 'Left', 'Right'] as const;
+
