@@ -37,6 +37,8 @@ const messages = {
     highScores: 'ハイスコア',
     openHighScores: 'ハイスコア一覧を開く',
     noRecord: '記録なし',
+    // ハイスコアを更新したときに表示するメッセージ
+    newRecord: '記録更新！',
     ok: 'OK',
     changeLang: '言語設定',
     selectLang: '言語を選択してください',
@@ -73,6 +75,8 @@ const messages = {
     highScores: 'High Scores',
     openHighScores: 'View High Scores',
     noRecord: 'No record',
+    // Message shown when a new high score is achieved
+    newRecord: 'New Record!',
     ok: 'OK',
     changeLang: 'Language',
     selectLang: 'Select language',
