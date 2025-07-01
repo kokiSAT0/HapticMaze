@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    // 背景を不透明にして背後が透けないようにする
+    backgroundColor: '#000',
   },
   modalContent: {
     gap: 16,
