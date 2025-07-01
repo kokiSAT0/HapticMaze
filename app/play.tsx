@@ -411,6 +411,7 @@ export default function PlayScreen() {
         <Pressable
           style={styles.menuOverlay}
           onPress={() => setShowMenu(false)}
+          accessibilityLabel="メニューを閉じる"
         >
           <View style={[styles.menuContent, { top: insets.top + 40 }]}>
             <PlainButton
@@ -431,7 +432,11 @@ export default function PlayScreen() {
         </Pressable>
       </Modal>
       <Modal transparent visible={showResult} animationType="fade">
-        <View style={styles.modalWrapper}>
+        <View
+          style={styles.modalWrapper}
+          accessible
+          accessibilityLabel="結果表示オーバーレイ"
+        >
           <ThemedView style={[styles.modalContent, { marginTop: resultTop }]}>
             <ThemedText type="title">
               {gameClear
