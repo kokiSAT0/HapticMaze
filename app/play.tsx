@@ -36,6 +36,7 @@ export default function PlayScreen() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    audioReady,
     borderColor,
     borderW,
     maxBorder,
@@ -150,6 +151,15 @@ export default function PlayScreen() {
       <View style={[styles.dpadWrapper, { top: dpadTop }]}>
         <DPad onPress={handleMove} disabled={locked} />
       </View>
+      {audioReady && (
+        <View
+          style={styles.audioIndicator}
+          pointerEvents="none"
+          accessibilityLabel="音声再生中"
+        >
+          <MaterialIcons name="music-note" size={24} color="#0f0" />
+        </View>
+      )}
       <PlayMenu
         visible={showMenu}
         top={insets.top + 40}
@@ -241,5 +251,11 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  // 音声再生中を知らせるアイコン用スタイル
+  audioIndicator: {
+    position: 'absolute',
+    left: 10,
+    bottom: 10,
   },
 });
