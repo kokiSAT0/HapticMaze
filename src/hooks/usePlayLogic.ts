@@ -7,6 +7,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { useGame } from '@/src/game/useGame';
 import { applyBumpFeedback, applyDistanceFeedback, nextPosition } from '@/src/game/utils';
 import { showInterstitial } from '@/src/ads/interstitial';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 import {
   loadHighScore,
   saveHighScore,
@@ -22,6 +23,7 @@ export function usePlayLogic() {
   const router = useRouter();
   const { state, move, maze, nextStage, resetRun } = useGame();
   const { width } = useWindowDimensions();
+  const { show: showSnackbar } = useSnackbar();
 
   // ステージ総数。迷路は正方形なので size×size となる
   const totalStages = maze.size * maze.size;
@@ -163,7 +165,12 @@ export function usePlayLogic() {
     } else if (stageClear) {
       // デバッグ用: ステージ1クリア時もインタースティシャル広告を表示する
       if (state.stage % 9 === 0 || state.stage === 1) {
-        await showInterstitial();
+        try {
+          await showInterstitial();
+        } catch (e) {
+          console.error('interstitial error', e);
+          showSnackbar('広告を表示できませんでした');
+        }
       }
       nextStage();
     }
