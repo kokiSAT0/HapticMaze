@@ -106,6 +106,8 @@ export function MiniMap({
   const cell = size / maze.size; // 各マスの大きさ
   const scheme = useColorScheme();
   const LINE_COLOR = scheme === 'light' ? 'black' : 'white';
+  // 外周線の太さ。値を変更することで線幅が変わる
+  const BORDER_STROKE = 10;
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
@@ -377,13 +379,14 @@ export function MiniMap({
     >
       <Svg width={size} height={size}>
         {/* マンハッタン距離に応じて濃さを変える外周線 */}
+        {/* strokeWidth の半分が内側に食い込むため、線を外側に配置する */}
         <AnimatedRect
           animatedProps={borderProps}
-          x={0}
-          y={0}
-          width={size}
-          height={size}
-          strokeWidth={10} // 外周の太さ
+          x={-BORDER_STROKE / 2}
+          y={-BORDER_STROKE / 2}
+          width={size + BORDER_STROKE}
+          height={size + BORDER_STROKE}
+          strokeWidth={BORDER_STROKE} // 外周の太さ
           fill="none"
         />
         {renderWalls()}
