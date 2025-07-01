@@ -7,8 +7,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "ANDROID_ADMOB_APP_ID": "${ANDROID_ADMOB_APP_ID}",
-        "IOS_ADMOB_APP_ID": "${IOS_ADMOB_APP_ID}"
+        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
       }
     },
     "preview": {
@@ -20,8 +20,8 @@
         "simulator": false
       },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "${ANDROID_ADMOB_APP_ID}",
-        "IOS_ADMOB_APP_ID": "${IOS_ADMOB_APP_ID}"
+        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
       }
     }
   }
