@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Audio } from 'expo-audio';
+import {
+  createAudioPlayer,
+  setAudioModeAsync,
+  type AudioPlayer,
+} from 'expo-audio';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { useGame } from '@/src/game/useGame';
@@ -47,29 +51,31 @@ export function usePlayLogic() {
   const [locked, setLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const bgmRef = useRef<Audio.Sound | null>(null);
-  const moveRef = useRef<Audio.Sound | null>(null);
+  const bgmRef = useRef<AudioPlayer | null>(null);
+  const moveRef = useRef<AudioPlayer | null>(null);
 
   // BGM と効果音を読み込む。コンポーネント初期化時に一度だけ実行
   useEffect(() => {
     (async () => {
       // サイレントモードでも再生できるように設定
-      await Audio.setAudioModeAsync({ playsInSilentMode: true });
-      const bgm = new Audio.Sound();
-      await bgm.loadAsync(require('../../assets/sounds/タタリ.mp3'));
-      await bgm.setIsLoopingAsync(true);
-      await bgm.playAsync();
+      await setAudioModeAsync({ playsInSilentMode: true });
+
+      // BGM を読み込みループ再生開始
+      // createAudioPlayer は音声再生オブジェクトを生成する関数
+      const bgm = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
+      bgm.loop = true;
+      bgm.play();
       bgmRef.current = bgm;
       // BGM の再生開始を合図
       setAudioReady(true);
 
-      const mv = new Audio.Sound();
-      await mv.loadAsync(require('../../assets/sounds/歩く音200ms_2.mp3'));
+      // 移動時効果音を読み込み
+      const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
       moveRef.current = mv;
     })();
     return () => {
-      bgmRef.current?.unloadAsync();
-      moveRef.current?.unloadAsync();
+      bgmRef.current?.remove();
+      moveRef.current?.remove();
       setAudioReady(false);
     };
   }, []);
@@ -225,7 +231,9 @@ export function usePlayLogic() {
       wait = applyBumpFeedback(borderW, setBorderColor);
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
-      moveRef.current?.replayAsync();
+      // 効果音を頭から再生するため seekTo(0) で位置を戻す
+      moveRef.current?.seekTo(0);
+      moveRef.current?.play();
       // 効果音が鳴ったことをUIで示す
       setAudioReady(true);
       setTimeout(() => setAudioReady(false), 200);
