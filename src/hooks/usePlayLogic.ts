@@ -161,7 +161,8 @@ export function usePlayLogic() {
       resetRun();
       router.replace('/');
     } else if (stageClear) {
-      if (state.stage % 9 === 0) {
+      // デバッグ用: ステージ1クリア時もインタースティシャル広告を表示する
+      if (state.stage % 9 === 0 || state.stage === 1) {
         await showInterstitial();
       }
       nextStage();
