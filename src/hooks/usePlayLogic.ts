@@ -36,6 +36,8 @@ export function usePlayLogic() {
   const [newRecord, setNewRecord] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
+  // 再生中を視覚化するためのフラグ
+  const [audioReady, setAudioReady] = useState(false);
 
   // 枠線色は壁衝突時のみ赤に変更する
   const [borderColor, setBorderColor] = useState('transparent');
@@ -51,12 +53,15 @@ export function usePlayLogic() {
   // BGM と効果音を読み込む。コンポーネント初期化時に一度だけ実行
   useEffect(() => {
     (async () => {
-      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+      // サイレントモードでも再生できるように設定
+      await Audio.setAudioModeAsync({ playsInSilentMode: true });
       const bgm = new Audio.Sound();
       await bgm.loadAsync(require('../../assets/sounds/タタリ.mp3'));
       await bgm.setIsLoopingAsync(true);
       await bgm.playAsync();
       bgmRef.current = bgm;
+      // BGM の再生開始を合図
+      setAudioReady(true);
 
       const mv = new Audio.Sound();
       await mv.loadAsync(require('../../assets/sounds/歩く音200ms_2.mp3'));
@@ -65,6 +70,7 @@ export function usePlayLogic() {
     return () => {
       bgmRef.current?.unloadAsync();
       moveRef.current?.unloadAsync();
+      setAudioReady(false);
     };
   }, []);
 
@@ -220,6 +226,9 @@ export function usePlayLogic() {
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
       moveRef.current?.replayAsync();
+      // 効果音が鳴ったことをUIで示す
+      setAudioReady(true);
+      setTimeout(() => setAudioReady(false), 200);
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
         next,
@@ -247,6 +256,7 @@ export function usePlayLogic() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    audioReady,
     borderColor,
     borderW,
     maxBorder,
