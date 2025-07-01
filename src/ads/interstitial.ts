@@ -22,11 +22,12 @@ export async function showInterstitial() {
   return new Promise<void>((resolve) => {
     let timeoutId: NodeJS.Timeout;
 
-    const unsubscribe = ad.onAdEvent((type, error) => {
+    // v6 以降の API では addAdEventsListener を利用する
+    const unsubscribe = ad.addAdEventsListener(({ type }) => {
       if (type === AdEventType.LOADED) {
         ad.show();
       }
-      if (type === AdEventType.CLOSED || type === AdEventType.ERROR || error) {
+      if (type === AdEventType.CLOSED || type === AdEventType.ERROR) {
         clearTimeout(timeoutId);
         unsubscribe();
         resolve();
