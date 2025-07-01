@@ -16,6 +16,7 @@ import Svg, {
 
 import type { Enemy } from "@/src/types/enemy";
 import type { MazeData, Vec2 } from "@/src/types/maze";
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 // AnimatedRect はコンポーネント外で一度だけ作成しておく
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
@@ -39,7 +40,7 @@ function enemyLines(
         y1={cy}
         x2={cx + r * Math.cos(rad)}
         y2={cy + r * Math.sin(rad)}
-        stroke="white"
+        stroke={LINE_COLOR}
         strokeWidth={1}
       />
     );
@@ -103,6 +104,8 @@ export function MiniMap({
   visitedGoals,
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
+  const scheme = useColorScheme();
+  const LINE_COLOR = scheme === 'light' ? 'black' : 'white';
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
@@ -134,7 +137,7 @@ export function MiniMap({
         y={0}
         width={size}
         height={size}
-        stroke="white"
+        stroke={LINE_COLOR}
         strokeWidth={1}
         fill="none"
       />
@@ -239,7 +242,7 @@ export function MiniMap({
             y1={(a.y + 0.5) * cell}
             x2={(b.x + 0.5) * cell}
             y2={(b.y + 0.5) * cell}
-            stroke="white"
+            stroke={LINE_COLOR}
             strokeWidth={1}
           />
         );
@@ -259,8 +262,8 @@ export function MiniMap({
                 y2={(b.y + 0.5) * cell}
                 gradientUnits="userSpaceOnUse"
               >
-                <Stop offset="0" stopColor="white" stopOpacity={startO} />
-                <Stop offset="1" stopColor="white" stopOpacity={endO} />
+                <Stop offset="0" stopColor={LINE_COLOR} stopOpacity={startO} />
+                <Stop offset="1" stopColor={LINE_COLOR} stopOpacity={endO} />
               </LinearGradient>
             </Defs>
             <Line
@@ -302,8 +305,8 @@ export function MiniMap({
                 y2={(b.y + 0.5) * cell}
                 gradientUnits="userSpaceOnUse"
               >
-                <Stop offset="0" stopColor="white" stopOpacity={startO} />
-                <Stop offset="1" stopColor="white" stopOpacity={endO} />
+                <Stop offset="0" stopColor={LINE_COLOR} stopOpacity={startO} />
+                <Stop offset="1" stopColor={LINE_COLOR} stopOpacity={endO} />
               </LinearGradient>
             </Defs>
             <Line
@@ -336,7 +339,7 @@ export function MiniMap({
       );
       return (
         <React.Fragment key={`enemy${i}`}>
-          <Circle cx={cx} cy={cy} r={cell * 0.1} fill="white" />
+          <Circle cx={cx} cy={cy} r={cell * 0.1} fill={LINE_COLOR} />
           {lines}
         </React.Fragment>
       );
@@ -357,7 +360,7 @@ export function MiniMap({
           y={(y + 0.25) * cell}
           width={cell * 0.5}
           height={cell * 0.5}
-          stroke="white"
+          stroke={LINE_COLOR}
           strokeWidth={1}
           fill="none"
         />
@@ -395,7 +398,7 @@ export function MiniMap({
             y={(maze.start[1] + 0.25) * cell}
             width={cell * 0.5}
             height={cell * 0.5}
-            stroke="white" // 枠線の色
+            stroke={LINE_COLOR} // 枠線の色
             strokeWidth={1} // 枠線の太さ
             fill="none" // 塗りつぶさず透明にする
           />
@@ -407,7 +410,7 @@ export function MiniMap({
             y={(maze.goal[1] + 0.25) * cell}
             width={cell * 0.5}
             height={cell * 0.5}
-            fill="white" // 塗りつぶし
+            fill={LINE_COLOR} // 塗りつぶし
           />
         )}
         {/* 現在位置を円で表示 */}
@@ -415,7 +418,7 @@ export function MiniMap({
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
           r={cell * 0.3}
-          fill="white"
+          fill={LINE_COLOR}
         />
         {renderEnemies()}
       </Svg>

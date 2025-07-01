@@ -19,6 +19,8 @@ export function PlayMenu({
   labelShowMaze,
   onVolume,
   labelVolume,
+  onDisplay,
+  labelDisplay,
 }: {
   visible: boolean;
   top: number;
@@ -32,6 +34,8 @@ export function PlayMenu({
   labelShowMaze: string;
   onVolume: () => void;
   labelVolume: string;
+  onDisplay: () => void;
+  labelDisplay: string;
 }) {
   return (
     <Modal transparent visible={visible} animationType="fade">
@@ -60,6 +64,12 @@ export function PlayMenu({
             title={labelVolume}
             onPress={onVolume}
             accessibilityLabel={labelVolume}
+          />
+          {/* 表示設定サブメニューを開くボタン */}
+          <PlainButton
+            title={labelDisplay}
+            onPress={onDisplay}
+            accessibilityLabel={labelDisplay}
           />
         </View>
       </Pressable>

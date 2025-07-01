@@ -7,10 +7,19 @@ import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ColorSchemeProvider } from '@/src/theme/ColorSchemeContext';
 import { GameProvider } from '@/src/game/useGame';
 import { LocaleProvider } from '@/src/locale/LocaleContext';
 
 export default function RootLayout() {
+  return (
+    <ColorSchemeProvider>
+      <InnerLayout />
+    </ColorSchemeProvider>
+  );
+}
+
+function InnerLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, type PressableProps } from 'react-native';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface PlainButtonProps {
   title: string;
@@ -23,19 +24,22 @@ export function PlainButton({
   disabled = false,
   style,
 }: PlainButtonProps) {
+  const scheme = useColorScheme();
+  const bgStyle = scheme === 'light' ? styles.lightButton : styles.button;
+  const textStyle = scheme === 'light' ? styles.lightText : styles.text;
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel ?? title}
       onPress={onPress}
       disabled={disabled}
       style={(state) => [
-        styles.button,
+        bgStyle,
         state.pressed && styles.pressed,
         disabled && styles.disabled,
         typeof style === 'function' ? style(state) : style,
       ]}
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={textStyle}>{title}</Text>
     </Pressable>
   );
 }
@@ -53,6 +57,20 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
+  },
+  lightButton: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  lightText: {
+    color: '#000',
   },
   pressed: {
     opacity: 0.7,
