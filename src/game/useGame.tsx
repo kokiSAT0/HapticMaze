@@ -287,6 +287,7 @@ function initState(
   enemyCountsFn?: (stage: number) => EnemyCounts,
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
+  levelId?: string,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
