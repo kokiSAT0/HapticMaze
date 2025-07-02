@@ -36,6 +36,12 @@ export default function PlayScreen() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    bgmVolume,
+    seVolume,
+    incBgm,
+    decBgm,
+    incSe,
+    decSe,
     audioReady,
     borderColor,
     borderW,
@@ -167,10 +173,22 @@ export default function PlayScreen() {
         onReset={handleReset}
         debugAll={debugAll}
         setDebugAll={setDebugAll}
+        bgmVolume={bgmVolume}
+        seVolume={seVolume}
+        incBgm={incBgm}
+        decBgm={decBgm}
+        incSe={incSe}
+        decSe={decSe}
         labelReset={t('resetMaze')}
         labelResetAcc={t('resetMazeLabel')}
         labelShowAll={t('showAll')}
         labelShowMaze={t('showMazeAll')}
+        labelBgm={t('bgmVolume')}
+        labelSe={t('seVolume')}
+        accIncBgm={t('increase', { label: t('bgmVolume') })}
+        accDecBgm={t('decrease', { label: t('bgmVolume') })}
+        accIncSe={t('increase', { label: t('seVolume') })}
+        accDecSe={t('decrease', { label: t('seVolume') })}
       />
       <ResultModal
         visible={showResult}
