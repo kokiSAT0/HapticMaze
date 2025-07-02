@@ -23,11 +23,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 // 中心から放射状に線を描くヘルパー
+// 線の色も引数で受け取るようにする
 function enemyLines(
   cx: number,
   cy: number,
   r: number,
-  count: number
+  count: number,
+  color: string // 描画する線の色
 ): React.JSX.Element[] {
   const lines: React.JSX.Element[] = [];
   const step = (2 * Math.PI) / count;
@@ -40,7 +42,8 @@ function enemyLines(
         y1={cy}
         x2={cx + r * Math.cos(rad)}
         y2={cy + r * Math.sin(rad)}
-        stroke={LINE_COLOR}
+        // 指定した色で放射線を描画
+        stroke={color}
         strokeWidth={1}
       />
     );
@@ -337,7 +340,8 @@ export function MiniMap({
         cx,
         cy,
         cell * 0.35,
-        lineMap[e.kind ?? "random"]
+        lineMap[e.kind ?? "random"],
+        LINE_COLOR
       );
       return (
         <React.Fragment key={`enemy${i}`}>
