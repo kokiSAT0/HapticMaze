@@ -53,6 +53,18 @@ export function usePlayLogic() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const bgmRef = useRef<AudioPlayer | null>(null);
   const moveRef = useRef<AudioPlayer | null>(null);
+  // BGM と効果音の音量。0〜1の範囲で管理する
+  const [bgmVolume, setBgmVolume] = useState(1);
+  const [seVolume, setSeVolume] = useState(1);
+
+  // 音量変更時に実プレイヤーへ反映
+  useEffect(() => {
+    if (bgmRef.current) bgmRef.current.volume = bgmVolume;
+  }, [bgmVolume]);
+
+  useEffect(() => {
+    if (moveRef.current) moveRef.current.volume = seVolume;
+  }, [seVolume]);
 
   // BGM と効果音を読み込む。コンポーネント初期化時に一度だけ実行
   useEffect(() => {
@@ -64,6 +76,7 @@ export function usePlayLogic() {
       // createAudioPlayer は音声再生オブジェクトを生成する関数
       const bgm = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
       bgm.loop = true;
+      bgm.volume = bgmVolume;
       bgm.play();
       bgmRef.current = bgm;
       // BGM の再生開始を合図
@@ -71,6 +84,7 @@ export function usePlayLogic() {
 
       // 移動時効果音を読み込み
       const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
+      mv.volume = seVolume;
       moveRef.current = mv;
     })();
     return () => {
@@ -215,6 +229,17 @@ export function usePlayLogic() {
     router.replace('/');
   };
 
+  // BGM 音量を 0.1 刻みで調整する
+  const incBgm = () =>
+    setBgmVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
+  const decBgm = () =>
+    setBgmVolume((v) => Math.max(0, Math.round((v - 0.1) * 10) / 10));
+  // 効果音(SE) 音量を調整
+  const incSe = () =>
+    setSeVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
+  const decSe = () =>
+    setSeVolume((v) => Math.max(0, Math.round((v - 0.1) * 10) / 10));
+
   /** DPad からの入力処理 */
   const handleMove = (dir: Dir) => {
     if (locked) return;
@@ -232,8 +257,11 @@ export function usePlayLogic() {
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
       // 効果音を頭から再生するため seekTo(0) で位置を戻す
-      moveRef.current?.seekTo(0);
-      moveRef.current?.play();
+      if (moveRef.current) {
+        moveRef.current.volume = seVolume;
+        moveRef.current.seekTo(0);
+        moveRef.current.play();
+      }
       // 効果音が鳴ったことをUIで示す
       setAudioReady(true);
       setTimeout(() => setAudioReady(false), 200);
@@ -264,6 +292,12 @@ export function usePlayLogic() {
     setShowMenu,
     debugAll,
     setDebugAll,
+    bgmVolume,
+    seVolume,
+    incBgm,
+    decBgm,
+    incSe,
+    decSe,
     audioReady,
     borderColor,
     borderW,
