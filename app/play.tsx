@@ -158,6 +158,7 @@ export default function PlayScreen() {
           showResult={showResult}
           hitV={state.hitV}
           hitH={state.hitH}
+          flash={borderW}
           playerPathLength={state.playerPathLength}
           wallLifetime={state.wallLifetime}
           // ミニマップを300pxで表示する
