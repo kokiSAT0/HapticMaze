@@ -40,8 +40,6 @@ export function usePlayLogic() {
   const [newRecord, setNewRecord] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
-  // 再生中を視覚化するためのフラグ
-  const [audioReady, setAudioReady] = useState(false);
   // 音量設定。BGM は控えめに、効果音はやや大きめに初期化
   const [bgmVol, setBgmVol] = useState(3);
   const [seVol, setSeVol] = useState(7);
@@ -74,8 +72,6 @@ export function usePlayLogic() {
         const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
         moveRef.current = mv;
 
-        // BGM の再生開始を合図
-        setAudioReady(true);
       }
 
       // 既に存在する場合は音量だけ更新
@@ -83,9 +79,9 @@ export function usePlayLogic() {
       if (moveRef.current) moveRef.current.volume = seVol / 10;
     })();
     return () => {
+      bgmRef.current?.pause();
       bgmRef.current?.remove();
       moveRef.current?.remove();
-      setAudioReady(false);
     };
   }, [bgmVol, seVol]);
 
@@ -245,9 +241,6 @@ export function usePlayLogic() {
       // 効果音を頭から再生するため seekTo(0) で位置を戻す
       moveRef.current?.seekTo(0);
       moveRef.current?.play();
-      // 効果音が鳴ったことをUIで示す
-      setAudioReady(true);
-      setTimeout(() => setAudioReady(false), 200);
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
         next,
@@ -279,7 +272,6 @@ export function usePlayLogic() {
     setBgmVol,
     seVol,
     setSeVol,
-    audioReady,
     borderColor,
     borderW,
     maxBorder,
