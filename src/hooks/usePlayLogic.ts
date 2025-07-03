@@ -47,6 +47,8 @@ export function usePlayLogic() {
   const maxBorder = width / 2;
 
   const [locked, setLocked] = useState(false);
+  // OK ボタン連打を防ぐためのフラグ
+  const [okLocked, setOkLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { volume: bgmVolume, setVolume: setBgmVolume, pause: pauseBgm, resume: resumeBgm } = useBgm();
@@ -120,6 +122,9 @@ export function usePlayLogic() {
    * リザルトモーダルで OK を押した際の処理
    */
   const handleOk = async () => {
+    // ボタン連打で複数回処理が走らないようロック
+    if (okLocked) return;
+    setOkLocked(true);
     if (gameOver) {
       resetRun();
     } else if (gameClear) {
@@ -146,6 +151,7 @@ export function usePlayLogic() {
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+    setOkLocked(false);
   };
 
   /** Reset Maze が選ばれたときの処理 */
@@ -239,6 +245,7 @@ export function usePlayLogic() {
     borderW,
     maxBorder,
     locked,
+    okLocked,
     handleMove,
     handleOk,
     handleReset,

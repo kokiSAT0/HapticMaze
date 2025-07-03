@@ -19,6 +19,7 @@ export function ResultModal({
   onOk,
   okLabel,
   accLabel,
+  disabled,
 }: {
   visible: boolean;
   top: number;
@@ -31,6 +32,7 @@ export function ResultModal({
   onOk: () => void | Promise<void>;
   okLabel: string;
   accLabel: string;
+  disabled?: boolean;
 }) {
   // 画面の文言を取得するためにロケールフックを利用
   const { t } = useLocale();
@@ -52,7 +54,12 @@ export function ResultModal({
             </ThemedText>
           )}
           {newRecord && <ThemedText>{t('newRecord')}</ThemedText>}
-          <PlainButton title={okLabel} onPress={onOk} accessibilityLabel={accLabel} />
+          <PlainButton
+            title={okLabel}
+            onPress={onOk}
+            accessibilityLabel={accLabel}
+            disabled={disabled}
+          />
         </ThemedView>
       </View>
     </Modal>
