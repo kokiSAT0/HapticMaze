@@ -1,4 +1,4 @@
-import { randomCell, biasedPickGoal, shouldChangeMap } from '../utils';
+import { randomCell, biasedPickGoal, shouldChangeMap } from '../maze';
 import type { Vec2 } from '@/src/types/maze';
 
 describe('randomCell', () => {

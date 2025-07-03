@@ -1,7 +1,7 @@
 // utils.ts の canMove と getHitWall をテストする
 // プログラミング初心者向けにコメント付き
 
-import { canMove, getHitWall, wallSet } from '../utils';
+import { canMove, getHitWall, wallSet } from '../maze';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 
 type TestMaze = MazeData & { v_walls: Set<string>; h_walls: Set<string> };

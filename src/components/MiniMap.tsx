@@ -1,4 +1,5 @@
-import { distance } from "@/src/game/utils";
+// 距離計算は math モジュールへ移動
+import { distance } from "@/src/game/math";
 import React from "react";
 import Animated, {
   useAnimatedProps,

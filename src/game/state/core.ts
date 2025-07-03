@@ -1,4 +1,4 @@
-import { wallSet } from '../utils';
+import { wallSet } from '../maze';
 import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy, EnemyCounts } from '@/src/types/enemy';

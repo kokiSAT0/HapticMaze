@@ -1,4 +1,4 @@
-import { spawnEnemies } from '../utils';
+import { spawnEnemies } from '../enemyAI';
 import type { MazeData } from '@/src/types/maze';
 import type { Enemy, EnemyCounts } from '@/src/types/enemy';
 

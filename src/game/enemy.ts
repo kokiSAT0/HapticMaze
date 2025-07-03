@@ -1,6 +1,6 @@
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy, EnemyBehavior } from '@/src/types/enemy';
-import { moveEnemyBasic, moveEnemySight } from './utils';
+import { moveEnemyBasic, moveEnemySight } from './enemyAI';
 
 /** 敵を1ターン移動させる関数の型 */
 export type EnemyMover = (

@@ -4,7 +4,9 @@ import { useRouter } from 'expo-router';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { useGame } from '@/src/game/useGame';
-import { applyBumpFeedback, applyDistanceFeedback, nextPosition } from '@/src/game/utils';
+// フィードバックと座標計算のヘルパーは分割したモジュールから読み込む
+import { applyBumpFeedback, applyDistanceFeedback } from '@/src/game/feedback';
+import { nextPosition } from '@/src/game/maze';
 import { showInterstitial } from '@/src/ads/interstitial';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useBgm } from '@/src/hooks/useBgm';

@@ -1,4 +1,5 @@
-import { canMove, getHitWall, nextPosition, updateEnemyPaths, updatePlayerPath, decayHitMap, inSight } from '../utils';
+import { canMove, getHitWall, nextPosition } from '../maze';
+import { updateEnemyPaths, updatePlayerPath, decayHitMap, inSight } from '../enemyAI';
 import { getEnemyMover } from '../enemy';
 import type { Dir, MazeData } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';

@@ -1,7 +1,7 @@
 // distance 関数のテスト
 // マンハッタン距離へ変更したため、その挙動を確認します
 
-import { distance } from '../utils';
+import { distance } from '../math';
 import type { Vec2 } from '@/src/types/maze';
 
 const pos = (x: number, y: number): Vec2 => ({ x, y });
