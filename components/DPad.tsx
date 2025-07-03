@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Dir } from '@/src/types/maze';
+import { UI } from '@/constants/ui';
 
 // DPad はここに集約
 
@@ -71,21 +72,22 @@ export function DPad({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    gap: 10,
+    // DPad 内ボタンの隙間を共通定義から取得
+    gap: UI.dpadSpacing,
   },
   row: {
     flexDirection: 'row',
-    gap: 10,
+    gap: UI.dpadSpacing,
     justifyContent: 'center',
   },
   // ボタンを十字の形に配置するための空白
   spacer: {
     width: 40,
   },
-  // 押下範囲のスタイル。幅・高さを 48 にして指が届きやすくする
+  // 押下範囲のスタイル。幅・高さを定数から参照し指が届きやすくする
   btn: {
-    width: 48,
-    height: 48,
+    width: UI.dpadButtonSize,
+    height: UI.dpadButtonSize,
     alignItems: 'center',
     justifyContent: 'center',
   },
