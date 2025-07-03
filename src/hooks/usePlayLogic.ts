@@ -38,8 +38,6 @@ export function usePlayLogic() {
   } = useHighScore(state.levelId);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
-  // 効果音が鳴ったかどうかを示すフラグ
-  const [audioReady, setAudioReady] = useState(false);
 
   // 枠線色は壁衝突時のみ赤に変更する
   const [borderColor, setBorderColor] = useState('transparent');
@@ -204,9 +202,6 @@ export function usePlayLogic() {
     } else {
       // 効果音を再生
       playMoveSe();
-      // 効果音が鳴ったことをUIで示す
-      setAudioReady(true);
-      setTimeout(() => setAudioReady(false), 200);
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
         next,
@@ -240,7 +235,6 @@ export function usePlayLogic() {
     decBgm,
     incSe,
     decSe,
-    audioReady,
     borderColor,
     borderW,
     maxBorder,
