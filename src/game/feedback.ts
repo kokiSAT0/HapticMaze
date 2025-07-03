@@ -29,24 +29,26 @@ export function applyDistanceFeedback(
   const dist = distance(pos, goal);
   const scaled = Math.max(1, Math.ceil((dist / maxDist) * 4));
 
-  let style: Haptics.ImpactFeedbackStyle;
-  let duration: number;
-  if (scaled === 1) {
-    style = Haptics.ImpactFeedbackStyle.Heavy;
-    duration = 400;
-  } else if (scaled === 2) {
-    style = Haptics.ImpactFeedbackStyle.Heavy;
-    duration = 200;
-  } else if (scaled === 3) {
-    style = Haptics.ImpactFeedbackStyle.Medium;
-    duration = 100;
-  } else if (scaled === 4) {
-    style = Haptics.ImpactFeedbackStyle.Medium;
-    duration = 100;
-  } else {
-    style = Haptics.ImpactFeedbackStyle.Light;
-    duration = 100;
-  }
+  // 距離段階ごとの振動設定をまとめたテーブル
+  // Record 型: キーと値の組み合わせを表すオブジェクト
+  const impactMap: Record<
+    number,
+    { style: Haptics.ImpactFeedbackStyle; duration: number }
+  > = {
+    1: { style: Haptics.ImpactFeedbackStyle.Heavy, duration: 400 },
+    2: { style: Haptics.ImpactFeedbackStyle.Heavy, duration: 200 },
+    3: { style: Haptics.ImpactFeedbackStyle.Medium, duration: 100 },
+    4: { style: Haptics.ImpactFeedbackStyle.Medium, duration: 100 },
+  };
+
+  // マップにない値は Light を使用
+  const impact =
+    impactMap[scaled] ?? {
+      style: Haptics.ImpactFeedbackStyle.Light,
+      duration: 100,
+    };
+
+  const { style, duration } = impact;
 
   Haptics.impactAsync(style);
   const id = setInterval(() => {
