@@ -99,3 +99,27 @@ export function updatePlayerPathIfMoved(state: State, newPos: { x: number; y: nu
     : state.path;
 }
 
+/**
+ * move アクションのまとめ役。プレイヤーの移動と敵の行動更新を行い、
+ * 新しい状態オブジェクトを返す。
+ */
+export function handleMoveAction(state: State, dir: Dir): State {
+  const player = handlePlayerMove(state, dir);
+  const enemyResult = updateEnemies(state, player.pos);
+
+  return {
+    ...state,
+    pos: player.pos,
+    steps: player.steps,
+    bumps: player.bumps,
+    path: updatePlayerPathIfMoved(state, player.pos, player.steps),
+    hitV: player.hitV,
+    hitH: player.hitH,
+    enemies: enemyResult.enemies,
+    enemyVisited: enemyResult.enemyVisited,
+    enemyPaths: enemyResult.enemyPaths,
+    caught: enemyResult.caught,
+  };
+}
+
+
