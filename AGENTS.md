@@ -1,4 +1,4 @@
-# AGENTS.md – AI Coding Guide for **Haptic Maze** α Development
+# AGENTS.md – AI Coding Guide for **Maze Sense** α Development
 
 > **目的**: このガイドは ChatGPT などの AI コーディング補助を最大限活用し、α 版仕様書 (v0.2.0) に沿った実装を効率化する。エンジニアが本ガイドの指示をそのまま AI へ投げれば、コンポーネント雛形や関数サンプルを即座に得られるようにする。
 
@@ -34,7 +34,7 @@
 ## 3. リポジトリ構成
 
 ```
-haptic-maze/
+maze-sense/
 ├── App.tsx                  # 画面切替 (Title ↔ Play)
 ├── assets/
 │   └── mazes/maze001.json   # 10×10 迷路データ

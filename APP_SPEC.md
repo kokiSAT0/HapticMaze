@@ -1,4 +1,4 @@
-# Haptic Maze — α 版 技術仕様書 (v0.2.0 / 2025‑06‑23)
+# Maze Sense — α 版 技術仕様書 (v0.2.0 / 2025‑06‑23)
 
 > **このドキュメントの目的**
 > このドキュメントをもとにテスターがプレイできる α 版を完成させる。
@@ -67,7 +67,7 @@ export interface MazeData {
 ## 4. アーキテクチャ & ディレクトリ構成
 
 ```
-haptic-maze/
+maze-sense/
 ├─ app/                       // expo-router ルート
 │   ├─ _layout.tsx            // Stack 定義
 │   ├─ index.tsx              // タイトル画面
@@ -148,13 +148,13 @@ _(Set<string> で常時  O(1) 判定)_
 
 マンハッタン距離に応じて振動スタイルと時間を以下のように固定する。
 
-| 距離 | 強度   | 時間   |
-| --- | --- | --- |
-| 1   | Heavy  | 0.6 秒 |
-| 2   | Heavy  | 0.3 秒 |
-| 3   | Medium | 0.3 秒 |
-| 4   | Medium | 0.15 秒 |
-| 5+  | Light  | 0.15 秒 |
+| 距離 | 強度   | 時間    |
+| ---- | ------ | ------- |
+| 1    | Heavy  | 0.6 秒  |
+| 2    | Heavy  | 0.3 秒  |
+| 3    | Medium | 0.3 秒  |
+| 4    | Medium | 0.15 秒 |
+| 5+   | Light  | 0.15 秒 |
 
 振動終了から 0.05 秒後に次の入力を受け付ける。
 
@@ -162,11 +162,11 @@ _(Set<string> で常時  O(1) 判定)_
 
 ## 7. 画面 UI  寸法
 
-| エリア       | 幅 × 高      | 備考            |
-| ------------ | ------------ | --------------- |
-| ミニマップ   | 80×80 px     | 固定            |
-| D‑Pad        | ボタン 56 dp | CenterBottom    |
-| ヘッダー     | H 48 dp      | rgba(0,0,0,0.6) |
+| エリア       | 幅 × 高      | 備考             |
+| ------------ | ------------ | ---------------- |
+| ミニマップ   | 80×80 px     | 固定             |
+| D‑Pad        | ボタン 56 dp | CenterBottom     |
+| ヘッダー     | H 48 dp      | rgba(0,0,0,0.6)  |
 | 枠フラッシュ | Border       | 2‑20 px / 150 ms |
 
 ---
@@ -188,8 +188,8 @@ _(Set<string> で常時  O(1) 判定)_
 
 ```bash
 # 1. プロジェクト作成
-npx create-expo-app haptic-maze -t expo-template-blank-typescript
-cd haptic-maze
+npx create-expo-app maze-sense -t expo-template-blank-typescript
+cd maze-sense
 pnpm add expo-haptics react-native-svg react-native-reanimated
 
 # 2. 迷路 JSON 追加
