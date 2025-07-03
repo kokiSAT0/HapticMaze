@@ -9,8 +9,7 @@ import { applyBumpFeedback, applyDistanceFeedback } from '@/src/game/feedback';
 import { nextPosition } from '@/src/game/maze';
 import { showInterstitial } from '@/src/ads/interstitial';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
-import { useBgm } from '@/src/hooks/useBgm';
-import { useSE } from '@/src/hooks/useSE';
+import { useAudioControls } from '@/src/hooks/useAudioControls';
 import { useHighScore } from '@/src/hooks/useHighScore';
 import type { Dir } from '@/src/types/maze';
 
@@ -38,8 +37,6 @@ export function usePlayLogic() {
   } = useHighScore(state.levelId);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
-  // 効果音が鳴ったかどうかを示すフラグ
-  const [audioReady, setAudioReady] = useState(false);
 
   // 枠線色は壁衝突時のみ赤に変更する
   const [borderColor, setBorderColor] = useState('transparent');
@@ -51,12 +48,18 @@ export function usePlayLogic() {
   const [okLocked, setOkLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const { volume: bgmVolume, setVolume: setBgmVolume, pause: pauseBgm, resume: resumeBgm } = useBgm();
   const {
-    volume: seVolume,
-    setVolume: setSeVolume,
-    play: playMoveSe,
-  } = useSE(require('../../assets/sounds/歩く音200ms_2.mp3'));
+    bgmVolume,
+    seVolume,
+    incBgm,
+    decBgm,
+    incSe,
+    decSe,
+    playMoveSe,
+    pauseBgm,
+    resumeBgm,
+    audioReady,
+  } = useAudioControls(require('../../assets/sounds/歩く音200ms_2.mp3'));
 
 
   // ハイスコアの読み込みは useHighScore 内で行う
@@ -175,16 +178,6 @@ export function usePlayLogic() {
     router.replace('/');
   };
 
-  // BGM 音量を 0.1 刻みで調整する
-  const incBgm = () =>
-    setBgmVolume(Math.min(1, Math.round((bgmVolume + 0.1) * 10) / 10));
-  const decBgm = () =>
-    setBgmVolume(Math.max(0, Math.round((bgmVolume - 0.1) * 10) / 10));
-  // 効果音(SE) 音量を調整
-  const incSe = () =>
-    setSeVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
-  const decSe = () =>
-    setSeVolume((v) => Math.max(0, Math.round((v - 0.1) * 10) / 10));
 
   /** DPad からの入力処理 */
   const handleMove = (dir: Dir) => {
@@ -202,11 +195,8 @@ export function usePlayLogic() {
       wait = applyBumpFeedback(borderW, setBorderColor);
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
-      // 効果音を再生
+      // 移動音を再生し、効果音再生フラグも更新
       playMoveSe();
-      // 効果音が鳴ったことをUIで示す
-      setAudioReady(true);
-      setTimeout(() => setAudioReady(false), 200);
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
         next,
