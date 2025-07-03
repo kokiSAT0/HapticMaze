@@ -3,6 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { PlainButton } from '@/components/PlainButton';
+import { useLocale } from '@/src/locale/LocaleContext';
 import type { HighScore } from '@/src/game/highScore';
 
 /** 結果表示モーダル */
@@ -31,6 +32,8 @@ export function ResultModal({
   okLabel: string;
   accLabel: string;
 }) {
+  // 画面の文言を取得するためにロケールフックを利用
+  const { t } = useLocale();
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.wrapper} accessible accessibilityLabel="結果表示オーバーレイ">
@@ -41,10 +44,14 @@ export function ResultModal({
           <ThemedText>{stageText}</ThemedText>
           {highScore && (
             <ThemedText>
-              Best: {highScore.stage}ステージ / {highScore.steps} steps / {highScore.bumps} bumps
+              {t('best', {
+                stage: highScore.stage,
+                steps: highScore.steps,
+                bumps: highScore.bumps,
+              })}
             </ThemedText>
           )}
-          {newRecord && <ThemedText>記録更新！</ThemedText>}
+          {newRecord && <ThemedText>{t('newRecord')}</ThemedText>}
           <PlainButton title={okLabel} onPress={onOk} accessibilityLabel={accLabel} />
         </ThemedView>
       </View>
