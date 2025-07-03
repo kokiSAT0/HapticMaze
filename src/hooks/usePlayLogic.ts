@@ -1,20 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { useGame } from '@/src/game/useGame';
 import { applyBumpFeedback, applyDistanceFeedback, nextPosition } from '@/src/game/utils';
 import { showInterstitial } from '@/src/ads/interstitial';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
-import { useBgm } from '@/src/audio/BgmProvider';
-import {
-  loadHighScore,
-  saveHighScore,
-  isBetterScore,
-  type HighScore,
-} from '@/src/game/highScore';
+import { useBgm } from '@/src/hooks/useBgm';
+import { useSE } from '@/src/hooks/useSE';
+import { useHighScore } from '@/src/hooks/useHighScore';
 import type { Dir } from '@/src/types/maze';
 
 /**
@@ -33,8 +28,12 @@ export function usePlayLogic() {
   const [gameOver, setGameOver] = useState(false);
   const [stageClear, setStageClear] = useState(false);
   const [gameClear, setGameClear] = useState(false);
-  const [highScore, setHighScore] = useState<HighScore | null>(null);
-  const [newRecord, setNewRecord] = useState(false);
+  const {
+    highScore,
+    newRecord,
+    setNewRecord,
+    updateScore,
+  } = useHighScore(state.levelId);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
   // 効果音が鳴ったかどうかを示すフラグ
@@ -48,37 +47,15 @@ export function usePlayLogic() {
   const [locked, setLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const moveRef = useRef<AudioPlayer | null>(null);
   const { volume: bgmVolume, setVolume: setBgmVolume, pause: pauseBgm, resume: resumeBgm } = useBgm();
-  // 効果音(SE) の音量。0〜1の範囲で管理する
-  const [seVolume, setSeVolume] = useState(1);
+  const {
+    volume: seVolume,
+    setVolume: setSeVolume,
+    play: playMoveSe,
+  } = useSE(require('../../assets/sounds/歩く音200ms_2.mp3'));
 
-  // 音量変更時に実プレイヤーへ反映
-  useEffect(() => {
-    if (moveRef.current) moveRef.current.volume = seVolume;
-  }, [seVolume]);
 
-  // 効果音を読み込む。コンポーネント初期化時に一度だけ実行
-  useEffect(() => {
-    // seVolume は初期値のみ使うため依存配列は空
-    const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
-    mv.volume = seVolume;
-    moveRef.current = mv;
-    return () => {
-      moveRef.current?.remove();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // 選択したレベルが変わったらハイスコアを読み込み直す
-  useEffect(() => {
-    if (!state.levelId) return;
-    (async () => {
-      const hs = await loadHighScore(state.levelId!);
-      setHighScore(hs);
-      setNewRecord(false);
-    })();
-  }, [state.levelId]);
+  // ハイスコアの読み込みは useHighScore 内で行う
 
   // ゴール到達や敵に捕まった際の処理をまとめる
   useEffect(() => {
@@ -90,22 +67,12 @@ export function usePlayLogic() {
       setShowResult(true);
       setDebugAll(willChangeMap);
       if (state.levelId) {
-        const current: HighScore = {
+        const current = {
           stage: state.stage,
           steps: state.steps,
           bumps: state.bumps,
         };
-        (async () => {
-          const old = await loadHighScore(state.levelId!);
-          const better = isBetterScore(old, current);
-          if (better) {
-            await saveHighScore(state.levelId!, current);
-            setHighScore(current);
-          } else {
-            setHighScore(old);
-          }
-          setNewRecord(better && state.finalStage);
-        })();
+        updateScore(current, state.finalStage);
       } else {
         setNewRecord(false);
       }
@@ -115,22 +82,12 @@ export function usePlayLogic() {
       setShowResult(true);
       setDebugAll(true);
       if (state.levelId) {
-        const current: HighScore = {
+        const current = {
           stage: state.stage - 1,
           steps: state.steps,
           bumps: state.bumps,
         };
-        (async () => {
-          const old = await loadHighScore(state.levelId!);
-          const better = isBetterScore(old, current);
-          if (better) {
-            await saveHighScore(state.levelId!, current);
-            setHighScore(current);
-          } else {
-            setHighScore(old);
-          }
-          setNewRecord(better);
-        })();
+        updateScore(current, false);
       } else {
         setNewRecord(false);
       }
@@ -145,6 +102,8 @@ export function usePlayLogic() {
     state.steps,
     state.bumps,
     state.levelId,
+    updateScore,
+    setNewRecord,
   ]);
 
   // コンポーネントが破棄される際にタイマーを解除
@@ -235,12 +194,8 @@ export function usePlayLogic() {
       wait = applyBumpFeedback(borderW, setBorderColor);
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
-      // 効果音を頭から再生するため seekTo(0) で位置を戻す
-      if (moveRef.current) {
-        moveRef.current.volume = seVolume;
-        moveRef.current.seekTo(0);
-        moveRef.current.play();
-      }
+      // 効果音を再生
+      playMoveSe();
       // 効果音が鳴ったことをUIで示す
       setAudioReady(true);
       setTimeout(() => setAudioReady(false), 200);
