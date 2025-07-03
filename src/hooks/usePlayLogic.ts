@@ -46,6 +46,9 @@ export function usePlayLogic() {
   const [locked, setLocked] = useState(false);
   // OK ボタン連打を防ぐためのフラグ
   const [okLocked, setOkLocked] = useState(false);
+  // 状態更新より早く現在のロック状態を参照するため useRef でも保持する
+  // useRef は値が変わっても再描画されないことがポイント
+  const okLockedRef = useRef<boolean>(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const {
@@ -126,7 +129,9 @@ export function usePlayLogic() {
    */
   const handleOk = async () => {
     // ボタン連打で複数回処理が走らないようロック
-    if (okLocked) return;
+    // okLockedRef.current で即座に状態を確認できる
+    if (okLockedRef.current) return;
+    okLockedRef.current = true;
     setOkLocked(true);
     if (gameOver) {
       resetRun();
@@ -154,6 +159,8 @@ export function usePlayLogic() {
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+    // 処理が完了したらロック解除
+    okLockedRef.current = false;
     setOkLocked(false);
   };
 
