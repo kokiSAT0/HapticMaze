@@ -1,6 +1,6 @@
-# AGENTS.md – AI Coding Guide for **Maze Sense** α Development
+# AGENTS.md – AI Coding Guide for **Maze Sense** Development
 
-> **目的**: このガイドは ChatGPT などの AI コーディング補助を最大限活用し、α 版仕様書 (v0.2.0) に沿った実装を効率化する。エンジニアが本ガイドの指示をそのまま AI へ投げれば、コンポーネント雛形や関数サンプルを即座に得られるようにする。
+> **目的**: このガイドは ChatGPT などの AI コーディング補助を最大限活用し実装を効率化する。エンジニアが本ガイドの指示をそのまま AI へ投げれば、コンポーネント雛形や関数サンプルを即座に得られるようにする。
 
 ---
 
@@ -13,13 +13,13 @@
 
 ---
 
-## 2. 技術スタック (α)
+## 2. 技術スタック 
 
 | 項目              | バージョン                              | 備考                       |
 | ----------------- | --------------------------------------- | -------------------------- |
 | Node.js           | 20.x                                    | LTS                        |
 | Expo SDK          | **53.x**                                | Managed Workflow           |
-| TypeScript        | 5.x (`"strict": false`)                 | α では緩め、段階的に厳格化 |
+| TypeScript        | 5.x (`"strict": false`)                 | 現時点は緩め、段階的に厳格化 |
 | State / Animation | `react-native-reanimated@^3`            |                            |
 | SVG               | `react-native-svg@^15`                  |                            |
 | 振動              | `expo-haptics`                          |                            |
@@ -27,11 +27,10 @@
 | ~~UI ライブラリ~~ | なし (シンプル UI のため不要)           |                            |
 | テスト            | `jest`, `@testing-library/react-native` |                            |
 
-> **削除**: `react-native-paper` は現行 UI に不要なため α では導入しない。
 
 ---
 
-## 3. リポジトリ構成
+## 3. リポジトリ構成(最新の構成に合わせてここを変更する必要あり)
 
 ```
 maze-sense/
@@ -54,7 +53,7 @@ maze-sense/
 
 ---
 
-## 4. Maze JSON 仕様 (α 固定)
+## 4. Maze JSON 仕様 
 
 ```json
 {
@@ -109,7 +108,7 @@ maze-sense/
 | ESLint / Prettier | ルートで設定し CI に組込む                         |
 | 迷路ロジック      | 純関数 & ユニットテスト必須                        |
 | エラー処理        | `try/catch` で Snackbar 通知 (Reanimated 影響なし) |
-| データ保存        | **α では未実装** (Progress 固定)                   |
+| データ保存        | β版を目指して実装を目指す。                  |
 | アクセシビリティ  | 主要ボタン ≥ 48dp, ラベル必須                      |
 
 ---
@@ -138,8 +137,9 @@ maze-sense/
 ## 9. リリース & 配布
 
 - 内部配布のみ (TestFlight / Google Play Internal Testing)。
-- **個人情報収集なし** → ストア設定は "No data collected"。
+- 個人情報収集なし。将来的にはランキング機能を追加。
+- 無料広告はAdmobを使用。
 
 ---
 
-_Last updated: 2025‑06‑23_
+_Last updated: 2025‑07‑04_
