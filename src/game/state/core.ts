@@ -5,7 +5,7 @@ import type { Enemy, EnemyCounts } from '@/src/types/enemy';
 import { createEnemies } from './enemy';
 
 // MazeData から壁情報を Set 化して検索を高速にするヘルパー
-interface MazeSets extends MazeData {
+export interface MazeSets extends MazeData {
   v_walls: Set<string>;
   h_walls: Set<string>;
 }

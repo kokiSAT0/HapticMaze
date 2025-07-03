@@ -1,6 +1,7 @@
 // 敵の移動や配置に関する処理を集めたモジュール
 
 import type { MazeData, Vec2, Dir } from '@/src/types/maze';
+import type { MazeSets } from './state/core';
 import type { Enemy } from '@/src/types/enemy';
 import { canMove, nextPosition, allCells, biasedPickGoal } from './maze';
 
@@ -40,7 +41,7 @@ export function spawnEnemies(
 /** ランダムに一マス移動する単純な行動 */
 export function moveEnemyRandom(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   _visited?: Map<string, number>,
   _player?: Vec2,
   rnd: () => number = Math.random,
@@ -56,7 +57,7 @@ export function moveEnemyRandom(
 /** 未踏マスを優先して移動する基本行動 */
 export function moveEnemyBasic(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   rnd: () => number = Math.random,
 ): Enemy {
@@ -89,7 +90,7 @@ export function moveEnemyBasic(
 export function shortestStep(
   start: Vec2,
   goal: Vec2,
-  maze: MazeData,
+  maze: MazeSets,
 ): { next: Vec2; dist: number } | null {
   const visited = new Set<string>([`${start.x},${start.y}`]);
   type Node = { pos: Vec2; dist: number; first: Vec2 | null };
@@ -118,7 +119,7 @@ export function shortestStep(
  */
 export function moveEnemySmart(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
@@ -140,7 +141,7 @@ export function moveEnemySmart(
 export function inSight(
   enemy: Vec2,
   player: Vec2,
-  maze: MazeData,
+  maze: MazeSets,
   range: number = Infinity,
 ): boolean {
   if (enemy.x === player.x) {
@@ -171,7 +172,7 @@ export function inSight(
  */
 export function moveEnemySight(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
