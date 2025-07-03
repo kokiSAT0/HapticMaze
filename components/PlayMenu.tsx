@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, Switch, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PlainButton } from '@/components/PlainButton';
 import { ThemedText } from '@/components/ThemedText';
+import { UI } from '@/constants/ui';
 
 /**
  * プレイ中に表示するメニューコンポーネント
@@ -84,14 +85,14 @@ export function PlayMenu({
                 accessibilityLabel={accDecBgm}
                 style={styles.volBtn}
               >
-                <MaterialIcons name="remove" size={20} color="#555" />
+                <MaterialIcons name="remove" size={20} color={UI.colors.icon} />
               </Pressable>
               <Pressable
                 onPress={incBgm}
                 accessibilityLabel={accIncBgm}
                 style={styles.volBtn}
               >
-                <MaterialIcons name="add" size={20} color="#555" />
+                <MaterialIcons name="add" size={20} color={UI.colors.icon} />
               </Pressable>
             </View>
           </View>
@@ -103,14 +104,14 @@ export function PlayMenu({
                 accessibilityLabel={accDecSe}
                 style={styles.volBtn}
               >
-                <MaterialIcons name="remove" size={20} color="#555" />
+                <MaterialIcons name="remove" size={20} color={UI.colors.icon} />
               </Pressable>
               <Pressable
                 onPress={incSe}
                 accessibilityLabel={accIncSe}
                 style={styles.volBtn}
               >
-                <MaterialIcons name="add" size={20} color="#555" />
+                <MaterialIcons name="add" size={20} color={UI.colors.icon} />
               </Pressable>
             </View>
           </View>
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   content: {
     position: 'absolute',
     right: 10,
-    backgroundColor: '#fff',
+    backgroundColor: UI.colors.modalBg,
     padding: 10,
     borderRadius: 8,
     gap: 8,

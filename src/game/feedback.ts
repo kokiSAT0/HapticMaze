@@ -2,6 +2,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
+import { UI } from '@/constants/ui';
 import type { Vec2 } from '@/src/types/maze';
 import { distance } from './math';
 
@@ -74,10 +75,10 @@ export function applyBumpFeedback(
   setColor: (color: string) => void,
   opts: BumpFeedbackOptions = {},
 ): number {
-  const width = opts.width ?? 50;
-  const showTime = opts.showTime ?? 300;
+  const width = opts.width ?? UI.feedback.bumpWidth;
+  const showTime = opts.showTime ?? UI.feedback.bumpShowTime;
 
-  setColor('red');
+  setColor(UI.colors.bump);
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
