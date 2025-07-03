@@ -1,4 +1,4 @@
-import { handlePlayerMove, updateEnemies, updatePlayerPathIfMoved } from './moveHandlers';
+import { handleMoveAction } from './moveHandlers';
 import type { Dir, MazeData } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';
 import { initState, State } from './core';
@@ -59,22 +59,7 @@ export function reducer(state: State, action: Action): State {
     case 'resetRun':
       return restartRun(state);
     case 'move': {
-      const player = handlePlayerMove(state, action.dir);
-      const enemyResult = updateEnemies(state, player.pos);
-
-      return {
-        ...state,
-        pos: player.pos,
-        steps: player.steps,
-        bumps: player.bumps,
-        path: updatePlayerPathIfMoved(state, player.pos, player.steps),
-        hitV: player.hitV,
-        hitH: player.hitH,
-        enemies: enemyResult.enemies,
-        enemyVisited: enemyResult.enemyVisited,
-        enemyPaths: enemyResult.enemyPaths,
-        caught: enemyResult.caught,
-      };
+      return handleMoveAction(state, action.dir);
     }
   }
 }
