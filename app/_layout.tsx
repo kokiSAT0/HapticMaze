@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
+import { Platform } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
@@ -17,9 +18,12 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // Google Mobile Ads SDK を初期化する。広告が表示されない問題を防ぐため
+  // Google Mobile Ads SDK を初期化する。web 環境では広告 SDK が利用できないため判定する
   useEffect(() => {
-    mobileAds().initialize();
+    if (Platform.OS !== 'web') {
+      // OS は Android/iOS のいずれか。ここで初期化しないと広告が表示されないことがある
+      mobileAds().initialize();
+    }
   }, []);
 
   if (!loaded) {
