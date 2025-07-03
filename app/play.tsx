@@ -64,8 +64,12 @@ export default function PlayScreen() {
   const gradLocs = Platform.OS === 'web' ? [0, 0.2, 1] : undefined;
 
   const dpadTop = height * (2 / 3);
-  const mapTop = height / 3 - 40;
-  const resultTop = mapTop + 260;
+  // ミニマップは ResultModal と重ならないよう少し上に配置する
+  // mapTop は画面高さの 1/3 から 80px 引いた位置
+  const mapTop = height / 3 - 80;
+  // ResultModal はミニマップ下端より 10px 下に表示する
+  // MiniMap のサイズは 300px のため、mapTop + 310 が位置となる
+  const resultTop = mapTop + 310;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
