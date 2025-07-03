@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { PlainButton } from '@/components/PlainButton';
 
 import { ThemedText } from '@/components/ThemedText';
+import { UI } from '@/constants/ui';
 import { useLocale } from '@/src/locale/LocaleContext';
 
 /**
@@ -67,8 +68,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   count: {
     borderWidth: 1,
-    borderColor: '#888',
-    color: '#fff',
+    borderColor: UI.colors.enemyCounterBorder,
+    color: UI.colors.buttonText,
     paddingHorizontal: 8,
     minWidth: 32,
     textAlign: 'center',

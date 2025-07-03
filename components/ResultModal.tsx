@@ -72,10 +72,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: UI.colors.overlay,
   },
   content: {
-    backgroundColor: '#fff',
+    backgroundColor: UI.colors.modalBg,
     padding: 20,
     borderRadius: 8,
     alignItems: 'center',

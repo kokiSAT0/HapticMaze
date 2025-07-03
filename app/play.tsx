@@ -11,6 +11,7 @@ import { PlayMenu } from "@/components/PlayMenu";
 import { ResultModal } from '@/components/ResultModal';
 import { EdgeOverlay } from '@/components/EdgeOverlay';
 import { playStyles } from '@/app/styles/playStyles';
+import { UI } from '@/constants/ui';
 
 export default function PlayScreen() {
   const { t } = useLocale();
@@ -63,7 +64,7 @@ export default function PlayScreen() {
         onPress={handleExit}
         accessibilityLabel="ホーム画面へ戻る"
       >
-        <MaterialIcons name="home" size={24} color="#555" />
+        <MaterialIcons name="home" size={24} color={UI.colors.icon} />
       </Pressable>
       {/* 枠線用のオーバーレイ。処理は EdgeOverlay にまとめた */}
       <EdgeOverlay borderColor={borderColor} borderW={borderW} maxBorder={maxBorder} />
@@ -73,7 +74,7 @@ export default function PlayScreen() {
         onPress={handleReset}
         accessibilityLabel="迷路をリセット"
       >
-        <MaterialIcons name="refresh" size={24} color="#555" />
+        <MaterialIcons name="refresh" size={24} color={UI.colors.icon} />
       </Pressable>
       {/* 右上のメニューアイコン */}
       <Pressable
@@ -82,7 +83,7 @@ export default function PlayScreen() {
         accessibilityLabel="メニューを開く"
       >
         {/* 背景が黒のためアイコンを濃いグレーにして視認性を確保 */}
-        <MaterialIcons name="more-vert" size={24} color="#555" />
+          <MaterialIcons name="more-vert" size={24} color={UI.colors.icon} />
       </Pressable>
       <View style={[playStyles.miniMapWrapper, { top: mapTop }]}>
         <MiniMap

@@ -43,7 +43,7 @@ export function PlainButton({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#000',
+    backgroundColor: UI.colors.buttonBg,
     borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#fff',
+    color: UI.colors.buttonText,
   },
   pressed: {
     opacity: 0.7,
