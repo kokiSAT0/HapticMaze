@@ -3,11 +3,16 @@
 import fs from 'fs';
 import path from 'path';
 
+// このスクリプトは assets/mazes フォルダ内の JSON を読み取り、
+// src/game/mazeAsset.ts に迷路データの import 文をまとめて自動生成します。
+// "自動生成" はプログラムが人の手を介さずファイルを作り直すことを意味します。
+
 // __dirname はこのファイルがあるディレクトリを指す特殊変数
 const rootDir: string = path.join(__dirname, '..');
 const mazesDir: string = path.join(rootDir, 'assets', 'mazes');
 
-// assets/mazes 内の JSON ファイル一覧を取得
+// 迷路データのファイル一覧を取得する処理
+// fs.readdirSync はフォルダ内の名前をすぐに配列で返す「同期処理」です
 const mazeFiles: string[] = fs
   .readdirSync(mazesDir)
   .filter(
@@ -15,10 +20,15 @@ const mazeFiles: string[] = fs
       name.endsWith('.json') && fs.statSync(path.join(mazesDir, name)).isFile()
   );
 
+// ↑ここまでで mazeFiles に JSON ファイル名だけが入りました
+
 if (mazeFiles.length === 0) {
   console.error('assets/mazes に JSON ファイルがありません');
   process.exit(1);
 }
+
+// ここから取得したファイル名を使って import と export の行を作ります
+// ファイル名に含まれる数字をサイズとして扱うため並び替えを行います
 
 // 迷路サイズごとの import / export 行を保存する配列
 const importLines: string[] = [];
@@ -42,6 +52,8 @@ mazeFiles
     exportLines.push(`export const mazeSet${size} = maze${size};`);
   });
 
+// ↑ここまでで importLines と exportLines の配列が完成しました
+
 const outputPath: string = path.join(rootDir, 'src', 'game', 'mazeAsset.ts');
 const content: string =
   `// 自動生成: assets/mazes 内の迷路をサイズ別にエクスポート\n` +
@@ -51,5 +63,9 @@ const content: string =
   exportLines.join('\n') +
   '\n';
 
+// ↑ここまでで出力するテキストが content にまとまりました
+
+// ファイルへ書き込む処理
 fs.writeFileSync(outputPath, content);
+// 書き込みが終わったことをコンソールに表示
 console.log(`mazeAsset.ts updated with ${mazeFiles.join(', ')}`);
