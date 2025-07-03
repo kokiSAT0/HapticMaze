@@ -8,6 +8,7 @@ import { createFirstStage, nextStageState, restartRun } from './stage';
 export type Action =
   | { type: 'reset' }
   | { type: 'move'; dir: Dir }
+  | { type: 'load'; state: State }
   | {
       type: 'newMaze';
       maze: MazeData;
@@ -61,6 +62,8 @@ export function reducer(state: State, action: Action): State {
     case 'move': {
       return handleMoveAction(state, action.dir);
     }
+    case 'load':
+      return action.state;
   }
 }
 
