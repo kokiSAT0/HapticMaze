@@ -1,4 +1,9 @@
-import { randomCell, allCells, biasedPickGoal, shouldChangeMap } from '../utils';
+import {
+  randomCell,
+  allCells,
+  biasedPickGoal,
+  shouldChangeMap,
+} from '../maze';
 import { loadMaze } from '../loadMaze';
 import type { MazeData } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';

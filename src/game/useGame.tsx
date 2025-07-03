@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { canMove } from './utils';
+import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
 import type { MazeData, Dir } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';

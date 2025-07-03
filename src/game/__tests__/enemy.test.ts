@@ -1,13 +1,13 @@
 // spawnEnemies と moveEnemySight のテスト
 // 初心者向けに分かりやすく記述
 
+import { wallSet } from '../maze';
 import {
   spawnEnemies,
   moveEnemySight,
-  wallSet,
   updateEnemyPaths,
   inSight,
-} from '../utils';
+} from '../enemyAI';
 import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 

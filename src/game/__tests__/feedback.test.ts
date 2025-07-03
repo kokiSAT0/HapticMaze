@@ -1,4 +1,4 @@
-import { applyDistanceFeedback, applyBumpFeedback } from '../utils';
+import { applyDistanceFeedback, applyBumpFeedback } from '../feedback';
 import * as Haptics from 'expo-haptics';
 
 // react-native-reanimated を使う関数は簡易モックを当てる

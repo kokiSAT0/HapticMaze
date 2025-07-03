@@ -1,7 +1,7 @@
 // utils.ts の nextPosition をテスト
 // 初心者向けにコメントを付けています
 
-import { nextPosition } from '../utils';
+import { nextPosition } from '../maze';
 import type { Vec2 } from '@/src/types/maze';
 
 const pos = (x: number, y: number): Vec2 => ({ x, y });
