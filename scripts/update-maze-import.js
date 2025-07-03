@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import path from 'path';
+// Node.js の標準モジュールを読み込む
+const fs = require('fs');
+const path = require('path');
 
 // __dirname はこのファイルがあるディレクトリを指す特殊変数
-const rootDir: string = path.join(__dirname, '..');
-const mazesDir: string = path.join(rootDir, 'assets', 'mazes');
+const rootDir = path.join(__dirname, '..');
+const mazesDir = path.join(rootDir, 'assets', 'mazes');
 
 // assets/mazes 内の JSON ファイル一覧を取得
-const mazeFiles: string[] = fs
+const mazeFiles = fs
   .readdirSync(mazesDir)
   .filter(
-    (name: string) =>
+    (name) =>
       name.endsWith('.json') && fs.statSync(path.join(mazesDir, name)).isFile()
   );
 
@@ -21,18 +22,18 @@ if (mazeFiles.length === 0) {
 }
 
 // 迷路サイズごとの import / export 行を保存する配列
-const importLines: string[] = [];
-const exportLines: string[] = [];
+const importLines = [];
+const exportLines = [];
 
 // ファイル名に含まれる数字順に並べ替え
 mazeFiles
   .slice()
-  .sort((a: string, b: string) => {
+  .sort((a, b) => {
     const aNum = parseInt(a.match(/(\d+)/)?.[1] ?? '0', 10);
     const bNum = parseInt(b.match(/(\d+)/)?.[1] ?? '0', 10);
     return aNum - bNum;
   })
-  .forEach((file: string) => {
+  .forEach((file) => {
     const basename = path.basename(file, '.json');
     // ファイル名から数字を取り出してサイズに利用
     const sizeMatch = basename.match(/(\d+)/);
@@ -42,8 +43,8 @@ mazeFiles
     exportLines.push(`export const mazeSet${size} = maze${size};`);
   });
 
-const outputPath: string = path.join(rootDir, 'src', 'game', 'mazeAsset.ts');
-const content: string =
+const outputPath = path.join(rootDir, 'src', 'game', 'mazeAsset.ts');
+const content =
   `// 自動生成: assets/mazes 内の迷路をサイズ別にエクスポート\n` +
   `// ${new Date().toISOString()}\n` +
   importLines.join('\n') +
