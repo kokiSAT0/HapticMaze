@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { useRouter } from 'expo-router';
 
-import { showInterstitial } from '@/src/ads/interstitial';
 import { useHighScore } from '@/src/hooks/useHighScore';
+import { useResultState } from '@/src/hooks/useResultState';
+import { useStageEffects } from '@/src/hooks/useStageEffects';
 import type { GameState } from '@/src/game/state';
 import type { MazeData } from '@/src/types/maze';
 
@@ -37,14 +38,28 @@ export function useResultActions({
     updateScore,
   } = useHighScore(state.levelId);
 
-  const [showResult, setShowResult] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [stageClear, setStageClear] = useState(false);
-  const [gameClear, setGameClear] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [debugAll, setDebugAll] = useState(false);
+  const {
+    showResult,
+    setShowResult,
+    gameOver,
+    setGameOver,
+    stageClear,
+    setStageClear,
+    gameClear,
+    setGameClear,
+    showMenu,
+    setShowMenu,
+    debugAll,
+    setDebugAll,
+    okLocked,
+    setOkLocked,
+  } = useResultState();
 
-  const [okLocked, setOkLocked] = useState(false);
+  const { showAdIfNeeded } = useStageEffects({
+    pauseBgm,
+    resumeBgm,
+    showSnackbar,
+  });
   const okLockedRef = useRef(false);
 
   // ゴール到達や捕まったときの処理をまとめる
@@ -94,6 +109,11 @@ export function useResultActions({
     state.levelId,
     updateScore,
     setNewRecord,
+    setStageClear,
+    setGameOver,
+    setShowResult,
+    setDebugAll,
+    setGameClear,
   ]);
 
   // OK ボタン押下時の処理
@@ -107,17 +127,7 @@ export function useResultActions({
       resetRun();
       router.replace('/');
     } else if (stageClear) {
-      if (state.stage % 9 === 0 || state.stage === 1) {
-        try {
-          pauseBgm();
-          await showInterstitial();
-        } catch (e) {
-          console.error('interstitial error', e);
-          showSnackbar('広告を表示できませんでした');
-        } finally {
-          resumeBgm();
-        }
-      }
+      await showAdIfNeeded(state.stage);
       nextStage();
     }
     setShowResult(false);
