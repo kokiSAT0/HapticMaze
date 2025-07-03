@@ -3,14 +3,14 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "prestart": "node ./scripts/update-maze-import.js",
+    "prestart": "node ./scripts/update-maze-import.ts",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "preandroid": "node ./scripts/update-maze-import.js",
+    "preandroid": "node ./scripts/update-maze-import.ts",
     "android": "expo start --android",
-    "preios": "node ./scripts/update-maze-import.js",
+    "preios": "node ./scripts/update-maze-import.ts",
     "ios": "expo start --ios",
-    "preweb": "node ./scripts/update-maze-import.js",
+    "preweb": "node ./scripts/update-maze-import.ts",
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest"
