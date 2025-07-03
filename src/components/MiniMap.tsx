@@ -6,51 +6,22 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from "react-native-reanimated";
-import Svg, {
-  Circle,
-  Defs,
-  Line,
-  LinearGradient,
-  Rect,
-  Stop,
-} from "react-native-svg";
+import Svg, { Circle, Rect } from "react-native-svg";
 
 import type { Enemy } from "@/src/types/enemy";
 import type { MazeData, Vec2 } from "@/src/types/maze";
+import { renderWalls, renderHitWalls } from "./mini-map/Walls";
+import {
+  renderPath,
+  renderEnemyPaths,
+  renderVisitedGoals,
+} from "./mini-map/Paths";
+import { renderEnemies } from "./mini-map/Enemies";
 
 // AnimatedRect はコンポーネント外で一度だけ作成しておく
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-// 中心から放射状に線を描くヘルパー
-function enemyLines(
-  cx: number,
-  cy: number,
-  r: number,
-  count: number
-): React.JSX.Element[] {
-  const lines: React.JSX.Element[] = [];
-  const step = (2 * Math.PI) / count;
-  for (let i = 0; i < count; i++) {
-    const rad = i * step - Math.PI / 2; // 12時方向から開始
-    lines.push(
-      <Line
-        key={`l${i}`}
-        x1={cx}
-        y1={cy}
-        x2={cx + r * Math.cos(rad)}
-        y2={cy + r * Math.sin(rad)}
-        stroke="white"
-        strokeWidth={1}
-      />
-    );
-  }
-  return lines;
-}
-
-// 壁を描画するときの色
-// "gray" という文字列を渡すと薄い灰色になる
-const WALL_COLOR = "gray";
 
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
@@ -122,250 +93,6 @@ export function MiniMap({
 
   const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
 
-  // 壁の線をまとめて描画
-  const renderWalls = () => {
-    // デバッグオフ時は外周を含む壁を描画しない
-    if (!showAll) return null;
-    const lines = [] as React.JSX.Element[];
-    // 外周を確認しやすくするため白枠を描画
-    lines.push(
-      <Rect
-        key="debugBorder"
-        x={0}
-        y={0}
-        width={size}
-        height={size}
-        stroke="white"
-        strokeWidth={1}
-        fill="none"
-      />
-    );
-
-    // 縦壁
-    for (const [x, y] of maze.v_walls) {
-      const px = (x + 1) * cell;
-      const py = y * cell;
-      lines.push(
-        <Line
-          key={`v${x},${y}`}
-          x1={px}
-          y1={py}
-          x2={px}
-          y2={py + cell}
-          // 縦壁を灰色で描画する
-          stroke={WALL_COLOR}
-          strokeWidth={1}
-        />
-      );
-    }
-
-    // 横壁
-    for (const [x, y] of maze.h_walls) {
-      const px = x * cell;
-      const py = (y + 1) * cell;
-      lines.push(
-        <Line
-          key={`h${x},${y}`}
-          x1={px}
-          y1={py}
-          x2={px + cell}
-          y2={py}
-          // 横壁を灰色で描画する
-          stroke={WALL_COLOR}
-          strokeWidth={1}
-        />
-      );
-    }
-
-    return lines;
-  };
-
-  // 衝突した壁を灰色で描画
-  // 外周との衝突も同じ座標形式で渡される
-  const renderHitWalls = () => {
-    const lines = [] as React.JSX.Element[];
-    hitV?.forEach((life, k) => {
-      const [x, y] = k.split(",").map(Number);
-      const op =
-        wallLifetime === Infinity || life === Infinity
-          ? 1
-          : life / wallLifetime;
-      lines.push(
-        <Line
-          key={`hv${k}`}
-          x1={(x + 1) * cell}
-          y1={y * cell}
-          x2={(x + 1) * cell}
-          y2={y * cell + cell}
-          // 壁に衝突した直後は濃い灰色、その後徐々に薄くなる
-          stroke={`rgba(128,128,128,${op})`}
-          strokeWidth={1}
-        />
-      );
-    });
-    hitH?.forEach((life, k) => {
-      const [x, y] = k.split(",").map(Number);
-      const op =
-        wallLifetime === Infinity || life === Infinity
-          ? 1
-          : life / wallLifetime;
-      lines.push(
-        <Line
-          key={`hh${k}`}
-          x1={x * cell}
-          y1={(y + 1) * cell}
-          x2={x * cell + cell}
-          y2={(y + 1) * cell}
-          // 横方向の衝突壁も同様に灰色で描画する
-          stroke={`rgba(128,128,128,${op})`}
-          strokeWidth={1}
-        />
-      );
-    });
-    return lines;
-  };
-
-  // プレイヤーの通過軌跡を線で描く
-  const renderPath = () => {
-    if (path.length < 2) return null;
-    const segments = [] as React.JSX.Element[];
-    for (let i = 0; i < path.length - 1; i++) {
-      const a = path[i];
-      const b = path[i + 1];
-      if (playerPathLength === Infinity) {
-        segments.push(
-          <Line
-            key={`p${i}`}
-            x1={(a.x + 0.5) * cell}
-            y1={(a.y + 0.5) * cell}
-            x2={(b.x + 0.5) * cell}
-            y2={(b.y + 0.5) * cell}
-            stroke="white"
-            strokeWidth={1}
-          />
-        );
-      } else {
-        const id = `pp${i}`;
-        const segs = path.length - 1;
-        const startO = i / segs;
-        const endO = (i + 1) / segs;
-        segments.push(
-          <React.Fragment key={id}>
-            <Defs>
-              <LinearGradient
-                id={id}
-                x1={(a.x + 0.5) * cell}
-                y1={(a.y + 0.5) * cell}
-                x2={(b.x + 0.5) * cell}
-                y2={(b.y + 0.5) * cell}
-                gradientUnits="userSpaceOnUse"
-              >
-                <Stop offset="0" stopColor="white" stopOpacity={startO} />
-                <Stop offset="1" stopColor="white" stopOpacity={endO} />
-              </LinearGradient>
-            </Defs>
-            <Line
-              x1={(a.x + 0.5) * cell}
-              y1={(a.y + 0.5) * cell}
-              x2={(b.x + 0.5) * cell}
-              y2={(b.y + 0.5) * cell}
-              stroke={`url(#${id})`}
-              strokeWidth={1}
-            />
-          </React.Fragment>
-        );
-      }
-    }
-    return segments;
-  };
-
-  // 敵の移動履歴を線で描画
-  // 最も古い線は透明から始まり徐々に白くなる
-  const renderEnemyPaths = () => {
-    const lines = [] as React.JSX.Element[];
-    enemyPaths.forEach((p, idx) => {
-      const enemy = enemies[idx];
-      if (enemy && !enemy.visible && !showAll) return;
-      for (let i = 0; i < p.length - 1; i++) {
-        const a = p[i];
-        const b = p[i + 1];
-        const id = `ep${idx}-${i}`;
-        const startO = i === 0 ? 0 : i === 1 ? 0.5 : 0.8;
-        const endO = i === p.length - 2 ? 1 : i === 0 ? 0.5 : 0.8;
-        lines.push(
-          <React.Fragment key={id}>
-            <Defs>
-              <LinearGradient
-                id={id}
-                x1={(a.x + 0.5) * cell}
-                y1={(a.y + 0.5) * cell}
-                x2={(b.x + 0.5) * cell}
-                y2={(b.y + 0.5) * cell}
-                gradientUnits="userSpaceOnUse"
-              >
-                <Stop offset="0" stopColor="white" stopOpacity={startO} />
-                <Stop offset="1" stopColor="white" stopOpacity={endO} />
-              </LinearGradient>
-            </Defs>
-            <Line
-              x1={(a.x + 0.5) * cell}
-              y1={(a.y + 0.5) * cell}
-              x2={(b.x + 0.5) * cell}
-              y2={(b.y + 0.5) * cell}
-              stroke={`url(#${id})`}
-              strokeWidth={1}
-            />
-          </React.Fragment>
-        );
-      }
-    });
-    return lines;
-  };
-
-  // 敵を放射線デザインで描画
-  const renderEnemies = () => {
-    const lineMap = { random: 4, slow: 6, sight: 24, fast: 12 } as const;
-    return enemies.map((e, i) => {
-      if (!e.visible && !showAll) return null;
-      const cx = (e.pos.x + 0.5) * cell;
-      const cy = (e.pos.y + 0.5) * cell;
-      const lines = enemyLines(
-        cx,
-        cy,
-        cell * 0.35,
-        lineMap[e.kind ?? "random"]
-      );
-      return (
-        <React.Fragment key={`enemy${i}`}>
-          <Circle cx={cx} cy={cy} r={cell * 0.1} fill="white" />
-          {lines}
-        </React.Fragment>
-      );
-    });
-  };
-
-  // 過去にゴールだったマスを枠線のみで描画
-  // showResult または showAll が true のときのみ表示
-  const renderVisitedGoals = () => {
-    if (!visitedGoals || (!showResult && !showAll)) return null;
-    const rects = [] as React.JSX.Element[];
-    visitedGoals.forEach((k) => {
-      const [x, y] = k.split(",").map(Number);
-      rects.push(
-        <Rect
-          key={`vg${k}`}
-          x={(x + 0.25) * cell}
-          y={(y + 0.25) * cell}
-          width={cell * 0.5}
-          height={cell * 0.5}
-          stroke="white"
-          strokeWidth={1}
-          fill="none"
-        />
-      );
-    });
-    return rects;
-  };
 
   return (
     // デバッグ表示の有無にかかわらず外枠は描画しない
@@ -384,11 +111,11 @@ export function MiniMap({
           strokeWidth={10} // 外周の太さ
           fill="none"
         />
-        {renderWalls()}
-        {renderHitWalls()}
-        {renderPath()}
-        {renderEnemyPaths()}
-        {renderVisitedGoals()}
+        {renderWalls({ maze, cell, size, showAll })}
+        {renderHitWalls({ cell, hitV, hitH, wallLifetime })}
+        {renderPath({ path, cell, playerPathLength })}
+        {renderEnemyPaths({ enemyPaths, enemies, cell, showAll })}
+        {renderVisitedGoals({ visitedGoals, cell, showResult, showAll })}
         {/* スタート位置は枠線のみで表示する */}
         {showAll && (
           <Rect
@@ -418,7 +145,7 @@ export function MiniMap({
           r={cell * 0.3}
           fill="white"
         />
-        {renderEnemies()}
+        {renderEnemies({ enemies, cell, showAll })}
       </Svg>
     </Animated.View>
   );
