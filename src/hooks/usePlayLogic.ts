@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import {
-  createAudioPlayer,
-  setAudioModeAsync,
-  type AudioPlayer,
-} from 'expo-audio';
+import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { useGame } from '@/src/game/useGame';
 import { applyBumpFeedback, applyDistanceFeedback, nextPosition } from '@/src/game/utils';
 import { showInterstitial } from '@/src/ads/interstitial';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
+import { useBgm } from '@/src/audio/BgmProvider';
 import {
   loadHighScore,
   saveHighScore,
@@ -40,7 +37,7 @@ export function usePlayLogic() {
   const [newRecord, setNewRecord] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
-  // 再生中を視覚化するためのフラグ
+  // 効果音が鳴ったかどうかを示すフラグ
   const [audioReady, setAudioReady] = useState(false);
 
   // 枠線色は壁衝突時のみ赤に変更する
@@ -51,47 +48,26 @@ export function usePlayLogic() {
   const [locked, setLocked] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const bgmRef = useRef<AudioPlayer | null>(null);
   const moveRef = useRef<AudioPlayer | null>(null);
-  // BGM と効果音の音量。0〜1の範囲で管理する
-  const [bgmVolume, setBgmVolume] = useState(1);
+  const { volume: bgmVolume, setVolume: setBgmVolume, pause: pauseBgm, resume: resumeBgm } = useBgm();
+  // 効果音(SE) の音量。0〜1の範囲で管理する
   const [seVolume, setSeVolume] = useState(1);
 
   // 音量変更時に実プレイヤーへ反映
   useEffect(() => {
-    if (bgmRef.current) bgmRef.current.volume = bgmVolume;
-  }, [bgmVolume]);
-
-  useEffect(() => {
     if (moveRef.current) moveRef.current.volume = seVolume;
   }, [seVolume]);
 
-  // BGM と効果音を読み込む。コンポーネント初期化時に一度だけ実行
+  // 効果音を読み込む。コンポーネント初期化時に一度だけ実行
   useEffect(() => {
-    (async () => {
-      // サイレントモードでも再生できるように設定
-      await setAudioModeAsync({ playsInSilentMode: true });
-
-      // BGM を読み込みループ再生開始
-      // createAudioPlayer は音声再生オブジェクトを生成する関数
-      const bgm = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
-      bgm.loop = true;
-      bgm.volume = bgmVolume;
-      bgm.play();
-      bgmRef.current = bgm;
-      // BGM の再生開始を合図
-      setAudioReady(true);
-
-      // 移動時効果音を読み込み
-      const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
-      mv.volume = seVolume;
-      moveRef.current = mv;
-    })();
+    // seVolume は初期値のみ使うため依存配列は空
+    const mv = createAudioPlayer(require('../../assets/sounds/歩く音200ms_2.mp3'));
+    mv.volume = seVolume;
+    moveRef.current = mv;
     return () => {
-      bgmRef.current?.remove();
       moveRef.current?.remove();
-      setAudioReady(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 選択したレベルが変わったらハイスコアを読み込み直す
@@ -192,10 +168,13 @@ export function usePlayLogic() {
       // デバッグ用: ステージ1クリア時もインタースティシャル広告を表示する
       if (state.stage % 9 === 0 || state.stage === 1) {
         try {
+          pauseBgm();
           await showInterstitial();
         } catch (e) {
           console.error('interstitial error', e);
           showSnackbar('広告を表示できませんでした');
+        } finally {
+          resumeBgm();
         }
       }
       nextStage();
@@ -231,9 +210,9 @@ export function usePlayLogic() {
 
   // BGM 音量を 0.1 刻みで調整する
   const incBgm = () =>
-    setBgmVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
+    setBgmVolume(Math.min(1, Math.round((bgmVolume + 0.1) * 10) / 10));
   const decBgm = () =>
-    setBgmVolume((v) => Math.max(0, Math.round((v - 0.1) * 10) / 10));
+    setBgmVolume(Math.max(0, Math.round((bgmVolume - 0.1) * 10) / 10));
   // 効果音(SE) 音量を調整
   const incSe = () =>
     setSeVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
