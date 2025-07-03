@@ -46,6 +46,7 @@ export default function PlayScreen() {
     borderW,
     maxBorder,
     locked,
+    okLocked,
     handleMove,
     handleOk,
     handleReset,
@@ -196,6 +197,7 @@ export default function PlayScreen() {
         onOk={handleOk}
         okLabel={t('ok')}
         accLabel={t('backToTitle')}
+        disabled={okLocked}
       />
     </View>
   );
