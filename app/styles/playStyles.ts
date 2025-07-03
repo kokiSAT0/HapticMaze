@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { UI } from '@/constants/ui';
 
 // PlayScreen 専用スタイルをまとめたファイル
 // StyleSheet.create で生成したオブジェクトをそのまま export する
@@ -9,21 +10,22 @@ export const playStyles = StyleSheet.create({
   },
   menuBtn: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    // ボタン類の余白を共通値で調整
+    top: UI.dpadSpacing,
+    right: UI.dpadSpacing,
     padding: 4,
   },
   // ホームボタン用スタイル。左上に固定表示
   homeBtn: {
     position: 'absolute',
-    top: 10,
-    left: 10,
+    top: UI.dpadSpacing,
+    left: UI.dpadSpacing,
     padding: 4,
   },
   // 迷路リセットボタン。メニューボタンの左隣に配置
   resetBtn: {
     position: 'absolute',
-    top: 10,
+    top: UI.dpadSpacing,
     right: 44,
     padding: 4,
   },

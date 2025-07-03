@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, type PressableProps } from 'react-native';
+import { UI } from '@/constants/ui';
 
 interface PlainButtonProps {
   title: string;
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    // 最低でも 48dp の高さを確保し、指で押しやすくする
-    minHeight: 48,
+    // 最低でも 48dp の高さを確保し、共通定義から参照
+    minHeight: UI.dpadButtonSize,
     alignItems: 'center',
     justifyContent: 'center',
   },

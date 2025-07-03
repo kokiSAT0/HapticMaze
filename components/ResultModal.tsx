@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { PlainButton } from '@/components/PlainButton';
 import { useLocale } from '@/src/locale/LocaleContext';
+import { UI } from '@/constants/ui';
 import type { HighScore } from '@/src/game/highScore';
 
 /** 結果表示モーダル */
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     alignItems: 'center',
-    gap: 10,
-    width: 250,
+    gap: UI.dpadSpacing,
+    width: UI.modalWidth,
   },
 });
