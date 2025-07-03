@@ -5,3 +5,4 @@ export * from './math';
 export * from './feedback';
 export * from './maze';
 export * from './enemyAI';
+export type { MazeSets } from './state';

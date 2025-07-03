@@ -1,6 +1,7 @@
 // 迷路関連の汎用処理をまとめたモジュール
 
-import type { MazeData, Vec2, Dir } from '@/src/types/maze';
+import type { Vec2, Dir } from '@/src/types/maze';
+import type { MazeSets } from './state/core';
 
 /**
  * 壁配列から高速検索用の Set を作成する
@@ -12,9 +13,9 @@ export function wallSet(walls: [number, number][]): Set<string> {
 /**
  * 現在位置から指定方向へ移動できるかを判定
  */
-export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
-  const h = maze.v_walls as unknown as Set<string>;
-  const v = maze.h_walls as unknown as Set<string>;
+export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeSets): boolean {
+  const h = maze.v_walls;
+  const v = maze.h_walls;
   const last = maze.size - 1;
   switch (dir) {
     case 'Right':
@@ -57,10 +58,10 @@ export function nextPosition(pos: Vec2, dir: Dir): Vec2 {
 export function getHitWall(
   { x, y }: Vec2,
   dir: Dir,
-  maze: MazeData,
+  maze: MazeSets,
 ): { kind: 'v' | 'h'; key: string } | null {
-  const h = maze.v_walls as unknown as Set<string>;
-  const v = maze.h_walls as unknown as Set<string>;
+  const h = maze.v_walls;
+  const v = maze.h_walls;
   const last = maze.size - 1;
   switch (dir) {
     case 'Right':
