@@ -1,6 +1,7 @@
-import { createContext, useContext, useReducer, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
+import { saveGame } from './saveGame';
 import type { MazeData, Dir } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';
 import {
@@ -8,6 +9,7 @@ import {
   createFirstStage,
   type GameState,
   type Action,
+  type State,
 } from './state';
 
 const GameContext = createContext<
@@ -28,6 +30,7 @@ const GameContext = createContext<
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
+      loadState: (s: State) => void;
       maze: MazeData;
     }
   | undefined
@@ -71,10 +74,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   const nextStage = () => send({ type: 'nextStage' });
   const resetRun = () => send({ type: 'resetRun' });
+  const loadState = (s: State) => send({ type: 'load', state: s });
+
+  // 状態が変化するたび自動保存する
+  useEffect(() => {
+    saveGame(state);
+  }, [state]);
 
   return (
     <GameContext.Provider
-      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun }}
+      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun, loadState }}
     >
       {children}
     </GameContext.Provider>

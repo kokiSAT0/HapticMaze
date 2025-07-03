@@ -47,6 +47,11 @@ const messages = {
     japanese: '日本語',
     english: 'English',
     backToTitle: 'タイトルへ戻る',
+    continue: 'つづきから',
+    startFromBegin: '{{name}}をはじめからプレイ',
+    confirmReset: '中断中のゲームデータを削除して新しいゲームを開始しますか？',
+    yes: 'はい',
+    cancel: 'キャンセル',
   },
   en: {
     practiceMode: 'Practice Mode',
@@ -87,6 +92,11 @@ const messages = {
     japanese: 'Japanese',
     english: 'English',
     backToTitle: 'Back to title',
+    continue: 'Continue',
+    startFromBegin: 'Play {{name}} from start',
+    confirmReset: 'Delete saved game and start new?',
+    yes: 'Yes',
+    cancel: 'Cancel',
   },
 } as const;
 
