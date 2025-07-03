@@ -9,10 +9,12 @@ import {
   inSight,
 } from '../utils';
 import { selectEnemyBehavior } from '../enemy';
-import type { MazeData, Vec2 } from '@/src/types/maze';
+import type { Vec2 } from '@/src/types/maze';
+// canMove 等で利用する MazeSets 型
+import type { MazeSets } from '../state';
 
 // 基本となる迷路データ（壁なし）
-const baseMaze: MazeData & { v_walls: Set<string>; h_walls: Set<string> } = {
+const baseMaze: MazeSets = {
   id: 'test',
   size: 10,
   start: [0, 0],

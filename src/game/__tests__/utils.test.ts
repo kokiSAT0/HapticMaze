@@ -3,8 +3,10 @@
 
 import { canMove, getHitWall, wallSet } from '../utils';
 import type { MazeData, Vec2 } from '@/src/types/maze';
+// MazeSets をテストで利用するためインポート
+import type { MazeSets } from '../state';
 
-type TestMaze = MazeData & { v_walls: Set<string>; h_walls: Set<string> };
+type TestMaze = MazeSets;
 
 // 迷路サイズは型の都合で常に 10 とするが、今回は数マスしか使わない
 const baseMaze: Omit<MazeData, 'v_walls' | 'h_walls'> = {

@@ -2,6 +2,8 @@ import * as Haptics from "expo-haptics";
 import { withTiming, withSequence, SharedValue } from "react-native-reanimated";
 import type { MazeData, Vec2, Dir } from "@/src/types/maze";
 import type { Enemy } from "@/src/types/enemy";
+// MazeSets 型を使用するため state から読み込む
+import type { MazeSets } from "./state";
 
 /**
  * 2点間のマンハッタン距離を求めます。
@@ -155,9 +157,10 @@ export function wallSet(walls: [number, number][]): Set<string> {
  * 現在位置と進行方向から移動可能か判定します。
  * MazeData の v_walls / h_walls は Set である前提です。
  */
-export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeData): boolean {
-  const h = maze.v_walls as unknown as Set<string>;
-  const v = maze.h_walls as unknown as Set<string>;
+export function canMove({ x, y }: Vec2, dir: Dir, maze: MazeSets): boolean {
+  // maze.v_walls / maze.h_walls は Set 型として扱える
+  const h = maze.v_walls;
+  const v = maze.h_walls;
   const last = maze.size - 1;
   switch (dir) {
     case "Right":
@@ -201,10 +204,11 @@ export function nextPosition(pos: Vec2, dir: Dir): Vec2 {
 export function getHitWall(
   { x, y }: Vec2,
   dir: Dir,
-  maze: MazeData
+  maze: MazeSets
 ): { kind: "v" | "h"; key: string } | null {
-  const h = maze.v_walls as unknown as Set<string>;
-  const v = maze.h_walls as unknown as Set<string>;
+  // MazeSets なら直接 Set 操作が可能
+  const h = maze.v_walls;
+  const v = maze.h_walls;
   // 迷路の端は last 番のマスの外側にあると考える
   const last = maze.size - 1;
   switch (dir) {
@@ -277,7 +281,7 @@ export function spawnEnemies(
  */
 export function moveEnemyRandom(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   _visited?: Map<string, number>,
   _player?: Vec2,
   rnd: () => number = Math.random
@@ -296,7 +300,7 @@ export function moveEnemyRandom(
  */
 export function moveEnemyBasic(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   rnd: () => number = Math.random
 ): Enemy {
@@ -332,7 +336,7 @@ export function moveEnemyBasic(
 export function shortestStep(
   start: Vec2,
   goal: Vec2,
-  maze: MazeData
+  maze: MazeSets
 ): { next: Vec2; dist: number } | null {
   const visited = new Set<string>([`${start.x},${start.y}`]);
   type Node = { pos: Vec2; dist: number; first: Vec2 | null };
@@ -364,7 +368,7 @@ export function shortestStep(
  */
 export function moveEnemySmart(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random
@@ -389,7 +393,7 @@ export function moveEnemySmart(
 export function inSight(
   enemy: Vec2,
   player: Vec2,
-  maze: MazeData,
+  maze: MazeSets,
   range: number = Infinity
 ): boolean {
   if (enemy.x === player.x) {
@@ -423,7 +427,7 @@ export function inSight(
  */
 export function moveEnemySight(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
@@ -452,7 +456,7 @@ export function moveEnemySight(
  */
 export function moveEnemySense(
   enemy: Enemy,
-  maze: MazeData,
+  maze: MazeSets,
   visited: Map<string, number>,
   player: Vec2,
   rnd: () => number = Math.random,
