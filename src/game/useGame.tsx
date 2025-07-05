@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useReducer, useRef, type ReactNode } from 'react';
 import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
 import { saveGame } from './saveGame';
@@ -39,6 +39,8 @@ const GameContext = createContext<
 export function GameProvider({ children }: { children: ReactNode }) {
   // useReducer 第3引数を使って初期迷路を読み込む
   const [state, dispatch] = useReducer(reducer, loadMaze(10), createFirstStage);
+  // 初回の useEffect 実行をスキップするためのフラグ
+  const first = useRef(true);
 
   const move = (dir: Dir): boolean => {
     const success = canMove(state.pos, dir, state.maze);
@@ -76,8 +78,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const resetRun = () => send({ type: 'resetRun' });
   const loadState = (s: State) => send({ type: 'load', state: s });
 
-  // 状態が変化するたび自動保存する
+  // 状態が変化するたび自動保存するが、初回だけはスキップする
   useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
     saveGame(state);
   }, [state]);
 
