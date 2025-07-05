@@ -121,21 +121,29 @@ export function useResultActions({
     if (okLockedRef.current) return;
     okLockedRef.current = true;
     setOkLocked(true);
+
+    const currentStage = state.stage;
+
     if (gameOver) {
       resetRun();
     } else if (gameClear) {
       resetRun();
       router.replace('/');
-    } else if (stageClear) {
-      await showAdIfNeeded(state.stage);
-      nextStage();
     }
+
+    // リザルト関連のフラグを先にリセットしておく
     setShowResult(false);
     setGameOver(false);
     setDebugAll(false);
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+
+    if (stageClear) {
+      await showAdIfNeeded(currentStage);
+      nextStage();
+    }
+
     okLockedRef.current = false;
     setOkLocked(false);
   };
