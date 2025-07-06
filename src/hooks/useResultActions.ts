@@ -56,6 +56,8 @@ export function useResultActions({
     setDebugAll,
     okLocked,
     setOkLocked,
+    adShown,
+    setAdShown,
   } = useResultState();
 
   const { showAdIfNeeded } = useStageEffects({
@@ -73,6 +75,7 @@ export function useResultActions({
       setGameOver(false);
       setGameClear(state.finalStage);
       setShowResult(true);
+      setAdShown(false);
       setDebugAll(willChangeMap);
       if (state.levelId) {
         const current = {
@@ -88,6 +91,7 @@ export function useResultActions({
       setGameOver(true);
       setStageClear(false);
       setShowResult(true);
+      setAdShown(false);
       setDebugAll(true);
       if (state.levelId) {
         const current = {
@@ -117,6 +121,7 @@ export function useResultActions({
     setShowResult,
     setDebugAll,
     setGameClear,
+    setAdShown,
   ]);
 
   // OK ボタン押下時の処理
@@ -147,13 +152,27 @@ export function useResultActions({
       router.replace('/');
     }
 
-    // リザルト関連のフラグを先にリセットしておく
+    // ステージクリア直後で広告未表示なら広告を出してリザルトを再表示
+    if (wasStageClear && !adShown) {
+      setShowResult(false);
+      setAdShown(true);
+      await showAdIfNeeded(currentStage);
+      setShowResult(true);
+      setTimeout(() => {
+        okLockedRef.current = false;
+        setOkLocked(false);
+      }, OK_UNLOCK_DELAY);
+      return;
+    }
+
+    // リザルト関連のフラグをリセット
     setShowResult(false);
     setGameOver(false);
     setDebugAll(false);
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+    setAdShown(false);
 
     // ステート更新後の値を確認するための空await
     await Promise.resolve();
@@ -163,13 +182,9 @@ export function useResultActions({
       showResult,
     });
 
-    // wasStageClear の値を使って広告表示や次ステージ遷移を判断する
+    // 広告後の2回目タップ時に次ステージへ進む
     if (wasStageClear) {
-      console.log('showAdIfNeeded called with', currentStage);
-      await showAdIfNeeded(currentStage);
-      console.log('showAdIfNeeded finished', { stage: state.stage });
       nextStage();
-      // nextStage はステージ番号を 1 増やす
       await Promise.resolve();
       console.log('after nextStage', { stage: state.stage });
     }
@@ -189,6 +204,7 @@ export function useResultActions({
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+    setAdShown(false);
     resetRun();
   };
 
@@ -199,6 +215,7 @@ export function useResultActions({
     setStageClear(false);
     setGameClear(false);
     setNewRecord(false);
+    setAdShown(false);
     resetRun();
     router.replace('/');
   };

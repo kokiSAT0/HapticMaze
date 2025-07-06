@@ -12,6 +12,8 @@ export function useResultState() {
   const [showMenu, setShowMenu] = useState(false);
   const [debugAll, setDebugAll] = useState(false);
   const [okLocked, setOkLocked] = useState(false);
+  // 各ステージで広告を一度だけ表示したかを記録するフラグ
+  const [adShown, setAdShown] = useState(false);
 
   return {
     showResult,
@@ -28,5 +30,7 @@ export function useResultState() {
     setDebugAll,
     okLocked,
     setOkLocked,
+    adShown,
+    setAdShown,
   } as const;
 }

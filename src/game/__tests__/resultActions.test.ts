@@ -21,6 +21,10 @@ const setDebugAll = jest.fn();
 const setNewRecord = jest.fn();
 const setOkLocked = jest.fn();
 const setShowMenu = jest.fn();
+let adShown = false;
+const setAdShown = jest.fn((v: boolean) => {
+  adShown = v;
+});
 
 jest.mock('@/src/hooks/useResultState', () => ({
   useResultState: () => ({
@@ -38,6 +42,8 @@ jest.mock('@/src/hooks/useResultState', () => ({
     setDebugAll,
     okLocked: false,
     setOkLocked,
+    adShown,
+    setAdShown,
   }),
 }));
 
@@ -53,7 +59,7 @@ jest.mock('@/src/hooks/useHighScore', () => ({
 const showAdIfNeeded = jest.fn(async () => {
   // 広告表示時点でリザルト関連フラグが全て false になっているか確認
   expect(showResult).toBe(false);
-  expect(stageClear).toBe(false);
+  expect(stageClear).toBe(true);
 });
 
 jest.mock('@/src/hooks/useStageEffects', () => ({
@@ -66,10 +72,11 @@ describe('handleOk の広告表示後処理', () => {
   beforeEach(() => {
     showResult = true;
     stageClear = true;
+    adShown = false;
     jest.clearAllMocks();
   });
 
-  test('広告閉鎖後に次ステージでリザルトが自動表示されない', async () => {
+  test('広告表示後は同じリザルト画面を維持する', async () => {
     const nextStage = jest.fn();
     const resetRun = jest.fn();
     const router = { replace: jest.fn() };
@@ -88,6 +95,33 @@ describe('handleOk の広告表示後処理', () => {
     await actions.handleOk();
 
     expect(showAdIfNeeded).toHaveBeenCalledWith(2);
+    expect(nextStage).not.toHaveBeenCalled();
+    expect(showResult).toBe(true);
+    expect(stageClear).toBe(true);
+  });
+
+  test('広告表示後の再押下で次ステージへ進む', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // 既に広告を見た状態を想定
+    adShown = true;
+
+    const actions = useResultActions({
+      state: { stage: 2 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      showSnackbar: jest.fn(),
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+
+    expect(showAdIfNeeded).not.toHaveBeenCalled();
     expect(nextStage).toHaveBeenCalled();
     expect(showResult).toBe(false);
     expect(stageClear).toBe(false);
@@ -122,7 +156,7 @@ describe('handleOk の広告表示後処理', () => {
     expect(showResult).toBe(false);
   });
 
-  test('ステート更新が非同期でもフラグが正しくリセットされる', async () => {
+  test('ステート更新が非同期でもリザルトを再表示できる', async () => {
     const nextStage = jest.fn();
     const resetRun = jest.fn();
     const router = { replace: jest.fn() };
@@ -152,8 +186,8 @@ describe('handleOk の広告表示後処理', () => {
     await Promise.resolve();
 
     expect(showAdIfNeeded).toHaveBeenCalledWith(2);
-    expect(nextStage).toHaveBeenCalled();
-    expect(showResult).toBe(false);
-    expect(stageClear).toBe(false);
+    expect(nextStage).not.toHaveBeenCalled();
+    expect(showResult).toBe(true);
+    expect(stageClear).toBe(true);
   });
 });
