@@ -1,5 +1,16 @@
-import React, { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
+import {
+  createAudioPlayer,
+  setAudioModeAsync,
+  type AudioPlayer,
+} from "expo-audio";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 interface BgmContextValue {
   volume: number;
@@ -20,7 +31,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     // volume は初期値だけ使用するため依存配列には含めない
     (async () => {
       await setAudioModeAsync({ playsInSilentMode: true });
-      const p = createAudioPlayer(require('../../assets/sounds/タタリ.mp3'));
+      const p = createAudioPlayer(
+        require("../../assets/sounds/降りしきる、白.mp3")
+      );
       p.loop = true;
       p.volume = volume;
       p.play();
@@ -54,6 +67,6 @@ export function BgmProvider({ children }: { children: ReactNode }) {
 
 export function useBgm() {
   const ctx = useContext(BgmContext);
-  if (!ctx) throw new Error('useBgm は BgmProvider 内で利用してください');
+  if (!ctx) throw new Error("useBgm は BgmProvider 内で利用してください");
   return ctx;
 }
