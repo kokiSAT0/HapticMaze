@@ -67,6 +67,19 @@ export function useResultActions({
   });
   const okLockedRef = useRef(false);
 
+  // 広告表示後にリザルト画面が再表示された際、
+  // OKボタンが押せないままになることを防ぐためのロック解除処理
+  useEffect(() => {
+    // showResult が true で広告表示済みかつボタンがロックされている場合
+    if (showResult && adShown && okLocked) {
+      const id = setTimeout(() => {
+        okLockedRef.current = false;
+        setOkLocked(false);
+      }, OK_UNLOCK_DELAY);
+      return () => clearTimeout(id);
+    }
+  }, [showResult, adShown, okLocked, setOkLocked]);
+
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
     const willChangeMap = state.stage % maze.size === 0;
