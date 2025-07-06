@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   loadHighScore,
   saveHighScore,
@@ -34,7 +34,7 @@ export function useHighScore(levelId: string | null | undefined) {
    * 現在のスコアを渡して、より良い記録なら保存する。
    * `finalStage` が true の場合のみ新記録表示を行う。
    */
-  const updateScore = async (score: HighScore, finalStage: boolean) => {
+  const updateScore = useCallback(async (score: HighScore, finalStage: boolean) => {
     if (!levelId) return;
     const old = await loadHighScore(levelId);
     const better = isBetterScore(old, score);
@@ -45,7 +45,7 @@ export function useHighScore(levelId: string | null | undefined) {
       setHighScore(old);
     }
     setNewRecord(better && finalStage);
-  };
+  }, [levelId]);
 
   return { highScore, newRecord, setNewRecord, updateScore } as const;
 }
