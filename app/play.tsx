@@ -7,7 +7,6 @@ import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
-import { PlayMenu } from "@/components/PlayMenu";
 import { ResultModal } from '@/components/ResultModal';
 import { EdgeOverlay } from '@/components/EdgeOverlay';
 import { playStyles } from '@/src/styles/playStyles';
@@ -26,16 +25,8 @@ export default function PlayScreen() {
     gameClear,
     highScore,
     newRecord,
-    showMenu,
-    setShowMenu,
     debugAll,
     setDebugAll,
-    bgmVolume,
-    seVolume,
-    incBgm,
-    decBgm,
-    incSe,
-    decSe,
     borderColor,
     borderW,
     maxBorder,
@@ -44,7 +35,6 @@ export default function PlayScreen() {
     handleMove,
     handleOk,
     handleRespawn,
-    handleReset,
     handleExit,
   } = usePlayLogic();
 
@@ -80,14 +70,18 @@ export default function PlayScreen() {
       >
         <MaterialIcons name="refresh" size={24} color={resetColor} />
       </Pressable>
-      {/* 右上のメニューアイコン */}
+      {/* 全てを可視化するボタン。押す度に表示/非表示を切り替える */}
       <Pressable
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
-        onPress={() => setShowMenu(true)}
-        accessibilityLabel="メニューを開く"
+        onPress={() => setDebugAll(!debugAll)}
+        accessibilityLabel={t('showMazeAll')}
       >
-        {/* 背景が黒のためアイコンを濃いグレーにして視認性を確保 */}
-          <MaterialIcons name="more-vert" size={24} color={UI.colors.icon} />
+        {/* debugAll の状態に応じてアイコンを変更 */}
+        <MaterialIcons
+          name={debugAll ? 'visibility-off' : 'visibility'}
+          size={24}
+          color={UI.colors.icon}
+        />
       </Pressable>
       <View style={[playStyles.miniMapWrapper, { top: mapTop }]}>
         <MiniMap
@@ -110,30 +104,6 @@ export default function PlayScreen() {
       <View style={[playStyles.dpadWrapper, { top: dpadTop }]}>
         <DPad onPress={handleMove} disabled={locked} />
       </View>
-      <PlayMenu
-        visible={showMenu}
-        top={insets.top + 40}
-        onClose={() => setShowMenu(false)}
-        onReset={handleReset}
-        debugAll={debugAll}
-        setDebugAll={setDebugAll}
-        bgmVolume={bgmVolume}
-        seVolume={seVolume}
-        incBgm={incBgm}
-        decBgm={decBgm}
-        incSe={incSe}
-        decSe={decSe}
-        labelReset={t('resetMaze')}
-        labelResetAcc={t('resetMazeLabel')}
-        labelShowAll={t('showAll')}
-        labelShowMaze={t('showMazeAll')}
-        labelBgm={t('bgmVolume')}
-        labelSe={t('seVolume')}
-        accIncBgm={t('increase', { label: t('bgmVolume') })}
-        accDecBgm={t('decrease', { label: t('bgmVolume') })}
-        accIncSe={t('increase', { label: t('seVolume') })}
-        accDecSe={t('decrease', { label: t('seVolume') })}
-      />
       <ResultModal
         visible={showResult}
         top={resultTop}
