@@ -164,7 +164,11 @@ export function useResultActions({
     if (wasStageClear) {
       console.log('showAdIfNeeded called with', currentStage);
       await showAdIfNeeded(currentStage);
+      console.log('showAdIfNeeded finished', { stage: state.stage });
       nextStage();
+      // nextStage はステージ番号を 1 増やす
+      await Promise.resolve();
+      console.log('after nextStage', { stage: state.stage });
     }
 
     okLockedRef.current = false;
