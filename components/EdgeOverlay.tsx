@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { playStyles } from '@/app/styles/playStyles';
+import { playStyles } from '@/src/styles/playStyles';
 
 // LinearGradient を Reanimated 用にラップする
 const AnimatedLG =

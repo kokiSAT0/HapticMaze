@@ -10,7 +10,7 @@ import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { PlayMenu } from "@/components/PlayMenu";
 import { ResultModal } from '@/components/ResultModal';
 import { EdgeOverlay } from '@/components/EdgeOverlay';
-import { playStyles } from '@/app/styles/playStyles';
+import { playStyles } from '@/src/styles/playStyles';
 import { UI } from '@/constants/ui';
 
 export default function PlayScreen() {
