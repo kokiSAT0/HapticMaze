@@ -25,6 +25,7 @@ export async function showInterstitial() {
 
     // 広告イベントを監視し、読み込み完了で表示、閉じるかエラーで終了
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
+      console.log('Interstitial event', type);
       if (type === AdEventType.LOADED) {
         ad.show();
       }
