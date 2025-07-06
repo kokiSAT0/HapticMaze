@@ -121,4 +121,39 @@ describe('handleOk の広告表示後処理', () => {
     // リザルト関連フラグは false のまま
     expect(showResult).toBe(false);
   });
+
+  test('ステート更新が非同期でもフラグが正しくリセットされる', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // 非同期で値が書き換わるようにモックする
+    setShowResult.mockImplementation(async (v: boolean) => {
+      await Promise.resolve();
+      showResult = v;
+    });
+    setStageClear.mockImplementation(async (v: boolean) => {
+      await Promise.resolve();
+      stageClear = v;
+    });
+
+    const actions = useResultActions({
+      state: { stage: 2 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      showSnackbar: jest.fn(),
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+    await Promise.resolve();
+
+    expect(showAdIfNeeded).toHaveBeenCalledWith(2);
+    expect(nextStage).toHaveBeenCalled();
+    expect(showResult).toBe(false);
+    expect(stageClear).toBe(false);
+  });
 });

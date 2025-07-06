@@ -123,6 +123,10 @@ export function useResultActions({
     setOkLocked(true);
 
     const currentStage = state.stage;
+    // stageClear の値は setState で非同期に変化する可能性があるため
+    // 先に変数へ退避しておく
+    // フラグ(flag)とは処理分岐のための真偽値のこと
+    const wasStageClear = stageClear;
 
     // 現在の状態をログに出すことでデバッグしやすくする
     console.log('handleOk start', {
@@ -156,7 +160,8 @@ export function useResultActions({
       showResult,
     });
 
-    if (stageClear) {
+    // wasStageClear の値を使って広告表示や次ステージ遷移を判断する
+    if (wasStageClear) {
       console.log('showAdIfNeeded called with', currentStage);
       await showAdIfNeeded(currentStage);
       nextStage();
