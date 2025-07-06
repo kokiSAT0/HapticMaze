@@ -115,6 +115,27 @@ export function biasedPickGoal(
 }
 
 /**
+ * 任意の位置から離れたマスほど選ばれやすい形で1マス取得する
+ * `biasedPickGoal` を一般化したもの。
+ */
+export function biasedPickFrom(
+  origin: Vec2,
+  cells: Vec2[],
+  rnd: () => number = Math.random,
+): Vec2 {
+  const weights = cells.map(
+    (c) => Math.abs(c.x - origin.x) + Math.abs(c.y - origin.y) + 1,
+  );
+  const sum = weights.reduce((a, b) => a + b, 0);
+  let r = rnd() * sum;
+  for (let i = 0; i < cells.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return cells[i];
+  }
+  return cells[cells.length - 1];
+}
+
+/**
  * サイズから全てのマス座標を列挙する
  */
 export function allCells(size: number): Vec2[] {

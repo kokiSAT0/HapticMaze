@@ -2,7 +2,7 @@
 // プログラミング初心者向けにコメント多めで解説しています
 
 import type { MazeData, Vec2 } from '@/src/types/maze';
-import { allCells, biasedPickGoal } from '../maze';
+import { allCells, biasedPickFrom } from '../maze';
 
 /** 敵をランダムな位置に生成する */
 export function spawnEnemies(
@@ -26,7 +26,7 @@ export function spawnEnemies(
 
   while (enemies.length < count && candidates.length > 0) {
     const cell = biased
-      ? biasedPickGoal(origin, candidates, rnd)
+      ? biasedPickFrom(origin, candidates, rnd)
       : candidates[Math.floor(rnd() * candidates.length)];
     const key = `${cell.x},${cell.y}`;
     enemies.push(cell);
