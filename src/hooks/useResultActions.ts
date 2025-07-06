@@ -7,6 +7,9 @@ import { useStageEffects } from '@/src/hooks/useStageEffects';
 import type { GameState } from '@/src/game/state';
 import type { MazeData } from '@/src/types/maze';
 
+// OKボタンのロックを解除するまでの待ち時間(ms)
+const OK_UNLOCK_DELAY = 500;
+
 interface Options {
   state: GameState;
   maze: MazeData;
@@ -171,8 +174,12 @@ export function useResultActions({
       console.log('after nextStage', { stage: state.stage });
     }
 
-    okLockedRef.current = false;
-    setOkLocked(false);
+    // 広告が閉じた瞬間に連続タップが発生することがあるため
+    // 少し待ってからロックを解除する
+    setTimeout(() => {
+      okLockedRef.current = false;
+      setOkLocked(false);
+    }, OK_UNLOCK_DELAY);
   };
 
   // リセット処理
