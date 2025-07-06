@@ -124,6 +124,15 @@ export function useResultActions({
 
     const currentStage = state.stage;
 
+    // 現在の状態をログに出すことでデバッグしやすくする
+    console.log('handleOk start', {
+      stage: state.stage,
+      gameOver,
+      gameClear,
+      stageClear,
+      showResult,
+    });
+
     if (gameOver) {
       resetRun();
     } else if (gameClear) {
@@ -139,10 +148,16 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
 
-    // 上記ステート更新が反映されるのを待つための空await
+    // ステート更新後の値を確認するための空await
     await Promise.resolve();
 
+    console.log('after reset', {
+      stageClear,
+      showResult,
+    });
+
     if (stageClear) {
+      console.log('showAdIfNeeded called with', currentStage);
       await showAdIfNeeded(currentStage);
       nextStage();
     }

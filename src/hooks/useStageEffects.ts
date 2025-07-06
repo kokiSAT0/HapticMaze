@@ -16,6 +16,8 @@ export function useStageEffects({ pauseBgm, resumeBgm, showSnackbar }: Options) 
    * 9 の倍数または 1 ステージ目で実行
    */
   const showAdIfNeeded = async (stage: number) => {
+    // 広告表示の条件と実行ステージをログに残す
+    console.log('showAdIfNeeded check', { stage });
     if (stage % 9 === 0 || stage === 1) {
       try {
         pauseBgm();
