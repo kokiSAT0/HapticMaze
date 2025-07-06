@@ -13,8 +13,8 @@ export interface StoredState {
   steps: number;
   bumps: number;
   path: State['path'];
-  hitV: [string, number][];
-  hitH: [string, number][];
+  hitV: [string, number | null][];
+  hitH: [string, number | null][];
   enemies: State['enemies'];
   enemyVisited: [string, number][][];
   enemyPaths: State['enemyPaths'];
@@ -24,9 +24,9 @@ export interface StoredState {
   finalStage: boolean;
   enemyBehavior: State['enemyBehavior'];
   enemyCounts: State['enemyCounts'];
-  enemyPathLength: number;
-  playerPathLength: number;
-  wallLifetime: number;
+  enemyPathLength: number | null;
+  playerPathLength: number | null;
+  wallLifetime: number | null;
   biasedSpawn: boolean;
   levelId?: string;
 }
@@ -68,8 +68,12 @@ export function decodeState(data: StoredState): State {
     steps: data.steps,
     bumps: data.bumps,
     path: data.path,
-    hitV: new Map(data.hitV),
-    hitH: new Map(data.hitH),
+    hitV: new Map(
+      data.hitV.map(([k, v]) => [k, v === null ? Infinity : v]),
+    ),
+    hitH: new Map(
+      data.hitH.map(([k, v]) => [k, v === null ? Infinity : v]),
+    ),
     enemies: data.enemies,
     enemyVisited: data.enemyVisited.map((arr) => new Map(arr)),
     enemyPaths: data.enemyPaths,
@@ -80,9 +84,11 @@ export function decodeState(data: StoredState): State {
     enemyBehavior: data.enemyBehavior,
     enemyCounts: data.enemyCounts,
     enemyCountsFn: level?.enemyCountsFn,
-    enemyPathLength: data.enemyPathLength,
-    playerPathLength: data.playerPathLength,
-    wallLifetime: data.wallLifetime,
+    enemyPathLength:
+      data.enemyPathLength === null ? Infinity : data.enemyPathLength,
+    playerPathLength:
+      data.playerPathLength === null ? Infinity : data.playerPathLength,
+    wallLifetime: data.wallLifetime === null ? Infinity : data.wallLifetime,
     wallLifetimeFn: level?.wallLifetimeFn,
     biasedSpawn: data.biasedSpawn,
     levelId: data.levelId,
