@@ -15,7 +15,7 @@ export function useStageEffects({ pauseBgm, resumeBgm, showSnackbar }: Options) 
    * ステージ番号に応じて広告を表示する
    * 9 の倍数または 1 ステージ目で実行
    */
-  const showAdIfNeeded = async (stage: number) => {
+  const showAdIfNeeded = async (stage: number): Promise<boolean> => {
     // 実行条件となるステージかどうか計算しておく
     const shouldShow = stage % 9 === 0 || stage === 1;
     console.log('showAdIfNeeded check', { stage, shouldShow });
@@ -31,7 +31,9 @@ export function useStageEffects({ pauseBgm, resumeBgm, showSnackbar }: Options) 
       } finally {
         resumeBgm();
       }
+      return true;
     }
+    return false;
   };
 
   return { showAdIfNeeded } as const;

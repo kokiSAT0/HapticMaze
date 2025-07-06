@@ -168,17 +168,21 @@ export function useResultActions({
       router.replace('/');
     }
 
-    // ステージクリア直後で広告未表示なら広告を出してリザルトを再表示
+    // ステージクリア直後で広告未表示なら広告を検討
     if (wasStageClear && !adShown) {
       setShowResult(false);
       setAdShown(true);
-      await showAdIfNeeded(currentStage);
-      setShowResult(true);
-      setTimeout(() => {
-        okLockedRef.current = false;
-        setOkLocked(false);
-      }, OK_UNLOCK_DELAY);
-      return;
+      const didShow = await showAdIfNeeded(currentStage);
+      if (didShow) {
+        // 広告を表示した場合はリザルトを再表示
+        setShowResult(true);
+        setTimeout(() => {
+          okLockedRef.current = false;
+          setOkLocked(false);
+        }, OK_UNLOCK_DELAY);
+        return;
+      }
+      // 広告を表示しなかった場合はこのまま次の処理へ
     }
 
     // リザルト関連のフラグをリセット

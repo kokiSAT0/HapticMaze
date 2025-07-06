@@ -60,6 +60,8 @@ const showAdIfNeeded = jest.fn(async () => {
   // 広告表示時点でリザルト関連フラグが全て false になっているか確認
   expect(showResult).toBe(false);
   expect(stageClear).toBe(true);
+  // テストでは広告が表示された想定で true を返す
+  return true;
 });
 
 jest.mock('@/src/hooks/useStageEffects', () => ({
@@ -122,6 +124,34 @@ describe('handleOk の広告表示後処理', () => {
     await actions.handleOk();
 
     expect(showAdIfNeeded).not.toHaveBeenCalled();
+    expect(nextStage).toHaveBeenCalled();
+    expect(showResult).toBe(false);
+    expect(stageClear).toBe(false);
+  });
+
+  test('広告条件外ならリザルトを再表示しない', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // このテストでは広告を表示しない想定で false を返す
+    showAdIfNeeded.mockResolvedValueOnce(false);
+
+    const actions = useResultActions({
+      state: { stage: 3 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      showSnackbar: jest.fn(),
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+
+    expect(showAdIfNeeded).toHaveBeenCalledWith(3);
+    // 広告が無いのでそのまま次ステージへ
     expect(nextStage).toHaveBeenCalled();
     expect(showResult).toBe(false);
     expect(stageClear).toBe(false);
