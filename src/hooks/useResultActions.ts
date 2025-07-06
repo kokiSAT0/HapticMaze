@@ -139,6 +139,9 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
 
+    // 上記ステート更新が反映されるのを待つための空await
+    await Promise.resolve();
+
     if (stageClear) {
       await showAdIfNeeded(currentStage);
       nextStage();

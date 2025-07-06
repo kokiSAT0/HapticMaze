@@ -92,4 +92,33 @@ describe('handleOk の広告表示後処理', () => {
     expect(showResult).toBe(false);
     expect(stageClear).toBe(false);
   });
+
+  test('広告なしでもリザルト非表示を維持', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // ステージクリアでない状態を想定
+    stageClear = false;
+
+    const actions = useResultActions({
+      state: { stage: 1 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      showSnackbar: jest.fn(),
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+
+    // 広告やステージ遷移は呼ばれない
+    expect(showAdIfNeeded).not.toHaveBeenCalled();
+    expect(nextStage).not.toHaveBeenCalled();
+
+    // リザルト関連フラグは false のまま
+    expect(showResult).toBe(false);
+  });
 });
