@@ -13,7 +13,7 @@ import { useMoveHandler } from '@/src/hooks/useMoveHandler';
  */
 export function usePlayLogic() {
   const router = useRouter();
-  const { state, move, maze, nextStage, resetRun } = useGame();
+  const { state, move, maze, nextStage, resetRun, respawnEnemies } = useGame();
   const { width } = useWindowDimensions();
   const { show: showSnackbar } = useSnackbar();
 
@@ -44,6 +44,15 @@ export function usePlayLogic() {
   // ステージ総数。迷路は正方形なので size×size となる
   const totalStages = maze.size * maze.size;
 
+  // 敵のみをリスポーンする処理
+  const handleRespawn = () => {
+    if (state.respawnStock <= 0) {
+      showSnackbar('リスポーン回数がありません');
+      return;
+    }
+    respawnEnemies();
+  };
+
   return {
     state,
     maze,
@@ -57,5 +66,6 @@ export function usePlayLogic() {
     decSe: audio.decSe,
     audioReady: audio.audioReady,
     ...moveCtrl,
+    handleRespawn,
   } as const;
 }

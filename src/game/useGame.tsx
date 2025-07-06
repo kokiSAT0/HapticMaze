@@ -30,6 +30,7 @@ const GameContext = createContext<
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
+      respawnEnemies: () => void;
       loadState: (s: State) => void;
       maze: MazeData;
     }
@@ -76,6 +77,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   const nextStage = () => send({ type: 'nextStage' });
   const resetRun = () => send({ type: 'resetRun' });
+  const respawnEnemies = () => send({ type: 'respawnEnemies', playerPos: state.pos });
   const loadState = (s: State) => send({ type: 'load', state: s });
 
   // 状態が変化するたび自動保存するが、初回だけはスキップする
@@ -89,7 +91,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   return (
     <GameContext.Provider
-      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun, loadState }}
+      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun, respawnEnemies, loadState }}
     >
       {children}
     </GameContext.Provider>

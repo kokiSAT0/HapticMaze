@@ -29,6 +29,7 @@ export interface StoredState {
   wallLifetime: number | null;
   biasedSpawn: boolean;
   levelId?: string;
+  respawnStock: number;
 }
 
 // State から保存用データへ変換
@@ -55,6 +56,7 @@ export function encodeState(state: State): StoredState {
     wallLifetime: state.wallLifetime,
     biasedSpawn: state.biasedSpawn,
     levelId: state.levelId,
+    respawnStock: state.respawnStock,
   };
 }
 
@@ -92,6 +94,7 @@ export function decodeState(data: StoredState): State {
     wallLifetimeFn: level?.wallLifetimeFn,
     biasedSpawn: data.biasedSpawn,
     levelId: data.levelId,
+    respawnStock: data.respawnStock,
   };
 }
 

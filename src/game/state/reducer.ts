@@ -3,6 +3,7 @@ import type { Dir, MazeData } from '@/src/types/maze';
 import type { EnemyCounts } from '@/src/types/enemy';
 import { initState, State } from './core';
 import { createFirstStage, nextStageState, restartRun } from './stage';
+import { createEnemies } from './enemy';
 
 // Reducer で使うアクション型
 export type Action =
@@ -22,7 +23,8 @@ export type Action =
       levelId?: string;
     }
   | { type: 'nextStage' }
-  | { type: 'resetRun' };
+  | { type: 'resetRun' }
+  | { type: 'respawnEnemies'; playerPos: { x: number; y: number } };
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -59,6 +61,21 @@ export function reducer(state: State, action: Action): State {
       return nextStageState(state);
     case 'resetRun':
       return restartRun(state);
+    case 'respawnEnemies': {
+      const enemies = createEnemies(
+        state.enemyCounts,
+        state.mazeRaw,
+        state.biasedSpawn,
+        action.playerPos,
+      );
+      return {
+        ...state,
+        enemies,
+        enemyVisited: enemies.map((e) => new Map([[`${e.pos.x},${e.pos.y}`, 1]])),
+        enemyPaths: enemies.map((e) => [{ ...e.pos }]),
+        respawnStock: state.respawnStock - 1,
+      };
+    }
     case 'move': {
       return handleMoveAction(state, action.dir);
     }

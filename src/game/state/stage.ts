@@ -50,6 +50,7 @@ export function createFirstStage(
     wallLifetimeFn,
     biasedSpawn,
     levelId,
+    3,
   );
 }
 
@@ -79,6 +80,7 @@ export function nextStageState(state: State): State {
   const hitV = changeMap ? new Map<string, number>() : new Map(state.hitV);
   const hitH = changeMap ? new Map<string, number>() : new Map(state.hitH);
   const nextWallLife = state.wallLifetimeFn?.(state.stage + 1) ?? state.wallLifetime;
+  const stock = Math.min(state.respawnStock + 1, 3);
   return initState(
     maze,
     state.stage + 1,
@@ -94,6 +96,7 @@ export function nextStageState(state: State): State {
     state.wallLifetimeFn,
     state.biasedSpawn,
     state.levelId,
+    stock,
   );
 }
 

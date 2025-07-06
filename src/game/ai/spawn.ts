@@ -11,21 +11,22 @@ export function spawnEnemies(
   rnd: () => number = Math.random,
   exclude: Set<string> = new Set(),
   biased: boolean = true,
+  // どこから遠ざけるかの基準位置。未指定ならスタート地点
+  origin: Vec2 = { x: maze.start[0], y: maze.start[1] },
 ): Vec2[] {
   const enemies: Vec2[] = [];
-  const start = { x: maze.start[0], y: maze.start[1] };
   const goal = { x: maze.goal[0], y: maze.goal[1] };
   const candidates = allCells(maze.size).filter((c) => {
     const key = `${c.x},${c.y}`;
     if (exclude.has(key)) return false;
-    if (c.x === start.x && c.y === start.y) return false;
+    if (c.x === origin.x && c.y === origin.y) return false;
     if (c.x === goal.x && c.y === goal.y) return false;
     return true;
   });
 
   while (enemies.length < count && candidates.length > 0) {
     const cell = biased
-      ? biasedPickGoal(start, candidates, rnd)
+      ? biasedPickGoal(origin, candidates, rnd)
       : candidates[Math.floor(rnd() * candidates.length)];
     const key = `${cell.x},${cell.y}`;
     enemies.push(cell);
