@@ -162,7 +162,9 @@ export function useResultActions({
     });
 
     if (gameOver) {
+      // ゲームオーバー時はランをリセットしてタイトルへ戻る
       resetRun();
+      router.replace('/');
     } else if (gameClear) {
       resetRun();
       router.replace('/');
