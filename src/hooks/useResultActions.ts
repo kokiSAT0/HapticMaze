@@ -202,16 +202,14 @@ export function useResultActions({
       showResult,
     });
 
-    // 広告後の2回目タップ時に次ステージへ進む
-    if (wasStageClear) {
-      nextStage();
-      await Promise.resolve();
-      console.log('after nextStage', { stage: state.stage });
-    }
-
-    // 広告が閉じた瞬間に連続タップが発生することがあるため
-    // 少し待ってからロックを解除する
+    // 広告後の2回目タップ時に次ステージへ進むが、
+    // 画面フェードアウト完了後に進むよう遅延させる
+    // setTimeout は指定時間後に一度だけ実行するタイマー関数
     setTimeout(() => {
+      if (wasStageClear) {
+        nextStage();
+      }
+      // OKボタンのロック解除も同時に行う
       okLockedRef.current = false;
       setOkLocked(false);
     }, OK_UNLOCK_DELAY);
