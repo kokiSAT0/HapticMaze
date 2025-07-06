@@ -226,7 +226,7 @@ export function useResultActions({
     resetRun();
   };
 
-  // タイトルへ戻る処理
+  // ステートを保持したままタイトルへ戻る処理
   const handleExit = () => {
     setShowMenu(false);
     setGameOver(false);
@@ -234,7 +234,6 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-    resetRun();
     router.replace('/');
   };
 
