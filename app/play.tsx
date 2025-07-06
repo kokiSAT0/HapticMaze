@@ -43,6 +43,7 @@ export default function PlayScreen() {
     okLocked,
     handleMove,
     handleOk,
+    handleRespawn,
     handleReset,
     handleExit,
   } = usePlayLogic();
@@ -55,6 +56,9 @@ export default function PlayScreen() {
   // ResultModal はミニマップ下端より 10px 下に表示する
   // MiniMap のサイズは 300px のため、mapTop + 310 が位置となる
   const resultTop = mapTop + 310;
+  // リセットボタンの色。使用回数に応じて白から黒へ変化させる
+  const gray = Math.round((state.respawnStock / 3) * 255);
+  const resetColor = `rgb(${gray},${gray},${gray})`;
 
   return (
     <View style={[playStyles.container, { paddingTop: insets.top }]}>
@@ -68,13 +72,13 @@ export default function PlayScreen() {
       </Pressable>
       {/* 枠線用のオーバーレイ。処理は EdgeOverlay にまとめた */}
       <EdgeOverlay borderColor={borderColor} borderW={borderW} maxBorder={maxBorder} />
-      {/* 右上のリセットアイコン。迷路を初期状態に戻す */}
+      {/* 右上のリセットアイコン。敵だけを再配置する */}
       <Pressable
         style={[playStyles.resetBtn, { top: insets.top + 10 }]}
-        onPress={handleReset}
-        accessibilityLabel="迷路をリセット"
+        onPress={handleRespawn}
+        accessibilityLabel="敵をリスポーン"
       >
-        <MaterialIcons name="refresh" size={24} color={UI.colors.icon} />
+        <MaterialIcons name="refresh" size={24} color={resetColor} />
       </Pressable>
       {/* 右上のメニューアイコン */}
       <Pressable

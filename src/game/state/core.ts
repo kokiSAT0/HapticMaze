@@ -58,6 +58,8 @@ export interface GameState {
   biasedSpawn: boolean;
   /** 現在のレベル識別子。練習モードは undefined */
   levelId?: string;
+  /** 敵をリスポーンできる残り回数 */
+  respawnStock: number;
 }
 
 // Provider が保持する全体の状態
@@ -82,6 +84,7 @@ export function initState(
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
   levelId?: string,
+  respawnStock: number = 3,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
@@ -114,5 +117,6 @@ export function initState(
     wallLifetimeFn,
     biasedSpawn,
     levelId,
+    respawnStock,
   };
 }

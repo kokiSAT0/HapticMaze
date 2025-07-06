@@ -7,10 +7,11 @@ export function createEnemies(
   counts: EnemyCounts,
   maze: MazeData,
   biasedSpawn: boolean,
+  biasFrom?: { x: number; y: number },
 ): Enemy[] {
   const enemies: Enemy[] = [];
   const exclude = new Set<string>();
-  spawnEnemies(counts.random, maze, Math.random, exclude, biasedSpawn).forEach(
+  spawnEnemies(counts.random, maze, Math.random, exclude, biasedSpawn, biasFrom).forEach(
     (p) => {
       enemies.push({
         pos: p,
@@ -25,7 +26,7 @@ export function createEnemies(
       });
     },
   );
-  spawnEnemies(counts.slow, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
+  spawnEnemies(counts.slow, maze, Math.random, exclude, biasedSpawn, biasFrom).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
@@ -38,7 +39,7 @@ export function createEnemies(
       kind: 'slow',
     });
   });
-  spawnEnemies(counts.sight, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
+  spawnEnemies(counts.sight, maze, Math.random, exclude, biasedSpawn, biasFrom).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
@@ -50,7 +51,7 @@ export function createEnemies(
       kind: 'sight',
     });
   });
-  spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude, biasedSpawn).forEach((p) => {
+  spawnEnemies(counts.fast ?? 0, maze, Math.random, exclude, biasedSpawn, biasFrom).forEach((p) => {
     enemies.push({
       pos: p,
       visible: true,
