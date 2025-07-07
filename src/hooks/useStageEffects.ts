@@ -3,6 +3,7 @@ import {
   showLoadedInterstitial,
   type InterstitialAd,
 } from "@/src/ads/interstitial";
+import { useCallback } from "react";
 
 interface Options {
   pauseBgm: () => void;
@@ -25,33 +26,43 @@ export function useStageEffects({
    */
   const shouldShowAd = (stage: number) => stage % 9 === 0 || stage === 1;
 
-  const loadAdIfNeeded = async (
-    stage: number,
-  ): Promise<InterstitialAd | null> => {
-    const shouldShow = shouldShowAd(stage);
-    console.log("loadAdIfNeeded", { stage, shouldShow });
-    if (!shouldShow) return null;
-    return loadInterstitial();
-  };
+  // 広告読み込み処理をメモ化
+  const loadAdIfNeeded = useCallback(
+    async (stage: number): Promise<InterstitialAd | null> => {
+      const shouldShow = shouldShowAd(stage);
+      console.log("loadAdIfNeeded", { stage, shouldShow });
+      if (!shouldShow) return null;
+      return loadInterstitial();
+    },
+    [],
+  );
 
-  const showAd = async (ad: InterstitialAd | null): Promise<boolean> => {
-    if (!ad) return false;
-    try {
-      pauseBgm();
-      await showLoadedInterstitial(ad);
-    } catch (e) {
-      console.error("interstitial error", e);
-      showSnackbar("広告を表示できませんでした");
-    } finally {
-      resumeBgm();
-    }
-    return true;
-  };
+  // 広告表示処理をメモ化。BGM 制御や通知を依存として指定
+  const showAd = useCallback(
+    async (ad: InterstitialAd | null): Promise<boolean> => {
+      if (!ad) return false;
+      try {
+        pauseBgm();
+        await showLoadedInterstitial(ad);
+      } catch (e) {
+        console.error("interstitial error", e);
+        showSnackbar("広告を表示できませんでした");
+      } finally {
+        resumeBgm();
+      }
+      return true;
+    },
+    [pauseBgm, resumeBgm, showSnackbar],
+  );
 
-  const showAdIfNeeded = async (stage: number): Promise<boolean> => {
-    const ad = await loadAdIfNeeded(stage);
-    return showAd(ad);
-  };
+  // 読み込みと表示をまとめた処理もメモ化
+  const showAdIfNeeded = useCallback(
+    async (stage: number): Promise<boolean> => {
+      const ad = await loadAdIfNeeded(stage);
+      return showAd(ad);
+    },
+    [loadAdIfNeeded, showAd],
+  );
 
   return { loadAdIfNeeded, showAd, showAdIfNeeded } as const;
 }
