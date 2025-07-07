@@ -74,9 +74,13 @@ export function useResultActions({
     showSnackbar,
   });
   const okLockedRef = useRef(false);
+  // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
+  const bannerActiveRef = useRef(false);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
+    // バナー表示中は旧ステージの判定をスキップする
+    if (bannerActiveRef.current) return;
     const willChangeMap = state.stage % maze.size === 0;
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setStageClear(true);
@@ -196,6 +200,8 @@ export function useResultActions({
     // 先にバナーを表示することで画面遷移をスムーズにする
     setBannerStage(state.stage + 1);
     setShowBanner(true);
+    // バナー表示中は判定をスキップするためフラグを立てる
+    bannerActiveRef.current = true;
 
     // リザルト関連のフラグをリセットする
     // これらは次のステージへ進む前に初期化したい状態
@@ -231,6 +237,7 @@ export function useResultActions({
    */
   const handleBannerFinish = () => {
     setShowBanner(false);
+    bannerActiveRef.current = false;
     // バナー表示後に OK ボタンのラベルを戻す
     setOkLabel(t("ok"));
     okLockedRef.current = false;
