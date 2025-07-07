@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
+import { useSeVolume } from '@/src/audio/SeVolumeProvider';
 
 /**
  * 効果音(SE)を管理するためのフック。
@@ -8,8 +9,8 @@ import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 export function useSE(soundFile: number) {
   // プレイヤーオブジェクトを保持する参照
   const playerRef = useRef<AudioPlayer | null>(null);
-  // 音量を 0〜1 の範囲で管理
-  const [volume, setVolume] = useState(1);
+  // グローバルな SE 音量を取得
+  const { volume, setVolume } = useSeVolume();
 
   // 初期化時に効果音を読み込む
   useEffect(() => {
