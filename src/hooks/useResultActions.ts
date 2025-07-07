@@ -76,15 +76,25 @@ export function useResultActions({
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
+  // ステージ1バナーを一度だけ表示したかを記録するフラグ
+  // useRef を使うことで表示済みかどうかを状態として保持する
+  const bannerShownRef = useRef(false);
 
   // ゲーム開始直後にステージ1バナーを表示する
   // 条件: ステージ1かつ移動回数0であること
   // ステージ開始時のバナー表示判定
   useEffect(() => {
-    if (state.stage === 1 && state.steps === 0 && !showBanner && bannerStage === 0) {
+    if (
+      state.stage === 1 &&
+      state.steps === 0 &&
+      !showBanner &&
+      bannerStage === 0 &&
+      !bannerShownRef.current
+    ) {
       setBannerStage(1);
       setShowBanner(true);
       bannerActiveRef.current = true;
+      bannerShownRef.current = true;
     }
   }, [state.stage, state.steps, showBanner, bannerStage, setBannerStage, setShowBanner]);
 
@@ -266,6 +276,8 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
+    // 初期ステージへ戻るのでバナー表示済みフラグもリセットする
+    bannerShownRef.current = false;
     resetRun();
   };
 
@@ -277,6 +289,8 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
+    // 次回開始時にステージバナーを表示するためフラグを戻す
+    bannerShownRef.current = false;
     router.replace("/");
   };
 
