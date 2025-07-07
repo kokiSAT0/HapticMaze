@@ -154,7 +154,7 @@ export default function TitleScreen() {
               {t("volumeSettings")}
             </ThemedText>
 
-            // ────── BGM 音量行（置換） ──────
+            {/* ────── BGM 音量行（置換） ────── */}
             <View style={styles.volumeRow}>
               <ThemedText lightColor="#fff" darkColor="#fff">
                 {t('bgmVolume')}:
@@ -183,7 +183,7 @@ export default function TitleScreen() {
               </View>
             </View>
 
-            // ────── SE 音量行（置換） ──────
+            {/* ────── SE 音量行（置換） ────── */}
             <View style={styles.volumeRow}>
               <ThemedText lightColor="#fff" darkColor="#fff">
                 {t('seVolume')}:
