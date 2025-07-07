@@ -91,7 +91,8 @@ export function useResultActions({
       setOkLabel(t("loadingAd"));
       loadAdIfNeeded(state.stage).then((ad) => {
         loadedAdRef.current = ad;
-        setOkLabel(ad ? t("showAd") : t("ok"));
+        // 広告が無ければ最初から「次のステージへ」と表示する
+        setOkLabel(ad ? t("showAd") : t("nextStage"));
         okLockedRef.current = false;
         setOkLocked(false);
       });
@@ -180,12 +181,15 @@ export function useResultActions({
     // ステージクリア直後で広告未表示なら広告を表示
     if (wasStageClear && !adShown) {
       setAdShown(true);
-      await showAd(loadedAdRef.current);
+      const shown = await showAd(loadedAdRef.current);
       loadedAdRef.current = null;
-      setOkLabel(t("nextStage"));
-      okLockedRef.current = false;
-      setOkLocked(false);
-      return;
+      // 広告が表示されたときのみボタンラベルを変更して処理を終了
+      if (shown) {
+        setOkLabel(t("nextStage"));
+        okLockedRef.current = false;
+        setOkLocked(false);
+        return;
+      }
     }
 
     // リザルト関連のフラグをリセット
