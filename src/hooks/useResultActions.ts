@@ -1,14 +1,13 @@
-import { useEffect, useRef, useState } from "react";
 import type { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 
+import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
 import { useResultState } from "@/src/hooks/useResultState";
 import { useStageEffects } from "@/src/hooks/useStageEffects";
 import { useLocale } from "@/src/locale/LocaleContext";
-import type { InterstitialAd } from "react-native-google-mobile-ads";
-import type { GameState } from "@/src/game/state";
 import type { MazeData } from "@/src/types/maze";
-
+import type { InterstitialAd } from "react-native-google-mobile-ads";
 
 interface Options {
   state: GameState;
@@ -35,7 +34,7 @@ export function useResultActions({
   resumeBgm,
 }: Options) {
   const { highScore, newRecord, setNewRecord, updateScore } = useHighScore(
-    state.levelId,
+    state.levelId
   );
 
   const {
@@ -178,12 +177,9 @@ export function useResultActions({
 
     // ステージクリア直後で広告未表示なら広告を表示
     if (wasStageClear && !adShown) {
-      setShowResult(false);
       setAdShown(true);
       await showAd(loadedAdRef.current);
       loadedAdRef.current = null;
-      // 広告を閉じたら同じリザルト画面を再表示
-      setShowResult(true);
       setOkLabel(t("nextStage"));
       okLockedRef.current = false;
       setOkLocked(false);
@@ -217,7 +213,7 @@ export function useResultActions({
       setShowBanner(false);
       okLockedRef.current = false;
       setOkLocked(false);
-    }, 1000);
+    }, 2000);
   };
 
   // リセット処理
