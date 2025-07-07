@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 /**
  * リザルト表示に関する状態だけを管理するフック。
@@ -14,6 +14,8 @@ export function useResultState() {
   const [okLocked, setOkLocked] = useState(false);
   // 各ステージで広告を一度だけ表示したかを記録するフラグ
   const [adShown, setAdShown] = useState(false);
+  // ステージ番号を表示する黒画面の表示フラグ
+  const [showBanner, setShowBanner] = useState(false);
 
   return {
     showResult,
@@ -32,5 +34,7 @@ export function useResultState() {
     setOkLocked,
     adShown,
     setAdShown,
+    showBanner,
+    setShowBanner,
   } as const;
 }

@@ -1,16 +1,17 @@
-import { View, Pressable, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { View, Pressable, useWindowDimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { DPad } from "@/components/DPad";
 import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
-import { ResultModal } from '@/components/ResultModal';
-import { EdgeOverlay } from '@/components/EdgeOverlay';
-import { playStyles } from '@/src/styles/playStyles';
-import { UI } from '@/constants/ui';
+import { ResultModal } from "@/components/ResultModal";
+import { StageBanner } from "@/components/StageBanner";
+import { EdgeOverlay } from "@/components/EdgeOverlay";
+import { playStyles } from "@/src/styles/playStyles";
+import { UI } from "@/constants/ui";
 
 export default function PlayScreen() {
   const { t } = useLocale();
@@ -32,12 +33,13 @@ export default function PlayScreen() {
     maxBorder,
     locked,
     okLocked,
+    okLabel,
+    showBanner,
     handleMove,
     handleOk,
     handleRespawn,
     handleExit,
   } = usePlayLogic();
-
 
   const dpadTop = height * (2 / 3);
   // ミニマップは ResultModal と重ならないよう少し上に配置する
@@ -61,7 +63,11 @@ export default function PlayScreen() {
         <MaterialIcons name="home" size={24} color={UI.colors.icon} />
       </Pressable>
       {/* 枠線用のオーバーレイ。処理は EdgeOverlay にまとめた */}
-      <EdgeOverlay borderColor={borderColor} borderW={borderW} maxBorder={maxBorder} />
+      <EdgeOverlay
+        borderColor={borderColor}
+        borderW={borderW}
+        maxBorder={maxBorder}
+      />
       {/* 右上のリセットアイコン。敵だけを再配置する */}
       <Pressable
         style={[playStyles.resetBtn, { top: insets.top + 10 }]}
@@ -74,11 +80,11 @@ export default function PlayScreen() {
       <Pressable
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
         onPress={() => setDebugAll(!debugAll)}
-        accessibilityLabel={t('showMazeAll')}
+        accessibilityLabel={t("showMazeAll")}
       >
         {/* debugAll の状態に応じてアイコンを変更 */}
         <MaterialIcons
-          name={debugAll ? 'visibility-off' : 'visibility'}
+          name={debugAll ? "visibility-off" : "visibility"}
           size={24}
           color={UI.colors.icon}
         />
@@ -107,18 +113,24 @@ export default function PlayScreen() {
       <ResultModal
         visible={showResult}
         top={resultTop}
-        title={gameClear ? t('gameClear') : gameOver ? t('gameOver') : t('goal')}
-        steps={t('steps', { count: state.steps })}
-        bumps={t('bumps', { count: state.bumps })}
-        stageText={t('stage', { current: state.stage, total: totalStages })}
+        title={
+          gameClear ? t("gameClear") : gameOver ? t("gameOver") : t("goal")
+        }
+        steps={t("steps", { count: state.steps })}
+        bumps={t("bumps", { count: state.bumps })}
+        stageText={t("stage", { current: state.stage, total: totalStages })}
         highScore={highScore && (gameClear || gameOver) ? highScore : null}
         newRecord={newRecord && (gameClear || gameOver)}
         onOk={handleOk}
-        okLabel={t('ok')}
-        accLabel={t('backToTitle')}
+        okLabel={okLabel}
+        accLabel={t("backToTitle")}
         disabled={okLocked}
+      />
+      <StageBanner
+        visible={showBanner}
+        stage={state.stage + 1}
+        onFinish={() => {}}
       />
     </View>
   );
 }
-

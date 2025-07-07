@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
-import type { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from "react";
+import type { useRouter } from "expo-router";
 
-import { useHighScore } from '@/src/hooks/useHighScore';
-import { useResultState } from '@/src/hooks/useResultState';
-import { useStageEffects } from '@/src/hooks/useStageEffects';
-import type { GameState } from '@/src/game/state';
-import type { MazeData } from '@/src/types/maze';
+import { useHighScore } from "@/src/hooks/useHighScore";
+import { useResultState } from "@/src/hooks/useResultState";
+import { useStageEffects } from "@/src/hooks/useStageEffects";
+import { useLocale } from "@/src/locale/LocaleContext";
+import type { InterstitialAd } from "react-native-google-mobile-ads";
+import type { GameState } from "@/src/game/state";
+import type { MazeData } from "@/src/types/maze";
 
 // OKボタンのロックを解除するまでの待ち時間(ms)
 const OK_UNLOCK_DELAY = 500;
@@ -34,12 +36,9 @@ export function useResultActions({
   pauseBgm,
   resumeBgm,
 }: Options) {
-  const {
-    highScore,
-    newRecord,
-    setNewRecord,
-    updateScore,
-  } = useHighScore(state.levelId);
+  const { highScore, newRecord, setNewRecord, updateScore } = useHighScore(
+    state.levelId,
+  );
 
   const {
     showResult,
@@ -58,9 +57,19 @@ export function useResultActions({
     setOkLocked,
     adShown,
     setAdShown,
+    showBanner,
+    setShowBanner,
   } = useResultState();
 
-  const { showAdIfNeeded } = useStageEffects({
+  const { t } = useLocale();
+
+  // OK ボタンのラベルを動的に変えるための状態
+  const [okLabel, setOkLabel] = useState(t("ok"));
+
+  // 読み込み済み広告を保持する参照
+  const loadedAdRef = useRef<InterstitialAd | null>(null);
+
+  const { loadAdIfNeeded, showAd } = useStageEffects({
     pauseBgm,
     resumeBgm,
     showSnackbar,
@@ -93,6 +102,16 @@ export function useResultActions({
       setShowResult(true);
       setAdShown(false);
       setDebugAll(willChangeMap);
+      // 広告を事前に読み込み、完了まで OK ボタンをロック
+      okLockedRef.current = true;
+      setOkLocked(true);
+      setOkLabel(t("loadingAd"));
+      loadAdIfNeeded(state.stage).then((ad) => {
+        loadedAdRef.current = ad;
+        setOkLabel(ad ? t("showAd") : t("ok"));
+        okLockedRef.current = false;
+        setOkLocked(false);
+      });
       if (state.levelId) {
         const current = {
           stage: state.stage,
@@ -109,6 +128,8 @@ export function useResultActions({
       setShowResult(true);
       setAdShown(false);
       setDebugAll(true);
+      loadedAdRef.current = null;
+      setOkLabel(t("ok"));
       if (state.levelId) {
         const current = {
           stage: state.stage - 1,
@@ -138,6 +159,10 @@ export function useResultActions({
     setDebugAll,
     setGameClear,
     setAdShown,
+    loadAdIfNeeded,
+    t,
+    setOkLocked,
+    setOkLabel,
   ]);
 
   // OK ボタン押下時の処理
@@ -146,14 +171,13 @@ export function useResultActions({
     okLockedRef.current = true;
     setOkLocked(true);
 
-    const currentStage = state.stage;
     // stageClear の値は setState で非同期に変化する可能性があるため
     // 先に変数へ退避しておく
     // フラグ(flag)とは処理分岐のための真偽値のこと
     const wasStageClear = stageClear;
 
     // 現在の状態をログに出すことでデバッグしやすくする
-    console.log('handleOk start', {
+    console.log("handleOk start", {
       stage: state.stage,
       gameOver,
       gameClear,
@@ -164,27 +188,18 @@ export function useResultActions({
     if (gameOver) {
       // ゲームオーバー時はランをリセットしてタイトルへ戻る
       resetRun();
-      router.replace('/');
+      router.replace("/");
     } else if (gameClear) {
       resetRun();
-      router.replace('/');
+      router.replace("/");
     }
 
     // ステージクリア直後で広告未表示なら広告を検討
     if (wasStageClear && !adShown) {
       setShowResult(false);
       setAdShown(true);
-      const didShow = await showAdIfNeeded(currentStage);
-      if (didShow) {
-        // 広告を表示した場合はリザルトを再表示
-        setShowResult(true);
-        setTimeout(() => {
-          okLockedRef.current = false;
-          setOkLocked(false);
-        }, OK_UNLOCK_DELAY);
-        return;
-      }
-      // 広告を表示しなかった場合はこのまま次の処理へ
+      await showAd(loadedAdRef.current);
+      loadedAdRef.current = null;
     }
 
     // リザルト関連のフラグをリセット
@@ -195,26 +210,26 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
+    setOkLabel(t("ok"));
 
     // ステート更新後の値を確認するための空await
     await Promise.resolve();
 
-    console.log('after reset', {
+    console.log("after reset", {
       stageClear,
       showResult,
     });
 
-    // 広告後の2回目タップ時に次ステージへ進むが、
-    // 画面フェードアウト完了後に進むよう遅延させる
-    // setTimeout は指定時間後に一度だけ実行するタイマー関数
+    // 次ステージ番号を一瞬表示してから進む
+    setShowBanner(true);
     setTimeout(() => {
       if (wasStageClear) {
         nextStage();
       }
-      // OKボタンのロック解除も同時に行う
+      setShowBanner(false);
       okLockedRef.current = false;
       setOkLocked(false);
-    }, OK_UNLOCK_DELAY);
+    }, 1000);
   };
 
   // リセット処理
@@ -236,7 +251,7 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-    router.replace('/');
+    router.replace("/");
   };
 
   return {
@@ -251,6 +266,8 @@ export function useResultActions({
     debugAll,
     setDebugAll,
     okLocked,
+    okLabel,
+    showBanner,
     handleOk,
     handleReset,
     handleExit,
