@@ -246,11 +246,13 @@ export function useResultActions({
       nextStage();
       pendingNextStageRef.current = false;
     }
+    // 番号を初期化して前ステージの残像を防ぐ
+    setBannerStage(0);
     // バナー表示後に OK ボタンのラベルを戻す
     setOkLabel(t("ok"));
     okLockedRef.current = false;
     setOkLocked(false);
-  }, [nextStage, setShowBanner, setOkLabel, setOkLocked, t]);
+  }, [nextStage, setShowBanner, setBannerStage, setOkLabel, setOkLocked, t]);
 
   // リセット処理
   const handleReset = () => {
