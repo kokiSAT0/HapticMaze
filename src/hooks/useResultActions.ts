@@ -77,6 +77,17 @@ export function useResultActions({
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
 
+  // ゲーム開始直後にステージ1バナーを表示する
+  // 条件: ステージ1かつ移動回数0であること
+  // ステージ開始時のバナー表示判定
+  useEffect(() => {
+    if (state.stage === 1 && state.steps === 0 && !showBanner && bannerStage === 0) {
+      setBannerStage(1);
+      setShowBanner(true);
+      bannerActiveRef.current = true;
+    }
+  }, [state.stage, state.steps, showBanner, bannerStage, setBannerStage, setShowBanner]);
+
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
     // バナー表示中は旧ステージの判定をスキップする
