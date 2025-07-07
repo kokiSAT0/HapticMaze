@@ -129,7 +129,10 @@ export default function PlayScreen() {
         accLabel={t("backToTitle")}
         disabled={okLocked}
       />
+      {/* key にステージ番号を使い毎回新規マウントすることで */}
+      {/* 前回のバナーがちらつく問題を防ぐ */}
       <StageBanner
+        key={bannerStage}
         visible={showBanner}
         stage={bannerStage}
         onFinish={handleBannerFinish}
