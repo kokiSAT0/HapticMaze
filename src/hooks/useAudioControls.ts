@@ -6,14 +6,17 @@ import { useSE } from '@/src/hooks/useSE';
  * BGM と SE の音量調整や再生をまとめて扱うフック。
  * Play 画面以外でも再利用できるよう独立させています。
  */
-export function useAudioControls(soundFile: number) {
+export function useAudioControls(moveFile: number, bumpFile: number) {
   const {
     volume: bgmVolume,
     setVolume: setBgmVolume,
     pause: pauseBgm,
     resume: resumeBgm,
+    change: changeBgm,
   } = useBgm();
-  const { volume: seVolume, setVolume: setSeVolume, play } = useSE(soundFile);
+  const { volume: seVolume, setVolume: setSeVolume, play: playMove } =
+    useSE(moveFile);
+  const { play: playBump } = useSE(bumpFile);
 
   // 効果音を再生したことを示すフラグ
   const [audioReady, setAudioReady] = useState(false);
@@ -28,20 +31,25 @@ export function useAudioControls(soundFile: number) {
   const incSe = () => {
     const newVol = Math.min(1, Math.round((seVolume + 0.1) * 10) / 10);
     setSeVolume(newVol);
-    play(newVol);
+    playMove(newVol);
   };
   /** SE 音量を下げ、変更後の音量で効果音を鳴らす */
   const decSe = () => {
     const newVol = Math.max(0, Math.round((seVolume - 0.1) * 10) / 10);
     setSeVolume(newVol);
-    play(newVol);
+    playMove(newVol);
   };
 
   /** 移動音を再生し audioReady を一時的に立てる */
   const playMoveSe = () => {
-    play();
+    playMove();
     setAudioReady(true);
     setTimeout(() => setAudioReady(false), 200);
+  };
+
+  /** 壁衝突音を再生する */
+  const playBumpSe = () => {
+    playBump();
   };
 
   return {
@@ -52,8 +60,10 @@ export function useAudioControls(soundFile: number) {
     incSe,
     decSe,
     playMoveSe,
+    playBumpSe,
     pauseBgm,
     resumeBgm,
+    changeBgm,
     audioReady,
   } as const;
 }

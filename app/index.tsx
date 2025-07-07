@@ -27,7 +27,17 @@ export default function TitleScreen() {
   const [showVolume, setShowVolume] = React.useState(false);
 
   // BGM/SE を制御
-  const audio = useAudioControls(require("../assets/sounds/歩く音200ms_2.mp3"));
+  const audio = useAudioControls(
+    require("../assets/sounds/歩く音200ms_調整.mp3"),
+    require("../assets/sounds/弓と矢_調整.mp3")
+  );
+
+  // タイトル画面では常に基本BGMに戻す
+  React.useEffect(() => {
+    audio.changeBgm(require("../assets/sounds/降りしきる、白_調整.mp3"));
+    // audio インスタンスは固定のため依存なし
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 初回起動時：言語選択モーダル
   React.useEffect(() => {
@@ -50,6 +60,11 @@ export default function TitleScreen() {
   const startLevel = (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
+    if (id === 'level2') {
+      audio.changeBgm(require('../assets/sounds/日没廃校_調整.mp3'));
+    } else {
+      audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));
+    }
     newGame(
       level.size,
       level.enemies,
