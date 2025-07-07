@@ -25,7 +25,12 @@ export function StageBanner({
 
   if (!visible) return null;
   return (
-    <Modal transparent visible animationType="fade">
+    <Modal
+      transparent
+      visible
+      animationType="fade"
+      presentationStyle="overFullScreen"
+    >
       <View
         style={styles.wrapper}
         accessible
