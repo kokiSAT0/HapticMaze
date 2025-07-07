@@ -160,7 +160,6 @@ export default function TitleScreen() {
                 {t('bgmVolume')}:
               </ThemedText>
 
-              {/* - 数値 + を 1 行内に並べる */}
               <View style={styles.volBtns}>
                 <PlainButton
                   title="-"
