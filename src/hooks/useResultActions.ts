@@ -203,11 +203,13 @@ export function useResultActions({
     // バナー表示中は判定をスキップするためフラグを立てる
     bannerActiveRef.current = true;
 
+
     // ステージクリア時はプレイヤー位置などを先に更新して
     // 旧ステージでの再判定を防ぐ
     if (wasStageClear) {
       nextStage();
     }
+
 
     // リザルト関連のフラグをリセットする
     // これらは次のステージへ進む前に初期化したい状態
