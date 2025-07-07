@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -99,6 +100,7 @@ const messages = {
     ok: "OK",
     loadingAd: "Loading ad...",
     showAd: "Show ad and continue",
+    nextStage: "Next stage",
     changeLang: "Language",
     selectLang: "Select language",
     japanese: "Japanese",
@@ -164,8 +166,12 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     setFirstLaunch(false);
   };
 
-  const t = (key: MessageKey, params?: Record<string, string | number>) =>
-    translate(lang, key, params);
+  // 翻訳関数をメモ化して無駄な再レンダリングを防ぐ
+  const t = useCallback(
+    (key: MessageKey, params?: Record<string, string | number>) =>
+      translate(lang, key, params),
+    [lang],
+  );
 
   return (
     <LocaleContext.Provider value={{ lang, t, changeLang, ready, firstLaunch }}>

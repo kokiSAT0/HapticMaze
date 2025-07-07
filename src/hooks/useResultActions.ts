@@ -1,16 +1,13 @@
-import { useEffect, useRef, useState } from "react";
 import type { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 
+import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
 import { useResultState } from "@/src/hooks/useResultState";
 import { useStageEffects } from "@/src/hooks/useStageEffects";
 import { useLocale } from "@/src/locale/LocaleContext";
-import type { InterstitialAd } from "react-native-google-mobile-ads";
-import type { GameState } from "@/src/game/state";
 import type { MazeData } from "@/src/types/maze";
-
-// OKボタンのロックを解除するまでの待ち時間(ms)
-const OK_UNLOCK_DELAY = 500;
+import type { InterstitialAd } from "react-native-google-mobile-ads";
 
 interface Options {
   state: GameState;
@@ -37,7 +34,7 @@ export function useResultActions({
   resumeBgm,
 }: Options) {
   const { highScore, newRecord, setNewRecord, updateScore } = useHighScore(
-    state.levelId,
+    state.levelId
   );
 
   const {
@@ -59,6 +56,8 @@ export function useResultActions({
     setAdShown,
     showBanner,
     setShowBanner,
+    bannerStage,
+    setBannerStage,
   } = useResultState();
 
   const { t } = useLocale();
@@ -75,25 +74,13 @@ export function useResultActions({
     showSnackbar,
   });
   const okLockedRef = useRef(false);
-
-  // リザルト画面が表示されている間に OK ボタンが押せなくなる
-  // (ロックされたままになる) 状態を避けるための処理
-  useEffect(() => {
-    // showResult が true かつボタンがロックされているときのみ解除タイマーを設定
-    if (showResult && okLocked) {
-      // setTimeout で少し待ってからロックを解除する
-      // number 型の ID が返るため型を明示している
-      const id: ReturnType<typeof setTimeout> = setTimeout(() => {
-        okLockedRef.current = false;
-        setOkLocked(false);
-      }, OK_UNLOCK_DELAY);
-      // showResult が変化した場合はタイマーをクリア
-      return () => clearTimeout(id);
-    }
-  }, [showResult, okLocked, setOkLocked]);
+  // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
+  const bannerActiveRef = useRef(false);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
+    // バナー表示中は旧ステージの判定をスキップする
+    if (bannerActiveRef.current) return;
     const willChangeMap = state.stage % maze.size === 0;
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setStageClear(true);
@@ -108,7 +95,8 @@ export function useResultActions({
       setOkLabel(t("loadingAd"));
       loadAdIfNeeded(state.stage).then((ad) => {
         loadedAdRef.current = ad;
-        setOkLabel(ad ? t("showAd") : t("ok"));
+        // 広告が無ければ最初から「次のステージへ」と表示する
+        setOkLabel(ad ? t("showAd") : t("nextStage"));
         okLockedRef.current = false;
         setOkLocked(false);
       });
@@ -194,15 +182,29 @@ export function useResultActions({
       router.replace("/");
     }
 
-    // ステージクリア直後で広告未表示なら広告を検討
+    // ステージクリア直後で広告未表示なら広告を表示
     if (wasStageClear && !adShown) {
-      setShowResult(false);
       setAdShown(true);
-      await showAd(loadedAdRef.current);
+      const shown = await showAd(loadedAdRef.current);
       loadedAdRef.current = null;
+      // 広告が表示されたときのみボタンラベルを変更して処理を終了
+      if (shown) {
+        setOkLabel(t("nextStage"));
+        okLockedRef.current = false;
+        setOkLocked(false);
+        return;
+      }
     }
 
-    // リザルト関連のフラグをリセット
+    // 次ステージ番号を表示しながら内部状態を初期化する
+    // 先にバナーを表示することで画面遷移をスムーズにする
+    setBannerStage(state.stage + 1);
+    setShowBanner(true);
+    // バナー表示中は判定をスキップするためフラグを立てる
+    bannerActiveRef.current = true;
+
+    // リザルト関連のフラグをリセットする
+    // これらは次のステージへ進む前に初期化したい状態
     setShowResult(false);
     setGameOver(false);
     setDebugAll(false);
@@ -210,26 +212,36 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-    setOkLabel(t("ok"));
 
-    // ステート更新後の値を確認するための空await
+    // ステージクリアしていればここでステージを進める
+    if (wasStageClear) {
+      nextStage();
+    }
+    // ステージクリアしていない場合は直ちにラベルを戻す
+    if (!wasStageClear) {
+      setOkLabel(t("ok"));
+    }
+
+    // ステート更新後の値を確認するための空 await
     await Promise.resolve();
 
     console.log("after reset", {
       stageClear,
       showResult,
     });
+  };
 
-    // 次ステージ番号を一瞬表示してから進む
-    setShowBanner(true);
-    setTimeout(() => {
-      if (wasStageClear) {
-        nextStage();
-      }
-      setShowBanner(false);
-      okLockedRef.current = false;
-      setOkLocked(false);
-    }, 1000);
+  /**
+   * ステージバナーが閉じた後に呼ばれる処理
+   * ロック解除など後片付けをここで行う
+   */
+  const handleBannerFinish = () => {
+    setShowBanner(false);
+    bannerActiveRef.current = false;
+    // バナー表示後に OK ボタンのラベルを戻す
+    setOkLabel(t("ok"));
+    okLockedRef.current = false;
+    setOkLocked(false);
   };
 
   // リセット処理
@@ -268,6 +280,8 @@ export function useResultActions({
     okLocked,
     okLabel,
     showBanner,
+    bannerStage,
+    handleBannerFinish,
     handleOk,
     handleReset,
     handleExit,
