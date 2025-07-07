@@ -16,6 +16,8 @@ export function useResultState() {
   const [adShown, setAdShown] = useState(false);
   // ステージ番号を表示する黒画面の表示フラグ
   const [showBanner, setShowBanner] = useState(false);
+  // バナーに表示する次のステージ番号
+  const [bannerStage, setBannerStage] = useState(0);
 
   return {
     showResult,
@@ -36,5 +38,7 @@ export function useResultState() {
     setAdShown,
     showBanner,
     setShowBanner,
+    bannerStage,
+    setBannerStage,
   } as const;
 }
