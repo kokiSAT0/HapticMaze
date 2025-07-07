@@ -52,6 +52,7 @@ const messages = {
     ok: "OK",
     loadingAd: "広告を読み込んでいます",
     showAd: "広告を表示して次に進む",
+    nextStage: "次のステージへ",
     changeLang: "Language",
     selectLang: "言語を選択してください",
     japanese: "日本語",
