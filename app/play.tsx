@@ -44,12 +44,11 @@ export default function PlayScreen() {
   } = usePlayLogic();
 
   const dpadTop = height * (2 / 3);
-  // ミニマップは ResultModal と重ならないよう少し上に配置する
+  // ミニマップはリザルトパネルと重ならないよう少し上に配置する
   // mapTop は画面高さの 1/3 から 80px 引いた位置
   const mapTop = height / 3 - 80;
-  // ResultModal はミニマップ下端より 10px 下に表示する
-  // MiniMap のサイズは 300px のため、mapTop + 310 が位置となる
-  const resultTop = mapTop + 310;
+  // リザルトパネルは DPad と同じ位置に表示する
+  const resultTop = dpadTop;
   // リセットボタンの色。使用回数に応じて白から黒へ変化させる
   const gray = Math.round((state.respawnStock / 3) * 255);
   const resetColor = `rgb(${gray},${gray},${gray})`;
@@ -109,9 +108,11 @@ export default function PlayScreen() {
           size={300}
         />
       </View>
-      <View style={[playStyles.dpadWrapper, { top: dpadTop }]}>
-        <DPad onPress={handleMove} disabled={locked} />
-      </View>
+      {!showResult && (
+        <View style={[playStyles.dpadWrapper, { top: dpadTop }]}>
+          <DPad onPress={handleMove} disabled={locked} />
+        </View>
+      )}
       <ResultModal
         visible={showResult}
         top={resultTop}
