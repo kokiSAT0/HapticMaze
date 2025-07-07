@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 
 /**
  * ステージ番号を表示するオーバーレイコンポーネント
- * visible が true の間だけ表示し、1 秒後に onFinish を呼び出す
+ * visible が true の間だけ表示し、2 秒後に onFinish を呼び出す
  */
 export function StageBanner({
   visible,
@@ -17,7 +17,9 @@ export function StageBanner({
 }) {
   useEffect(() => {
     if (!visible) return;
-    const id = setTimeout(onFinish, 1000);
+    // 初期化処理がすぐ終わっても最低 2 秒は表示する
+    // 2000 は 2 秒をミリ秒で表した数値
+    const id = setTimeout(onFinish, 2000);
     return () => clearTimeout(id);
   }, [visible, onFinish]);
 
