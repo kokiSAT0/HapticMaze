@@ -10,6 +10,7 @@ interface Options {
   maze: MazeData;
   move: (dir: Dir) => boolean;
   playMoveSe: () => void;
+  playBumpSe: () => void;
   width: number;
 }
 
@@ -21,6 +22,7 @@ export function useMoveHandler({
   maze,
   move,
   playMoveSe,
+  playBumpSe,
   width,
 }: Options) {
   // 壁衝突時に表示する枠線の色
@@ -55,6 +57,7 @@ export function useMoveHandler({
     let wait: number;
     if (!move(dir)) {
       wait = applyBumpFeedback(borderW, setBorderColor);
+      playBumpSe();
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
       playMoveSe();

@@ -17,6 +17,8 @@ interface BgmContextValue {
   setVolume: (v: number) => void;
   pause: () => void;
   resume: () => void;
+  /** 再生する BGM を変更する */
+  change: (file: number) => void;
   ready: boolean;
 }
 
@@ -32,7 +34,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     (async () => {
       await setAudioModeAsync({ playsInSilentMode: true });
       const p = createAudioPlayer(
-        require("../../assets/sounds/降りしきる、白.mp3")
+        require("../../assets/sounds/降りしきる、白_調整.mp3")
       );
       p.loop = true;
       p.volume = volume;
@@ -58,8 +60,19 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     if (playerRef.current?.paused) playerRef.current.play();
   };
 
+  const change = (file: number) => {
+    if (playerRef.current) {
+      playerRef.current.remove();
+    }
+    const p = createAudioPlayer(file);
+    p.loop = true;
+    p.volume = volume;
+    p.play();
+    playerRef.current = p;
+  };
+
   return (
-    <BgmContext.Provider value={{ volume, setVolume, pause, resume, ready }}>
+    <BgmContext.Provider value={{ volume, setVolume, pause, resume, change, ready }}>
       {children}
     </BgmContext.Provider>
   );

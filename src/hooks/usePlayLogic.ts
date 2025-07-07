@@ -18,7 +18,10 @@ export function usePlayLogic() {
   const { show: showSnackbar } = useSnackbar();
 
   // BGM・SE 操作は専用フックに委譲
-  const audio = useAudioControls(require('../../assets/sounds/歩く音200ms_2.mp3'));
+  const audio = useAudioControls(
+    require('../../assets/sounds/歩く音200ms_調整.mp3'),
+    require('../../assets/sounds/弓と矢_調整.mp3')
+  );
 
   // リザルト表示やメニュー操作の管理
   const result = useResultActions({
@@ -38,6 +41,7 @@ export function usePlayLogic() {
     maze,
     move,
     playMoveSe: audio.playMoveSe,
+    playBumpSe: audio.playBumpSe,
     width,
   });
 
