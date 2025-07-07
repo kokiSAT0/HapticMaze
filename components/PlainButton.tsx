@@ -11,10 +11,12 @@ interface PlainButtonProps {
    * 外から追加のスタイルを渡したいとき用
    */
   style?: PressableProps['style'];
+  /** 背景色と文字色の組み合わせを変えるオプション */
+  variant?: 'dark' | 'light';
 }
 
 /**
- * 黒背景・白文字のシンプルなボタン
+ * 背景と文字色が選べるシンプルなボタン
  * 初心者でも分かりやすいように Pressable と Text を組み合わせている
  */
 export function PlainButton({
@@ -23,7 +25,14 @@ export function PlainButton({
   accessibilityLabel,
   disabled = false,
   style,
+  variant = 'dark',
 }: PlainButtonProps) {
+  // variant の値に応じてボタンと文字の色を切り替える
+  const variantStyle =
+    variant === 'light'
+      ? { backgroundColor: '#fff', color: '#000' }
+      : { backgroundColor: UI.colors.buttonBg, color: UI.colors.buttonText };
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel ?? title}
@@ -31,12 +40,13 @@ export function PlainButton({
       disabled={disabled}
       style={(state) => [
         styles.button,
+        { backgroundColor: variantStyle.backgroundColor },
         state.pressed && styles.pressed,
         disabled && styles.disabled,
         typeof style === 'function' ? style(state) : style,
       ]}
     >
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, { color: variantStyle.color }]}>{title}</Text>
     </Pressable>
   );
 }
