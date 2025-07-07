@@ -9,8 +9,6 @@ import type { InterstitialAd } from "react-native-google-mobile-ads";
 import type { GameState } from "@/src/game/state";
 import type { MazeData } from "@/src/types/maze";
 
-// OKボタンのロックを解除するまでの待ち時間(ms)
-const OK_UNLOCK_DELAY = 500;
 
 interface Options {
   state: GameState;
@@ -75,22 +73,6 @@ export function useResultActions({
     showSnackbar,
   });
   const okLockedRef = useRef(false);
-
-  // リザルト画面が表示されている間に OK ボタンが押せなくなる
-  // (ロックされたままになる) 状態を避けるための処理
-  useEffect(() => {
-    // showResult が true かつボタンがロックされているときのみ解除タイマーを設定
-    if (showResult && okLocked) {
-      // setTimeout で少し待ってからロックを解除する
-      // number 型の ID が返るため型を明示している
-      const id: ReturnType<typeof setTimeout> = setTimeout(() => {
-        okLockedRef.current = false;
-        setOkLocked(false);
-      }, OK_UNLOCK_DELAY);
-      // showResult が変化した場合はタイマーをクリア
-      return () => clearTimeout(id);
-    }
-  }, [showResult, okLocked, setOkLocked]);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
