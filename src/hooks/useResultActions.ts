@@ -196,11 +196,9 @@ export function useResultActions({
     // 先にバナーを表示することで画面遷移をスムーズにする
     setBannerStage(state.stage + 1);
     setShowBanner(true);
-    if (wasStageClear) {
-      nextStage();
-    }
 
-    // リザルト関連のフラグをリセット
+    // リザルト関連のフラグをリセットする
+    // これらは次のステージへ進む前に初期化したい状態
     setShowResult(false);
     setGameOver(false);
     setDebugAll(false);
@@ -208,7 +206,12 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-    // ステージクリア時はバナー終了後にラベルを戻す
+
+    // ステージクリアしていればここでステージを進める
+    if (wasStageClear) {
+      nextStage();
+    }
+    // ステージクリアしていない場合は直ちにラベルを戻す
     if (!wasStageClear) {
       setOkLabel(t("ok"));
     }
