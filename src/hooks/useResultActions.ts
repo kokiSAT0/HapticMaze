@@ -1,5 +1,5 @@
 import type { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
@@ -76,6 +76,8 @@ export function useResultActions({
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
+  // バナー表示後に次のステージへ進むかどうかを保持するフラグ
+  const pendingNextStageRef = useRef(false);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
@@ -204,10 +206,9 @@ export function useResultActions({
     bannerActiveRef.current = true;
 
 
-    // ステージクリア時はプレイヤー位置などを先に更新して
-    // 旧ステージでの再判定を防ぐ
+    // ステージクリア時はバナー後に次ステージへ進む
     if (wasStageClear) {
-      nextStage();
+      pendingNextStageRef.current = true;
     }
 
 
@@ -238,14 +239,18 @@ export function useResultActions({
    * ステージバナーが閉じた後に呼ばれる処理
    * ロック解除など後片付けをここで行う
    */
-  const handleBannerFinish = () => {
+  const handleBannerFinish = useCallback(() => {
     setShowBanner(false);
     bannerActiveRef.current = false;
+    if (pendingNextStageRef.current) {
+      nextStage();
+      pendingNextStageRef.current = false;
+    }
     // バナー表示後に OK ボタンのラベルを戻す
     setOkLabel(t("ok"));
     okLockedRef.current = false;
     setOkLocked(false);
-  };
+  }, [nextStage, setShowBanner, setOkLabel, setOkLocked, t]);
 
   // リセット処理
   const handleReset = () => {
