@@ -29,9 +29,13 @@ export function useSE(soundFile: number) {
     if (playerRef.current) playerRef.current.volume = volume;
   }, [volume]);
 
-  /** 効果音を頭から再生する */
-  const play = () => {
+  /**
+   * 効果音を頭から再生する
+   * @param vol 再生時に一時的に適用する音量。指定しない場合は現在の音量を利用
+   */
+  const play = (vol?: number) => {
     if (!playerRef.current) return;
+    if (vol !== undefined) playerRef.current.volume = vol;
     playerRef.current.seekTo(0);
     playerRef.current.play();
   };

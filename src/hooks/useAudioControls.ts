@@ -24,12 +24,18 @@ export function useAudioControls(soundFile: number) {
   /** BGM 音量を下げる */
   const decBgm = () =>
     setBgmVolume(Math.max(0, Math.round((bgmVolume - 0.1) * 10) / 10));
-  /** SE 音量を上げる */
-  const incSe = () =>
-    setSeVolume((v) => Math.min(1, Math.round((v + 0.1) * 10) / 10));
-  /** SE 音量を下げる */
-  const decSe = () =>
-    setSeVolume((v) => Math.max(0, Math.round((v - 0.1) * 10) / 10));
+  /** SE 音量を上げ、変更後の音量で効果音を鳴らす */
+  const incSe = () => {
+    const newVol = Math.min(1, Math.round((seVolume + 0.1) * 10) / 10);
+    setSeVolume(newVol);
+    play(newVol);
+  };
+  /** SE 音量を下げ、変更後の音量で効果音を鳴らす */
+  const decSe = () => {
+    const newVol = Math.max(0, Math.round((seVolume - 0.1) * 10) / 10);
+    setSeVolume(newVol);
+    play(newVol);
+  };
 
   /** 移動音を再生し audioReady を一時的に立てる */
   const playMoveSe = () => {
