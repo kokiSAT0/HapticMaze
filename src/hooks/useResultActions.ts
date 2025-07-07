@@ -192,6 +192,14 @@ export function useResultActions({
       }
     }
 
+    // 次ステージ番号を表示しながら内部状態を初期化する
+    // 先にバナーを表示することで画面遷移をスムーズにする
+    setBannerStage(state.stage + 1);
+    setShowBanner(true);
+    if (wasStageClear) {
+      nextStage();
+    }
+
     // リザルト関連のフラグをリセット
     setShowResult(false);
     setGameOver(false);
@@ -200,7 +208,10 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-    setOkLabel(t("ok"));
+    // ステージクリア時はバナー終了後にラベルを戻す
+    if (!wasStageClear) {
+      setOkLabel(t("ok"));
+    }
 
     // ステート更新後の値を確認するための空 await
     await Promise.resolve();
@@ -209,13 +220,6 @@ export function useResultActions({
       stageClear,
       showResult,
     });
-
-    // 次ステージ番号を表示しながら内部状態を初期化する
-    setBannerStage(state.stage + 1);
-    setShowBanner(true);
-    if (wasStageClear) {
-      nextStage();
-    }
   };
 
   /**
@@ -224,6 +228,8 @@ export function useResultActions({
    */
   const handleBannerFinish = () => {
     setShowBanner(false);
+    // バナー表示後に OK ボタンのラベルを戻す
+    setOkLabel(t("ok"));
     okLockedRef.current = false;
     setOkLocked(false);
   };
