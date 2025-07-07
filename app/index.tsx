@@ -13,6 +13,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { LEVELS } from "@/constants/levels";
+import { useAudioControls } from "@/src/hooks/useAudioControls";
 
 export default function TitleScreen() {
   const router = useRouter();
@@ -24,6 +25,9 @@ export default function TitleScreen() {
   const [hasSave, setHasSave] = React.useState(false);
   const [confirmReset, setConfirmReset] = React.useState(false);
   const [pendingLevel, setPendingLevel] = React.useState<string | null>(null);
+  const [showVolume, setShowVolume] = React.useState(false);
+  // BGM と SE をまとめて操作するフックを使う。効果音には歩く音を利用
+  const audio = useAudioControls(require('../assets/sounds/歩く音200ms_2.mp3'));
 
   // 初回起動時は言語選択モーダルを表示する
   React.useEffect(() => {
@@ -122,6 +126,12 @@ export default function TitleScreen() {
         onPress={() => router.push("/scores")}
         accessibilityLabel={t("openHighScores")}
       />
+      {/* 音量設定メニューを開くボタン */}
+      <PlainButton
+        title={t('volumeSettings')}
+        onPress={() => setShowVolume(true)}
+        accessibilityLabel={t('volumeSettings')}
+      />
       {/* 言語切り替え用ボタン */}
       <PlainButton
         title={t("changeLang")}
@@ -149,6 +159,55 @@ export default function TitleScreen() {
               title={t("english")}
               onPress={() => select("en")}
               accessibilityLabel={t("english")}
+            />
+          </ThemedView>
+        </View>
+      </Modal>
+      {/* 音量調整モーダル */}
+      <Modal transparent visible={showVolume} animationType="fade">
+        <View style={styles.modalWrapper} accessible accessibilityLabel="音量設定オーバーレイ">
+          <ThemedView style={styles.modalContent}>
+            <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+              {t('volumeSettings')}
+            </ThemedText>
+            <View style={styles.volumeRow}>
+              <ThemedText>{t('bgmVolume')}: {Math.round(audio.bgmVolume * 10)}</ThemedText>
+              <View style={styles.volBtns}>
+                <PlainButton
+                  title="-"
+                  onPress={audio.decBgm}
+                  accessibilityLabel={t('decrease', { label: t('bgmVolume') })}
+                  style={styles.volBtn}
+                />
+                <PlainButton
+                  title="+"
+                  onPress={audio.incBgm}
+                  accessibilityLabel={t('increase', { label: t('bgmVolume') })}
+                  style={styles.volBtn}
+                />
+              </View>
+            </View>
+            <View style={styles.volumeRow}>
+              <ThemedText>{t('seVolume')}: {Math.round(audio.seVolume * 10)}</ThemedText>
+              <View style={styles.volBtns}>
+                <PlainButton
+                  title="-"
+                  onPress={audio.decSe}
+                  accessibilityLabel={t('decrease', { label: t('seVolume') })}
+                  style={styles.volBtn}
+                />
+                <PlainButton
+                  title="+"
+                  onPress={audio.incSe}
+                  accessibilityLabel={t('increase', { label: t('seVolume') })}
+                  style={styles.volBtn}
+                />
+              </View>
+            </View>
+            <PlainButton
+              title={t('cancel')}
+              onPress={() => setShowVolume(false)}
+              accessibilityLabel={t('cancel')}
             />
           </ThemedView>
         </View>
@@ -202,5 +261,18 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 24,
     backgroundColor: "#000",
+  },
+  volumeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  volBtns: {
+    flexDirection: "row",
+    gap: 4,
+    alignItems: "center",
+  },
+  volBtn: {
+    padding: 4,
   },
 });

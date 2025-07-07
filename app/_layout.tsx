@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
 import { LocaleProvider } from '@/src/locale/LocaleContext';
 import { BgmProvider } from '@/src/audio/BgmProvider';
+import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -34,18 +35,20 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <BgmProvider>
-        <LocaleProvider>
-          <GameProvider>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="practice" options={{ headerShown: false }} />
-              <Stack.Screen name="scores" options={{ headerShown: false }} />
-              <Stack.Screen name="play" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </GameProvider>
-        </LocaleProvider>
-        <StatusBar style="auto" />
+        <SeVolumeProvider>
+          <LocaleProvider>
+            <GameProvider>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="practice" options={{ headerShown: false }} />
+                <Stack.Screen name="scores" options={{ headerShown: false }} />
+                <Stack.Screen name="play" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </GameProvider>
+          </LocaleProvider>
+          <StatusBar style="auto" />
+        </SeVolumeProvider>
       </BgmProvider>
     </ThemeProvider>
   );
