@@ -176,12 +176,18 @@ export function useResultActions({
       router.replace("/");
     }
 
-    // ステージクリア直後で広告未表示なら広告を検討
+    // ステージクリア直後で広告未表示なら広告を表示
     if (wasStageClear && !adShown) {
       setShowResult(false);
       setAdShown(true);
       await showAd(loadedAdRef.current);
       loadedAdRef.current = null;
+      // 広告を閉じたら同じリザルト画面を再表示
+      setShowResult(true);
+      setOkLabel(t("nextStage"));
+      okLockedRef.current = false;
+      setOkLocked(false);
+      return;
     }
 
     // リザルト関連のフラグをリセット
@@ -194,7 +200,7 @@ export function useResultActions({
     setAdShown(false);
     setOkLabel(t("ok"));
 
-    // ステート更新後の値を確認するための空await
+    // ステート更新後の値を確認するための空 await
     await Promise.resolve();
 
     console.log("after reset", {
