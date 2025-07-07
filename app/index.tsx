@@ -17,23 +17,24 @@ import { useAudioControls } from "@/src/hooks/useAudioControls";
 
 export default function TitleScreen() {
   const router = useRouter();
-  // GameProvider から新しい迷路を読み込む関数を取得
   const { newGame, loadState } = useGame();
-  // 言語関連のフックを取得
   const { t, firstLaunch, changeLang } = useLocale();
+
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
   const [confirmReset, setConfirmReset] = React.useState(false);
   const [pendingLevel, setPendingLevel] = React.useState<string | null>(null);
   const [showVolume, setShowVolume] = React.useState(false);
-  // BGM と SE をまとめて操作するフックを使う。効果音には歩く音を利用
-  const audio = useAudioControls(require('../assets/sounds/歩く音200ms_2.mp3'));
 
-  // 初回起動時は言語選択モーダルを表示する
+  // BGM/SE を制御
+  const audio = useAudioControls(require("../assets/sounds/歩く音200ms_2.mp3"));
+
+  // 初回起動時：言語選択モーダル
   React.useEffect(() => {
     if (firstLaunch) setShowLang(true);
   }, [firstLaunch]);
 
+  // セーブデータ有無を確認
   React.useEffect(() => {
     (async () => {
       const data = await loadGame();
@@ -46,7 +47,6 @@ export default function TitleScreen() {
     setShowLang(false);
   };
 
-  // 定義済みレベルの設定を使ってゲームを開始する
   const startLevel = (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
@@ -64,7 +64,6 @@ export default function TitleScreen() {
     router.replace("/play");
   };
 
-  // 中断データがある場合に確認してから開始する
   const startLevelFromStart = (id: string) => {
     if (hasSave) {
       setPendingLevel(id);
@@ -84,94 +83,84 @@ export default function TitleScreen() {
     const data = await loadGame();
     if (!data) return;
     loadState(data);
-    router.replace('/play');
+    router.replace("/play");
   };
+
   return (
-    <ThemedView
-      /* 背景色を黒に固定。light/dark ともに同じ色を指定する */
-      lightColor="#000"
-      darkColor="#000"
-      style={styles.container}
-    >
-      {/* アプリタイトル。文字色を白にして視認性を高める */}
+    <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
         Maze Sense
       </ThemedText>
-      {/* 練習モードへの遷移 */}
+
       <PlainButton
         title={t("practiceMode")}
         onPress={() => router.push("/practice")}
         accessibilityLabel={t("openPractice")}
       />
-      {/* 中断データがあれば続きからを表示 */}
+
       {hasSave && (
         <PlainButton
-          title={t('continue')}
+          title={t("continue")}
           onPress={resumeGame}
-          accessibilityLabel={t('continue')}
+          accessibilityLabel={t("continue")}
         />
       )}
-      {/* プリセットレベルの開始ボタン */}
+
       {LEVELS.map((lv) => (
         <PlainButton
           key={lv.id}
-          title={t('startFromBegin', { name: t(lv.id as MessageKey) })}
+          title={t("startFromBegin", { name: t(lv.id as MessageKey) })}
           onPress={() => startLevelFromStart(lv.id)}
-          accessibilityLabel={t('startFromBegin', { name: t(lv.id as MessageKey) })}
+          accessibilityLabel={t("startFromBegin", { name: t(lv.id as MessageKey) })}
         />
       ))}
-      {/* ハイスコア画面への遷移ボタン */}
+
       <PlainButton
         title={t("highScores")}
         onPress={() => router.push("/scores")}
         accessibilityLabel={t("openHighScores")}
       />
-      {/* 音量設定メニューを開くボタン */}
+
       <PlainButton
-        title={t('volumeSettings')}
+        title={t("volumeSettings")}
         onPress={() => setShowVolume(true)}
-        accessibilityLabel={t('volumeSettings')}
+        accessibilityLabel={t("volumeSettings")}
       />
-      {/* 言語切り替え用ボタン */}
+
       <PlainButton
         title={t("changeLang")}
         onPress={() => setShowLang(true)}
         accessibilityLabel={t("changeLang")}
       />
-      {/* 言語選択モーダル */}
+
+      {/* ───── 言語選択モーダル ───── */}
       <Modal transparent visible={showLang} animationType="fade">
-        <View
-          style={styles.modalWrapper}
-          accessible
-          accessibilityLabel="言語選択オーバーレイ"
-        >
+        <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
           <ThemedView style={styles.modalContent}>
-            {/* モーダル内では背景が黒なので、文字色を白に固定して読みやすくする */}
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
               {t("selectLang")}
             </ThemedText>
-            <PlainButton
-              title={t("japanese")}
-              onPress={() => select("ja")}
-              accessibilityLabel={t("japanese")}
-            />
-            <PlainButton
-              title={t("english")}
-              onPress={() => select("en")}
-              accessibilityLabel={t("english")}
-            />
+            <PlainButton title={t("japanese")} onPress={() => select("ja")} accessibilityLabel={t("japanese")} />
+            <PlainButton title={t("english")} onPress={() => select("en")} accessibilityLabel={t("english")} />
           </ThemedView>
         </View>
       </Modal>
-      {/* 音量調整モーダル */}
+
+      {/* ───── 音量設定モーダル ───── */}
       <Modal transparent visible={showVolume} animationType="fade">
         <View style={styles.modalWrapper} accessible accessibilityLabel="音量設定オーバーレイ">
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-              {t('volumeSettings')}
+              {t("volumeSettings")}
             </ThemedText>
+
+            // ────── BGM 音量行（置換） ──────
             <View style={styles.volumeRow}>
-              <ThemedText>{t('bgmVolume')}: {Math.round(audio.bgmVolume * 10)}</ThemedText>
+              <ThemedText lightColor="#fff" darkColor="#fff">
+                {t('bgmVolume')}:
+              </ThemedText>
+
+              {/* - 数値 + を 1 行内に並べる */}
               <View style={styles.volBtns}>
                 <PlainButton
                   title="-"
@@ -179,6 +168,13 @@ export default function TitleScreen() {
                   accessibilityLabel={t('decrease', { label: t('bgmVolume') })}
                   style={styles.volBtn}
                 />
+                <ThemedText
+                  style={styles.volumeNumber}
+                  lightColor="#fff"
+                  darkColor="#fff"
+                >
+                  {Math.round(audio.bgmVolume * 10)}
+                </ThemedText>
                 <PlainButton
                   title="+"
                   onPress={audio.incBgm}
@@ -187,8 +183,13 @@ export default function TitleScreen() {
                 />
               </View>
             </View>
+
+            // ────── SE 音量行（置換） ──────
             <View style={styles.volumeRow}>
-              <ThemedText>{t('seVolume')}: {Math.round(audio.seVolume * 10)}</ThemedText>
+              <ThemedText lightColor="#fff" darkColor="#fff">
+                {t('seVolume')}:
+              </ThemedText>
+
               <View style={styles.volBtns}>
                 <PlainButton
                   title="-"
@@ -196,6 +197,13 @@ export default function TitleScreen() {
                   accessibilityLabel={t('decrease', { label: t('seVolume') })}
                   style={styles.volBtn}
                 />
+                <ThemedText
+                  style={styles.volumeNumber}
+                  lightColor="#fff"
+                  darkColor="#fff"
+                >
+                  {Math.round(audio.seVolume * 10)}
+                </ThemedText>
                 <PlainButton
                   title="+"
                   onPress={audio.incSe}
@@ -204,38 +212,28 @@ export default function TitleScreen() {
                 />
               </View>
             </View>
-            <PlainButton
-              title={t('cancel')}
-              onPress={() => setShowVolume(false)}
-              accessibilityLabel={t('cancel')}
-            />
+
+            <PlainButton title={t("cancel")} onPress={() => setShowVolume(false)} accessibilityLabel={t("cancel")} />
           </ThemedView>
         </View>
       </Modal>
-      {/* 中断データ削除確認モーダル */}
+
+      {/* ───── セーブリセット確認モーダル ───── */}
       <Modal transparent visible={confirmReset} animationType="fade">
-        <View
-          style={styles.modalWrapper}
-          accessible
-          accessibilityLabel="リセット確認オーバーレイ"
-        >
+        <View style={styles.modalWrapper} accessible accessibilityLabel="リセット確認オーバーレイ">
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-              {t('confirmReset')}
+              {t("confirmReset")}
             </ThemedText>
             <PlainButton
-              title={t('yes')}
+              title={t("yes")}
               onPress={() => {
                 if (pendingLevel) confirmStart(pendingLevel);
                 setConfirmReset(false);
               }}
-              accessibilityLabel={t('yes')}
+              accessibilityLabel={t("yes")}
             />
-            <PlainButton
-              title={t('cancel')}
-              onPress={() => setConfirmReset(false)}
-              accessibilityLabel={t('cancel')}
-            />
+            <PlainButton title={t("cancel")} onPress={() => setConfirmReset(false)} accessibilityLabel={t("cancel")} />
           </ThemedView>
         </View>
       </Modal>
@@ -254,7 +252,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // 背景を不透明にして背後が透けないようにする
     backgroundColor: "#000",
   },
   modalContent: {
@@ -267,12 +264,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  volumeLabelArea: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4, // ラベルと数値の間隔
+  },
+  volumeNumber: {
+    width: 24, // 0〜10 を右寄せで固定表示
+    textAlign: "right",
+    marginLeft: 0,
+  },
   volBtns: {
     flexDirection: "row",
-    gap: 4,
+    gap: 2,
     alignItems: "center",
   },
   volBtn: {
     padding: 4,
   },
 });
+
