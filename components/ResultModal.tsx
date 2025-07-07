@@ -38,7 +38,12 @@ export function ResultModal({
   // 画面の文言を取得するためにロケールフックを利用
   const { t } = useLocale();
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      presentationStyle="overFullScreen"
+    >
       <View style={styles.wrapper} accessible accessibilityLabel="結果表示オーバーレイ">
         <ThemedView style={[styles.content, { marginTop: top }]}>
           <ThemedText type="title">{title}</ThemedText>
