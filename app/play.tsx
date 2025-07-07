@@ -35,6 +35,8 @@ export default function PlayScreen() {
     okLocked,
     okLabel,
     showBanner,
+    bannerStage,
+    handleBannerFinish,
     handleMove,
     handleOk,
     handleRespawn,
@@ -128,8 +130,8 @@ export default function PlayScreen() {
       />
       <StageBanner
         visible={showBanner}
-        stage={state.stage + 1}
-        onFinish={() => {}}
+        stage={bannerStage}
+        onFinish={handleBannerFinish}
       />
     </View>
   );

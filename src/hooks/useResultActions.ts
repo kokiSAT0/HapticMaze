@@ -56,6 +56,8 @@ export function useResultActions({
     setAdShown,
     showBanner,
     setShowBanner,
+    bannerStage,
+    setBannerStage,
   } = useResultState();
 
   const { t } = useLocale();
@@ -204,16 +206,22 @@ export function useResultActions({
       showResult,
     });
 
-    // 次ステージ番号を一瞬表示してから進む
+    // 次ステージ番号を表示しながら内部状態を初期化する
+    setBannerStage(state.stage + 1);
     setShowBanner(true);
-    setTimeout(() => {
-      if (wasStageClear) {
-        nextStage();
-      }
-      setShowBanner(false);
-      okLockedRef.current = false;
-      setOkLocked(false);
-    }, 2000);
+    if (wasStageClear) {
+      nextStage();
+    }
+  };
+
+  /**
+   * ステージバナーが閉じた後に呼ばれる処理
+   * ロック解除など後片付けをここで行う
+   */
+  const handleBannerFinish = () => {
+    setShowBanner(false);
+    okLockedRef.current = false;
+    setOkLocked(false);
   };
 
   // リセット処理
@@ -252,6 +260,8 @@ export function useResultActions({
     okLocked,
     okLabel,
     showBanner,
+    bannerStage,
+    handleBannerFinish,
     handleOk,
     handleReset,
     handleExit,
