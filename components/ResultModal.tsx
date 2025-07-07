@@ -40,16 +40,16 @@ export function ResultModal({
 
   return (
     <ThemedView
-      style={[styles.content, { marginTop: top }]}
+      style={[styles.content, { top }]}
       accessible
       accessibilityLabel="結果表示パネル"
     >
-      <ThemedText type="title">{title}</ThemedText>
-      <ThemedText>{steps}</ThemedText>
-      <ThemedText>{bumps}</ThemedText>
-      <ThemedText>{stageText}</ThemedText>
+      <ThemedText type="title" style={styles.text}>{title}</ThemedText>
+      <ThemedText style={styles.text}>{steps}</ThemedText>
+      <ThemedText style={styles.text}>{bumps}</ThemedText>
+      <ThemedText style={styles.text}>{stageText}</ThemedText>
       {highScore && (
-        <ThemedText>
+        <ThemedText style={styles.text}>
           {t("best", {
             stage: highScore.stage,
             steps: highScore.steps,
@@ -57,12 +57,13 @@ export function ResultModal({
           })}
         </ThemedText>
       )}
-      {newRecord && <ThemedText>{t("newRecord")}</ThemedText>}
+      {newRecord && <ThemedText style={styles.text}>{t("newRecord")}</ThemedText>}
       <PlainButton
         title={okLabel}
         onPress={onOk}
         accessibilityLabel={accLabel}
         disabled={disabled}
+        variant="light"
       />
     </ThemedView>
   );
@@ -70,11 +71,16 @@ export function ResultModal({
 
 const styles = StyleSheet.create({
   content: {
-    backgroundColor: UI.colors.modalBg,
+    position: 'absolute',
+    backgroundColor: '#000',
     padding: 20,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
     gap: UI.dpadSpacing,
     width: UI.modalWidth,
+    alignSelf: 'center',
+  },
+  text: {
+    color: '#fff',
   },
 });
