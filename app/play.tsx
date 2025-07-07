@@ -1,4 +1,5 @@
 import { View, Pressable, useWindowDimensions } from "react-native";
+import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -42,6 +43,27 @@ export default function PlayScreen() {
     handleRespawn,
     handleExit,
   } = usePlayLogic();
+
+  // useEffect は指定した値が変わるたびに実行される React の仕組みです。
+  // ここではプレイ画面の主な状態とバナー状態をログに出して
+  // 今何が表示されているか確認しやすくします。
+  useEffect(() => {
+    console.log('[PlayScreen]', {
+      stage: state.stage,
+      showResult,
+      gameOver,
+      gameClear,
+      showBanner,
+      bannerStage,
+    });
+  }, [
+    state.stage,
+    showResult,
+    gameOver,
+    gameClear,
+    showBanner,
+    bannerStage,
+  ]);
 
   const dpadTop = height * (2 / 3);
   // ミニマップはリザルトパネルと重ならないよう少し上に配置する
