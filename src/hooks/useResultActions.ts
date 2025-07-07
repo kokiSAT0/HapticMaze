@@ -203,6 +203,14 @@ export function useResultActions({
     // バナー表示中は判定をスキップするためフラグを立てる
     bannerActiveRef.current = true;
 
+
+    // ステージクリア時はプレイヤー位置などを先に更新して
+    // 旧ステージでの再判定を防ぐ
+    if (wasStageClear) {
+      nextStage();
+    }
+
+
     // リザルト関連のフラグをリセットする
     // これらは次のステージへ進む前に初期化したい状態
     setShowResult(false);
@@ -212,11 +220,6 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
-
-    // ステージクリアしていればここでステージを進める
-    if (wasStageClear) {
-      nextStage();
-    }
     // ステージクリアしていない場合は直ちにラベルを戻す
     if (!wasStageClear) {
       setOkLabel(t("ok"));
