@@ -49,3 +49,58 @@ export async function showInterstitial() {
     ad.load();
   });
 }
+
+/**
+ * 広告だけを事前に読み込む関数。成功時は InterstitialAd を返す
+ */
+export async function loadInterstitial(): Promise<InterstitialAd | null> {
+  if (Platform.OS === 'web') return Promise.resolve(null);
+  const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+  return new Promise((resolve) => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const unsubscribe = ad.addAdEventsListener(({ type }) => {
+      console.log('Interstitial load', type);
+      if (type === AdEventType.LOADED) {
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        resolve(ad);
+      }
+      if (type === AdEventType.ERROR) {
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        resolve(null);
+      }
+    });
+    timeoutId = setTimeout(() => {
+      unsubscribe();
+      resolve(null);
+    }, 10000);
+    ad.load();
+  });
+}
+
+/**
+ * 読み込み済み広告を表示する関数
+ */
+export async function showLoadedInterstitial(ad: InterstitialAd) {
+  if (Platform.OS === 'web') return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const unsubscribe = ad.addAdEventsListener(({ type }) => {
+      console.log('Interstitial show', type);
+      if (type === AdEventType.OPENED) {
+        if (timeoutId) clearTimeout(timeoutId);
+      }
+      if (type === AdEventType.CLOSED || type === AdEventType.ERROR) {
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        resolve();
+      }
+    });
+    timeoutId = setTimeout(() => {
+      unsubscribe();
+      resolve();
+    }, 10000);
+    ad.show();
+  });
+}
