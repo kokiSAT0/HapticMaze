@@ -260,13 +260,16 @@ export function useResultActions({
   const handleBannerFinish = useCallback(() => {
     setShowBanner(false);
     bannerActiveRef.current = false;
-    // 番号を初期化して前ステージの残像を防ぐ
-    setBannerStage(0);
     // バナー表示後に OK ボタンのラベルを戻す
     setOkLabel(t("ok"));
     okLockedRef.current = false;
     setOkLocked(false);
-  }, [setShowBanner, setBannerStage, setOkLabel, setOkLocked, t]);
+  }, [setShowBanner, setOkLabel, setOkLocked, t]);
+
+  // モーダルのフェードアウトが終わった後に番号をリセットする
+  const handleBannerDismiss = useCallback(() => {
+    setBannerStage(0);
+  }, [setBannerStage]);
 
   // リセット処理
   const handleReset = () => {
@@ -310,6 +313,7 @@ export function useResultActions({
     showBanner,
     bannerStage,
     handleBannerFinish,
+    handleBannerDismiss,
     handleOk,
     handleReset,
     handleExit,

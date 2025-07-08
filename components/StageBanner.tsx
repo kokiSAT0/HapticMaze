@@ -15,10 +15,12 @@ export function StageBanner({
   visible,
   stage,
   onFinish,
+  onDismiss,
 }: {
   visible: boolean;
   stage: number;
   onFinish: () => void;
+  onDismiss?: () => void;
 }) {
   // ステージバナーを無効化している場合、表示要求があれば即終了する
   useEffect(() => {
@@ -52,6 +54,7 @@ export function StageBanner({
       visible
       animationType="fade"
       presentationStyle="overFullScreen"
+      onDismiss={onDismiss}
     >
       <View
         style={styles.wrapper}
