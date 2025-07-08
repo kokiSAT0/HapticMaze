@@ -80,25 +80,40 @@ export default function TitleScreen() {
   };
 
   const startLevelFromStart = (id: string) => {
+    // 開始をログ出力
+    console.log('[TitleScreen] startLevelFromStart begin', id);
     if (hasSave) {
       setPendingLevel(id);
       setConfirmReset(true);
     } else {
       confirmStart(id);
     }
+    // 処理完了をログ出力
+    console.log('[TitleScreen] startLevelFromStart end', id);
   };
 
   const confirmStart = async (id: string) => {
+    // 開始をログ出力
+    console.log('[TitleScreen] confirmStart begin', id);
     await clearGame();
     setHasSave(false);
     startLevel(id);
+    // 処理完了をログ出力
+    console.log('[TitleScreen] confirmStart end', id);
   };
 
   const resumeGame = async () => {
+    // 開始をログ出力
+    console.log('[TitleScreen] resumeGame begin');
     const data = await loadGame();
-    if (!data) return;
+    if (!data) {
+      console.log('[TitleScreen] resumeGame no data');
+      return;
+    }
     loadState(data);
     router.replace("/play");
+    // 処理完了をログ出力
+    console.log('[TitleScreen] resumeGame end');
   };
 
   return (
