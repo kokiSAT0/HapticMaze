@@ -7,13 +7,16 @@ const TEST_ID = TestIds.INTERSTITIAL;
 // 本番用ID。環境変数が無ければテストIDを使用
 export const AD_UNIT_ID = process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID ?? TEST_ID;
 
+// 環境変数 EXPO_PUBLIC_DISABLE_ADS が 'true' のとき広告関連処理を無効化する
+export const DISABLE_ADS = process.env.EXPO_PUBLIC_DISABLE_ADS === 'true';
+
 /**
  * インタースティシャル広告を読み込みつつ表示する関数
  * 広告が閉じられると解決します
  */
 export async function showInterstitial() {
-  // Web 環境では広告が表示できないためすぐ解決します
-  if (Platform.OS === 'web') {
+  // Web 環境や広告無効化フラグが立っている場合はすぐ解決します
+  if (Platform.OS === 'web' || DISABLE_ADS) {
     return Promise.resolve();
   }
 
@@ -54,7 +57,7 @@ export async function showInterstitial() {
  * 広告だけを事前に読み込む関数。成功時は InterstitialAd を返す
  */
 export async function loadInterstitial(): Promise<InterstitialAd | null> {
-  if (Platform.OS === 'web') return Promise.resolve(null);
+  if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve(null);
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
   return new Promise((resolve) => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -83,7 +86,7 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
  * 読み込み済み広告を表示する関数
  */
 export async function showLoadedInterstitial(ad: InterstitialAd) {
-  if (Platform.OS === 'web') return Promise.resolve();
+  if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve();
   return new Promise<void>((resolve) => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
