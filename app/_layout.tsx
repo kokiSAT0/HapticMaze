@@ -11,6 +11,7 @@ import { DISABLE_ADS } from '@/src/ads/interstitial';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
 import { LocaleProvider } from '@/src/locale/LocaleContext';
+import { ResultStateProvider } from '@/src/hooks/useResultState';
 import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 
@@ -38,7 +39,8 @@ export default function RootLayout() {
       <BgmProvider>
         <SeVolumeProvider>
           <LocaleProvider>
-            <GameProvider>
+            <ResultStateProvider>
+              <GameProvider>
               <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="practice" options={{ headerShown: false }} />
@@ -49,6 +51,7 @@ export default function RootLayout() {
                 <Stack.Screen name="+not-found" />
               </Stack>
             </GameProvider>
+            </ResultStateProvider>
           </LocaleProvider>
           <StatusBar style="auto" />
         </SeVolumeProvider>
