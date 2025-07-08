@@ -2,6 +2,7 @@ import {
   loadInterstitial,
   showLoadedInterstitial,
   type InterstitialAd,
+  DISABLE_ADS,
 } from "@/src/ads/interstitial";
 import { useCallback } from "react";
 
@@ -31,7 +32,7 @@ export function useStageEffects({
     async (stage: number): Promise<InterstitialAd | null> => {
       const shouldShow = shouldShowAd(stage);
       console.log("loadAdIfNeeded", { stage, shouldShow });
-      if (!shouldShow) return null;
+      if (!shouldShow || DISABLE_ADS) return null;
       return loadInterstitial();
     },
     [],
@@ -40,7 +41,7 @@ export function useStageEffects({
   // 広告表示処理をメモ化。BGM 制御や通知を依存として指定
   const showAd = useCallback(
     async (ad: InterstitialAd | null): Promise<boolean> => {
-      if (!ad) return false;
+      if (!ad || DISABLE_ADS) return false;
       try {
         pauseBgm();
         await showLoadedInterstitial(ad);
