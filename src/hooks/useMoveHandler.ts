@@ -56,10 +56,12 @@ export function useMoveHandler({
 
     let wait: number;
     if (!move(dir)) {
-      wait = applyBumpFeedback(borderW, setBorderColor);
+      // 壁にぶつかったら即座に効果音を鳴らす
       playBumpSe();
+      wait = applyBumpFeedback(borderW, setBorderColor);
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
+      // 移動成功時も先に効果音を鳴らす
       playMoveSe();
       const maxDist = (maze.size - 1) * 2;
       const { wait: w, id } = applyDistanceFeedback(
