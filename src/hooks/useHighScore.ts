@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 import {
   loadHighScore,
   saveHighScore,
@@ -11,6 +12,7 @@ import {
  * levelId が変わるたびにスコアを読み込み直す。
  */
 export function useHighScore(levelId: string | null | undefined) {
+  const { show: showSnackbar } = useSnackbar();
   // 現在保存されているハイスコア
   const [highScore, setHighScore] = useState<HighScore | null>(null);
   // 新記録かどうかを示すフラグ
@@ -24,11 +26,11 @@ export function useHighScore(levelId: string | null | undefined) {
       return;
     }
     (async () => {
-      const hs = await loadHighScore(levelId);
+      const hs = await loadHighScore(levelId, { showError: showSnackbar });
       setHighScore(hs);
       setNewRecord(false);
     })();
-  }, [levelId]);
+  }, [levelId, showSnackbar]);
 
   /**
    * 現在のスコアを渡して、より良い記録なら保存する。
@@ -36,16 +38,16 @@ export function useHighScore(levelId: string | null | undefined) {
    */
   const updateScore = useCallback(async (score: HighScore, finalStage: boolean) => {
     if (!levelId) return;
-    const old = await loadHighScore(levelId);
+    const old = await loadHighScore(levelId, { showError: showSnackbar });
     const better = isBetterScore(old, score);
     if (better) {
-      await saveHighScore(levelId, score);
+      await saveHighScore(levelId, score, { showError: showSnackbar });
       setHighScore(score);
     } else {
       setHighScore(old);
     }
     setNewRecord(better && finalStage);
-  }, [levelId]);
+  }, [levelId, showSnackbar]);
 
   return { highScore, newRecord, setNewRecord, updateScore } as const;
 }

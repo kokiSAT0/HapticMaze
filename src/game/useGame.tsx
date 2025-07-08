@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useReducer, useRef, type ReactNode } from 'react';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
 import { saveGame } from './saveGame';
@@ -38,6 +39,7 @@ const GameContext = createContext<
 >(undefined);
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const { show: showSnackbar } = useSnackbar();
   // useReducer 第3引数を使って初期迷路を読み込む
   const [state, dispatch] = useReducer(reducer, loadMaze(10), createFirstStage);
   // 初回の useEffect 実行をスキップするためのフラグ
@@ -86,8 +88,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       first.current = false;
       return;
     }
-    saveGame(state);
-  }, [state]);
+    saveGame(state, { showError: showSnackbar });
+  }, [state, showSnackbar]);
 
   return (
     <GameContext.Provider

@@ -4,6 +4,7 @@ import { PlainButton } from "@/components/PlainButton";
 import { useRouter } from "expo-router";
 import { useGame } from "@/src/game/useGame";
 import { loadGame, clearGame } from "@/src/game/saveGame";
+import { useSnackbar } from "@/src/hooks/useSnackbar";
 import {
   useLocale,
   type Lang,
@@ -19,6 +20,7 @@ export default function TitleScreen() {
   const router = useRouter();
   const { newGame, loadState } = useGame();
   const { t, firstLaunch, changeLang } = useLocale();
+  const { show: showSnackbar } = useSnackbar();
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
@@ -45,10 +47,10 @@ export default function TitleScreen() {
   // セーブデータ有無を確認
   React.useEffect(() => {
     (async () => {
-      const data = await loadGame();
+      const data = await loadGame({ showError: showSnackbar });
       setHasSave(!!data);
     })();
-  }, []);
+  }, [showSnackbar]);
 
 
   const select = (lang: Lang) => {
@@ -101,7 +103,7 @@ export default function TitleScreen() {
   const confirmStart = async (id: string) => {
     // 開始をログ出力
     console.log('[TitleScreen] confirmStart begin', id);
-    await clearGame();
+    await clearGame({ showError: showSnackbar });
     setHasSave(false);
     await startLevel(id);
     // 処理完了をログ出力
@@ -111,7 +113,7 @@ export default function TitleScreen() {
   const resumeGame = async () => {
     // 開始をログ出力
     console.log('[TitleScreen] resumeGame begin');
-    const data = await loadGame();
+    const data = await loadGame({ showError: showSnackbar });
     if (!data) {
       console.log('[TitleScreen] resumeGame no data');
       return;
