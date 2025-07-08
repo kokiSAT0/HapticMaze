@@ -38,6 +38,7 @@ export default function PlayScreen() {
     showBanner,
     bannerStage,
     handleBannerFinish,
+    handleBannerDismiss,
     handleMove,
     handleOk,
     handleRespawn,
@@ -158,6 +159,7 @@ export default function PlayScreen() {
         visible={showBanner}
         stage={bannerStage}
         onFinish={handleBannerFinish}
+        onDismiss={handleBannerDismiss}
       />
     </View>
   );
