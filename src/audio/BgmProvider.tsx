@@ -53,10 +53,16 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   };
 
   const change = (file: number) => {
+    // 既にプレイヤーが存在する場合はソースだけを入れ替えることで
+    // 新しいプレイヤーが増えないようにする
     if (playerRef.current) {
-      playerRef.current.remove();
-      playerRef.current = null;
+      playerRef.current.replace(file);
+      playerRef.current.loop = true;
+      playerRef.current.volume = volume;
+      playerRef.current.play();
+      return;
     }
+    // 初回のみプレイヤーを生成
     const p = createAudioPlayer(file);
     p.loop = true;
     p.volume = volume;
@@ -65,7 +71,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <BgmContext.Provider value={{ volume, setVolume, pause, resume, change, ready }}>
+    <BgmContext.Provider
+      value={{ volume, setVolume, pause, resume, change, ready }}
+    >
       {children}
     </BgmContext.Provider>
   );
