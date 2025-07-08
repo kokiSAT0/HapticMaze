@@ -56,7 +56,7 @@ jest.mock('@/src/hooks/useHighScore', () => ({
   }),
 }));
 
-const showAdIfNeeded = jest.fn(async () => {
+const showAd = jest.fn(async () => {
   // 広告表示時点でリザルト関連フラグが全て false になっているか確認
   expect(showResult).toBe(false);
   expect(stageClear).toBe(true);
@@ -65,7 +65,7 @@ const showAdIfNeeded = jest.fn(async () => {
 });
 
 jest.mock('@/src/hooks/useStageEffects', () => ({
-  useStageEffects: () => ({ showAdIfNeeded }),
+  useStageEffects: () => ({ showAd }),
 }));
 
 import { useResultActions } from '@/src/hooks/useResultActions';
@@ -96,7 +96,7 @@ describe('handleOk の広告表示後処理', () => {
 
     await actions.handleOk();
 
-    expect(showAdIfNeeded).toHaveBeenCalledWith(2);
+    expect(showAd).toHaveBeenCalled();
     expect(nextStage).not.toHaveBeenCalled();
     expect(showResult).toBe(true);
     expect(stageClear).toBe(true);
@@ -123,7 +123,7 @@ describe('handleOk の広告表示後処理', () => {
 
     await actions.handleOk();
 
-    expect(showAdIfNeeded).not.toHaveBeenCalled();
+    expect(showAd).not.toHaveBeenCalled();
     expect(nextStage).toHaveBeenCalled();
     expect(showResult).toBe(false);
     expect(stageClear).toBe(false);
@@ -135,7 +135,7 @@ describe('handleOk の広告表示後処理', () => {
     const router = { replace: jest.fn() };
 
     // このテストでは広告を表示しない想定で false を返す
-    showAdIfNeeded.mockResolvedValueOnce(false);
+    showAd.mockResolvedValueOnce(false);
 
     const actions = useResultActions({
       state: { stage: 3 } as any,
@@ -150,7 +150,7 @@ describe('handleOk の広告表示後処理', () => {
 
     await actions.handleOk();
 
-    expect(showAdIfNeeded).toHaveBeenCalledWith(3);
+    expect(showAd).toHaveBeenCalled();
     // 広告が無いのでそのまま次ステージへ
     expect(nextStage).toHaveBeenCalled();
     expect(showResult).toBe(false);
@@ -179,7 +179,7 @@ describe('handleOk の広告表示後処理', () => {
     await actions.handleOk();
 
     // 広告やステージ遷移は呼ばれない
-    expect(showAdIfNeeded).not.toHaveBeenCalled();
+    expect(showAd).not.toHaveBeenCalled();
     expect(nextStage).not.toHaveBeenCalled();
 
     // リザルト関連フラグは false のまま
@@ -215,7 +215,7 @@ describe('handleOk の広告表示後処理', () => {
     await actions.handleOk();
     await Promise.resolve();
 
-    expect(showAdIfNeeded).toHaveBeenCalledWith(2);
+    expect(showAd).toHaveBeenCalled();
     expect(nextStage).not.toHaveBeenCalled();
     expect(showResult).toBe(true);
     expect(stageClear).toBe(true);
