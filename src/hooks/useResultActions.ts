@@ -58,6 +58,8 @@ export function useResultActions({
     setShowBanner,
     bannerStage,
     setBannerStage,
+    bannerShown,
+    setBannerShown,
   } = useResultState();
 
   const { t } = useLocale();
@@ -76,9 +78,6 @@ export function useResultActions({
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
-  // ステージ1バナーを一度だけ表示したかを記録するフラグ
-  // useRef を使うことで表示済みかどうかを状態として保持する
-  const bannerShownRef = useRef(false);
   // バナー終了後に次ステージを読み込むかどうかを判定するフラグ
   const nextStageRef = useRef(false);
 
@@ -91,14 +90,14 @@ export function useResultActions({
       state.steps === 0 &&
       !showBanner &&
       bannerStage === 0 &&
-      !bannerShownRef.current
+      !bannerShown
     ) {
       setBannerStage(1);
       setShowBanner(true);
       bannerActiveRef.current = true;
-      bannerShownRef.current = true;
+      setBannerShown(true);
     }
-  }, [state.stage, state.steps, showBanner, bannerStage, setBannerStage, setShowBanner]);
+  }, [state.stage, state.steps, showBanner, bannerStage, bannerShown, setBannerStage, setShowBanner, setBannerShown]);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
@@ -284,7 +283,7 @@ export function useResultActions({
     setNewRecord(false);
     setAdShown(false);
     // 初期ステージへ戻るのでバナー表示済みフラグもリセットする
-    bannerShownRef.current = false;
+    setBannerShown(false);
     resetRun();
   };
 
@@ -297,7 +296,7 @@ export function useResultActions({
     setNewRecord(false);
     setAdShown(false);
     // 次回開始時にステージバナーを表示するためフラグを戻す
-    bannerShownRef.current = false;
+    setBannerShown(false);
     router.replace("/");
   };
 

@@ -22,6 +22,9 @@ interface ResultStateValue {
   setShowBanner: (v: boolean) => void;
   bannerStage: number;
   setBannerStage: (v: number) => void;
+  // ステージ1バナーを一度だけ表示したかどうか
+  bannerShown: boolean;
+  setBannerShown: (v: boolean) => void;
 }
 
 const ResultStateContext = createContext<ResultStateValue | undefined>(undefined);
@@ -51,6 +54,8 @@ function useResultStateImpl(): ResultStateValue {
   const [showBanner, setShowBanner] = useState(false);
   // バナーに表示する次のステージ番号
   const [bannerStage, setBannerStage] = useState(0);
+  // ステージ1バナーを一度だけ表示したかを保持するフラグ
+  const [bannerShown, setBannerShown] = useState(false);
 
   return {
     showResult,
@@ -73,6 +78,8 @@ function useResultStateImpl(): ResultStateValue {
     setShowBanner,
     bannerStage,
     setBannerStage,
+    bannerShown,
+    setBannerShown,
   } as const;
 }
 
