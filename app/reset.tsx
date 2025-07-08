@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LEVELS } from '@/constants/levels';
 import { clearGame } from '@/src/game/saveGame';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useGame } from '@/src/game/useGame';
 import { useLocale } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
@@ -18,6 +19,7 @@ export default function ResetConfirmScreen() {
   const { newGame } = useGame();
   const { t } = useLocale();
   const { change } = useBgm();
+  const { show: showSnackbar } = useSnackbar();
 
   const start = async () => {
     if (!levelId) {
@@ -29,7 +31,7 @@ export default function ResetConfirmScreen() {
       router.replace('/');
       return;
     }
-    await clearGame();
+    await clearGame({ showError: showSnackbar });
     if (levelId === 'level2') {
       change(require('../assets/sounds/日没廃校_調整.mp3'));
     } else {

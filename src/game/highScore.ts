@@ -12,12 +12,20 @@ const PREFIX = 'highscore:';
  * ハイスコアを取得する非同期関数。
  * データが無い場合は null を返す。
  */
-export async function loadHighScore(levelId: string): Promise<HighScore | null> {
+export interface HighScoreOptions {
+  showError?: (msg: string) => void;
+}
+
+export async function loadHighScore(
+  levelId: string,
+  opts?: HighScoreOptions,
+): Promise<HighScore | null> {
   try {
     const json = await AsyncStorage.getItem(PREFIX + levelId);
     return json ? (JSON.parse(json) as HighScore) : null;
-  } catch {
-    // エラー時は null を返す
+  } catch (e) {
+    console.error('loadHighScore error', e);
+    opts?.showError?.('ハイスコアを読み込めませんでした');
     return null;
   }
 }
@@ -25,11 +33,16 @@ export async function loadHighScore(levelId: string): Promise<HighScore | null> 
 /**
  * ハイスコアを保存する非同期関数。
  */
-export async function saveHighScore(levelId: string, score: HighScore): Promise<void> {
+export async function saveHighScore(
+  levelId: string,
+  score: HighScore,
+  opts?: HighScoreOptions,
+): Promise<void> {
   try {
     await AsyncStorage.setItem(PREFIX + levelId, JSON.stringify(score));
-  } catch {
-    // 保存に失敗しても無視する
+  } catch (e) {
+    console.error('saveHighScore error', e);
+    opts?.showError?.('ハイスコアを保存できませんでした');
   }
 }
 

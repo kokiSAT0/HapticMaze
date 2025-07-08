@@ -99,32 +99,40 @@ export function decodeState(data: StoredState): State {
 }
 
 // データを保存する
-export async function saveGame(state: State) {
+export interface SaveLoadOptions {
+  showError?: (msg: string) => void;
+}
+
+export async function saveGame(state: State, opts?: SaveLoadOptions) {
   try {
     const data = encodeState(state);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // 失敗時は無視
+  } catch (e) {
+    console.error('saveGame error', e);
+    opts?.showError?.('セーブデータを保存できませんでした');
   }
 }
 
 // 保存データを読み込む
-export async function loadGame(): Promise<State | null> {
+export async function loadGame(opts?: SaveLoadOptions): Promise<State | null> {
   try {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
     if (!json) return null;
     const data = JSON.parse(json) as StoredState;
     return decodeState(data);
-  } catch {
+  } catch (e) {
+    console.error('loadGame error', e);
+    opts?.showError?.('セーブデータの読み込みに失敗しました');
     return null;
   }
 }
 
 // 保存データを削除する
-export async function clearGame() {
+export async function clearGame(opts?: SaveLoadOptions) {
   try {
     await AsyncStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // 失敗しても無視
+  } catch (e) {
+    console.error('clearGame error', e);
+    opts?.showError?.('セーブデータを削除できませんでした');
   }
 }
