@@ -22,8 +22,6 @@ export default function TitleScreen() {
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
-  const [confirmReset, setConfirmReset] = React.useState(false);
-  const [pendingLevel, setPendingLevel] = React.useState<string | null>(null);
   const [showVolume, setShowVolume] = React.useState(false);
 
   // BGM/SE を制御
@@ -52,10 +50,6 @@ export default function TitleScreen() {
     })();
   }, []);
 
-  // confirmReset の表示状態を監視して開閉をログに残す
-  React.useEffect(() => {
-    console.log('[TitleScreen] confirmReset', confirmReset ? 'open' : 'closed');
-  }, [confirmReset]);
 
   const select = (lang: Lang) => {
     changeLang(lang);
@@ -95,10 +89,8 @@ export default function TitleScreen() {
     // 開始をログ出力
     console.log('[TitleScreen] startLevelFromStart begin', id);
     if (hasSave) {
-      setPendingLevel(id);
-      // 確認モーダルを開くタイミングでログも残す
-      console.log('[TitleScreen] confirmReset open', id);
-      setConfirmReset(true);
+      // 進行中データがある場合は確認ページへ遷移
+      router.push(`/reset?level=${id}`);
     } else {
       confirmStart(id);
     }
@@ -261,36 +253,6 @@ export default function TitleScreen() {
         </View>
       </Modal>
 
-      {/* ───── セーブリセット確認モーダル ───── */}
-      <Modal transparent visible={confirmReset} animationType="fade">
-        <View style={styles.modalWrapper} accessible accessibilityLabel="リセット確認オーバーレイ">
-          <ThemedView style={styles.modalContent}>
-            <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-              {t("confirmReset")}
-            </ThemedText>
-            <PlainButton
-              title={t("yes")}
-              /* モーダルを閉じてから遷移を開始する */
-              onPress={async () => {
-                console.log('[TitleScreen] confirmReset yes', pendingLevel);
-                // モーダルを閉じたことをログに記録
-                console.log('[TitleScreen] confirmReset close');
-                setConfirmReset(false);
-                if (pendingLevel) await confirmStart(pendingLevel);
-              }}
-              accessibilityLabel={t("yes")}
-            />
-            <PlainButton
-              title={t("cancel")}
-              onPress={() => {
-                console.log('[TitleScreen] confirmReset cancel');
-                setConfirmReset(false);
-              }}
-              accessibilityLabel={t("cancel")}
-            />
-          </ThemedView>
-        </View>
-      </Modal>
     </ThemedView>
   );
 }
