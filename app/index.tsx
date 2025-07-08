@@ -60,6 +60,8 @@ export default function TitleScreen() {
   const startLevel = (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
+    // ゲーム開始直前にログを出してどのレベルを選んだか記録する
+    console.log('[TitleScreen] startLevel', id);
     if (id === 'level2') {
       audio.changeBgm(require('../assets/sounds/日没廃校_調整.mp3'));
     } else {
@@ -77,6 +79,8 @@ export default function TitleScreen() {
       level.id
     );
     router.replace("/play");
+    // 画面遷移後もログを残してデバッグしやすくする
+    console.log('[TitleScreen] startLevel replaced', id);
   };
 
   const startLevelFromStart = (id: string) => {
@@ -84,6 +88,8 @@ export default function TitleScreen() {
     console.log('[TitleScreen] startLevelFromStart begin', id);
     if (hasSave) {
       setPendingLevel(id);
+      // 確認モーダルを開くタイミングでログも残す
+      console.log('[TitleScreen] confirmReset open', id);
       setConfirmReset(true);
     } else {
       confirmStart(id);
@@ -256,14 +262,23 @@ export default function TitleScreen() {
             </ThemedText>
             <PlainButton
               title={t("yes")}
-              /* まずモーダルを閉じてからゲーム開始処理を await */
+              /* はいを押したときは先にログを出し、その後ゲーム開始処理を待つ */
               onPress={async () => {
-                setConfirmReset(false);
+                console.log('[TitleScreen] confirmReset yes', pendingLevel);
                 if (pendingLevel) await confirmStart(pendingLevel);
+                // 画面遷移後にモーダルを閉じる。画面が切り替わるので実質不要だが保険として残す
+                setConfirmReset(false);
               }}
               accessibilityLabel={t("yes")}
             />
-            <PlainButton title={t("cancel")} onPress={() => setConfirmReset(false)} accessibilityLabel={t("cancel")} />
+            <PlainButton
+              title={t("cancel")}
+              onPress={() => {
+                console.log('[TitleScreen] confirmReset cancel');
+                setConfirmReset(false);
+              }}
+              accessibilityLabel={t("cancel")}
+            />
           </ThemedView>
         </View>
       </Modal>
