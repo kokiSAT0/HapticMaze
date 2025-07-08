@@ -9,7 +9,7 @@ import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { ResultModal } from "@/components/ResultModal";
-import { StageBanner } from "@/components/StageBanner";
+import { useRouter } from "expo-router";
 import { EdgeOverlay } from "@/components/EdgeOverlay";
 import { playStyles } from "@/src/styles/playStyles";
 import { UI } from "@/constants/ui";
@@ -18,6 +18,7 @@ export default function PlayScreen() {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
+  const router = useRouter();
   const {
     state,
     maze,
@@ -37,8 +38,6 @@ export default function PlayScreen() {
     okLabel,
     showBanner,
     bannerStage,
-    handleBannerFinish,
-    handleBannerDismiss,
     handleMove,
     handleOk,
     handleRespawn,
@@ -65,6 +64,14 @@ export default function PlayScreen() {
     showBanner,
     bannerStage,
   ]);
+
+  // ステージバナー表示フラグが立ったら専用ページへ移動
+  useEffect(() => {
+    // bannerStage が 0 のときは表示データが無いので遷移しない
+    if (showBanner && bannerStage > 0) {
+      router.replace(`/stage?stage=${bannerStage}`);
+    }
+  }, [showBanner, bannerStage, router]);
 
   const dpadTop = height * (2 / 3);
   // ミニマップはリザルトパネルと重ならないよう少し上に配置する
@@ -152,15 +159,7 @@ export default function PlayScreen() {
         accLabel={t("backToTitle")}
         disabled={okLocked}
       />
-      {/* key にステージ番号を使い毎回新規マウントすることで */}
-      {/* 前回のバナーがちらつく問題を防ぐ */}
-      <StageBanner
-        key={bannerStage}
-        visible={showBanner}
-        stage={bannerStage}
-        onFinish={handleBannerFinish}
-        onDismiss={handleBannerDismiss}
-      />
+      {/* バナー表示時は Stage ページへ遷移する */}
     </View>
   );
 }

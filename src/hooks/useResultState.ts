@@ -1,10 +1,46 @@
-import { useState } from "react";
+import React, { createContext, useContext, useState, type ReactNode } from "react";
 
-/**
- * リザルト表示に関する状態だけを管理するフック。
- * 表示の ON/OFF やフラグをまとめて扱います。
- */
-export function useResultState() {
+// ResultState の値をまとめたインターフェース
+interface ResultStateValue {
+  showResult: boolean;
+  setShowResult: (v: boolean) => void;
+  gameOver: boolean;
+  setGameOver: (v: boolean) => void;
+  stageClear: boolean;
+  setStageClear: (v: boolean) => void;
+  gameClear: boolean;
+  setGameClear: (v: boolean) => void;
+  showMenu: boolean;
+  setShowMenu: (v: boolean) => void;
+  debugAll: boolean;
+  setDebugAll: (v: boolean) => void;
+  okLocked: boolean;
+  setOkLocked: (v: boolean) => void;
+  adShown: boolean;
+  setAdShown: (v: boolean) => void;
+  showBanner: boolean;
+  setShowBanner: (v: boolean) => void;
+  bannerStage: number;
+  setBannerStage: (v: number) => void;
+  // ステージ1バナーを一度だけ表示したかどうか
+  bannerShown: boolean;
+  setBannerShown: (v: boolean) => void;
+}
+
+const ResultStateContext = createContext<ResultStateValue | undefined>(undefined);
+
+// Provider コンポーネント。App 全体をラップして状態を共有する
+export function ResultStateProvider({ children }: { children: ReactNode }) {
+  const value = useResultStateImpl();
+  return React.createElement(
+    ResultStateContext.Provider,
+    { value },
+    children
+  );
+}
+
+// 実際の状態管理ロジックを分離
+function useResultStateImpl(): ResultStateValue {
   const [showResult, setShowResult] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [stageClear, setStageClear] = useState(false);
@@ -18,6 +54,8 @@ export function useResultState() {
   const [showBanner, setShowBanner] = useState(false);
   // バナーに表示する次のステージ番号
   const [bannerStage, setBannerStage] = useState(0);
+  // ステージ1バナーを一度だけ表示したかを保持するフラグ
+  const [bannerShown, setBannerShown] = useState(false);
 
   return {
     showResult,
@@ -40,5 +78,16 @@ export function useResultState() {
     setShowBanner,
     bannerStage,
     setBannerStage,
+    bannerShown,
+    setBannerShown,
   } as const;
+}
+
+// Context から状態を取得するフック
+export function useResultState(): ResultStateValue {
+  const ctx = useContext(ResultStateContext);
+  if (!ctx) {
+    throw new Error('useResultState は ResultStateProvider 内で利用してください');
+  }
+  return ctx;
 }

@@ -25,6 +25,14 @@ let adShown = false;
 const setAdShown = jest.fn((v: boolean) => {
   adShown = v;
 });
+let bannerStage = 0;
+const setBannerStage = jest.fn((v: number) => {
+  bannerStage = v;
+});
+let bannerShown = false;
+const setBannerShown = jest.fn((v: boolean) => {
+  bannerShown = v;
+});
 
 jest.mock('@/src/hooks/useResultState', () => ({
   useResultState: () => ({
@@ -44,6 +52,12 @@ jest.mock('@/src/hooks/useResultState', () => ({
     setOkLocked,
     adShown,
     setAdShown,
+    showBanner: false,
+    setShowBanner: jest.fn(),
+    bannerStage,
+    setBannerStage,
+    bannerShown,
+    setBannerShown,
   }),
 }));
 

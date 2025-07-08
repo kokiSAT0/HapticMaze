@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 
 // 環境変数 EXPO_PUBLIC_DISABLE_STAGE_BANNER が 'true' のとき
@@ -8,19 +8,17 @@ const DISABLE_STAGE_BANNER =
   process.env.EXPO_PUBLIC_DISABLE_STAGE_BANNER === "true";
 
 /**
- * ステージ番号を表示するオーバーレイコンポーネント
+ * ステージ番号を表示する全画面のビュー
  * visible が true の間だけ表示し、2 秒後に onFinish を呼び出す
  */
 export function StageBanner({
   visible,
   stage,
   onFinish,
-  onDismiss,
 }: {
   visible: boolean;
   stage: number;
   onFinish: () => void;
-  onDismiss?: () => void;
 }) {
   // ステージバナーを無効化している場合、表示要求があれば即終了する
   useEffect(() => {
@@ -49,23 +47,15 @@ export function StageBanner({
 
   if (!visible || DISABLE_STAGE_BANNER) return null;
   return (
-    <Modal
-      transparent
-      visible
-      animationType="fade"
-      presentationStyle="overFullScreen"
-      onDismiss={onDismiss}
+    <View
+      style={styles.wrapper}
+      accessible
+      accessibilityLabel={`Stage ${stage}`}
     >
-      <View
-        style={styles.wrapper}
-        accessible
-        accessibilityLabel={`Stage ${stage}`}
-      >
-        <ThemedText type="title" style={styles.text}>
-          Stage {stage}
-        </ThemedText>
-      </View>
-    </Modal>
+      <ThemedText type="title" style={styles.text}>
+        Stage {stage}
+      </ThemedText>
+    </View>
   );
 }
 
