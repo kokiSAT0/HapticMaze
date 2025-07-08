@@ -52,6 +52,14 @@ export default function TitleScreen() {
     })();
   }, []);
 
+  // confirmReset が閉じたタイミングをログ出力
+  // useEffect は状態変化に応じて副作用を実行する React の仕組み
+  React.useEffect(() => {
+    if (!confirmReset) {
+      console.log('[TitleScreen] confirmReset closed');
+    }
+  }, [confirmReset]);
+
   const select = (lang: Lang) => {
     changeLang(lang);
     setShowLang(false);
@@ -265,9 +273,10 @@ export default function TitleScreen() {
               /* はいを押したときは先にログを出し、その後ゲーム開始処理を待つ */
               onPress={async () => {
                 console.log('[TitleScreen] confirmReset yes', pendingLevel);
-                if (pendingLevel) await confirmStart(pendingLevel);
-                // 画面遷移後にモーダルを閉じる。画面が切り替わるので実質不要だが保険として残す
+                // まずモーダルを閉じる。非同期処理で待たされても画面が即時反応
+                // するようにするため
                 setConfirmReset(false);
+                if (pendingLevel) await confirmStart(pendingLevel);
               }}
               accessibilityLabel={t("yes")}
             />
