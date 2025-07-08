@@ -241,9 +241,10 @@ export default function TitleScreen() {
             </ThemedText>
             <PlainButton
               title={t("yes")}
-              onPress={() => {
-                if (pendingLevel) confirmStart(pendingLevel);
+              /* まずモーダルを閉じてからゲーム開始処理を await */
+              onPress={async () => {
                 setConfirmReset(false);
+                if (pendingLevel) await confirmStart(pendingLevel);
               }}
               accessibilityLabel={t("yes")}
             />
