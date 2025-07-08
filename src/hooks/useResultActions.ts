@@ -102,7 +102,8 @@ export function useResultActions({
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
     // バナー表示中は旧ステージの判定をスキップする
-    if (bannerActiveRef.current) return;
+    // showBanner が true の間は StageScreen でも判定が発火しないようにする
+    if (bannerActiveRef.current || showBanner) return;
     const willChangeMap = state.stage % maze.size === 0;
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setStageClear(true);
@@ -160,6 +161,7 @@ export function useResultActions({
     maze.size,
     state.steps,
     state.bumps,
+    showBanner,
     state.levelId,
     updateScore,
     setNewRecord,
