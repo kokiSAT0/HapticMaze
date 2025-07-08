@@ -7,11 +7,13 @@ import { ThemedView } from '@/components/ThemedView';
 import { PlainButton } from '@/components/PlainButton';
 import { LEVELS } from '@/constants/levels';
 import { loadHighScore, type HighScore } from '@/src/game/highScore';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 
 export default function ScoresScreen() {
   const router = useRouter();
   const { t } = useLocale();
+  const { show: showSnackbar } = useSnackbar();
   // レベルIDごとのハイスコアを保持
   const [scores, setScores] = useState<Record<string, HighScore | null>>({});
 
@@ -20,11 +22,11 @@ export default function ScoresScreen() {
     (async () => {
       const result: Record<string, HighScore | null> = {};
       for (const lv of LEVELS) {
-        result[lv.id] = await loadHighScore(lv.id);
+        result[lv.id] = await loadHighScore(lv.id, { showError: showSnackbar });
       }
       setScores(result);
     })();
-  }, []);
+  }, [showSnackbar]);
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
