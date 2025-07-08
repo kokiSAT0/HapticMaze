@@ -67,7 +67,8 @@ export default function PlayScreen() {
 
   // ステージバナー表示フラグが立ったら専用ページへ移動
   useEffect(() => {
-    if (showBanner) {
+    // bannerStage が 0 のときは表示データが無いので遷移しない
+    if (showBanner && bannerStage > 0) {
       router.replace(`/stage?stage=${bannerStage}`);
     }
   }, [showBanner, bannerStage, router]);
