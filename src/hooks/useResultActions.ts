@@ -78,8 +78,6 @@ export function useResultActions({
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
-  // バナー終了後に次ステージを読み込むかどうかを判定するフラグ
-  const nextStageRef = useRef(false);
 
   // ゲーム開始直後にステージ1バナーを表示する
   // 条件: ステージ1かつ移動回数0であること
@@ -220,14 +218,16 @@ export function useResultActions({
       }
     }
 
-    // 次ステージ番号を表示しながら内部状態を初期化する
-    // 先にバナーを表示することで画面遷移をスムーズにする
+    // 次ステージ番号を表示するため事前に値をセット
     setBannerStage(state.stage + 1);
+    // ステージクリア時はここでステージを進める
+    if (wasStageClear) {
+      nextStage();
+    }
+    // バナー表示で演出を行う
     setShowBanner(true);
-    // バナー表示中は判定をスキップするためフラグを立てる
+    // バナー表示中は判定をスキップする
     bannerActiveRef.current = true;
-    // ステージクリアしている場合はバナー終了後に次ステージを読み込む
-    nextStageRef.current = wasStageClear;
 
 
     // リザルト関連のフラグをリセットする
@@ -264,12 +264,7 @@ export function useResultActions({
     setOkLabel(t("ok"));
     okLockedRef.current = false;
     setOkLocked(false);
-    // 次ステージ読み込みが予約されていればここで実行
-    if (nextStageRef.current) {
-      nextStage();
-      nextStageRef.current = false;
-    }
-  }, [setShowBanner, setOkLabel, setOkLocked, t, nextStage]);
+  }, [setShowBanner, setOkLabel, setOkLocked, t]);
 
   // モーダルのフェードアウトが終わった後に番号をリセットする
   const handleBannerDismiss = useCallback(() => {
