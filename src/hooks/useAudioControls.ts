@@ -13,6 +13,7 @@ export function useAudioControls(moveFile: number, bumpFile: number) {
     pause: pauseBgm,
     resume: resumeBgm,
     change: changeBgm,
+    ready: bgmReady,
   } = useBgm();
   const { volume: seVolume, setVolume: setSeVolume, play: playMove } =
     useSE(moveFile);
@@ -64,6 +65,7 @@ export function useAudioControls(moveFile: number, bumpFile: number) {
     pauseBgm,
     resumeBgm,
     changeBgm,
+    bgmReady,
     audioReady,
   } as const;
 }

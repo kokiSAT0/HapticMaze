@@ -30,22 +30,14 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // volume は初期値だけ使用するため依存配列には含めない
+    // マウント時は音声モードの設定だけを行い、BGM は再生しない
     (async () => {
       await setAudioModeAsync({ playsInSilentMode: true });
-      const p = createAudioPlayer(
-        require("../../assets/sounds/降りしきる、白_調整.mp3")
-      );
-      p.loop = true;
-      p.volume = volume;
-      p.play();
-      playerRef.current = p;
       setReady(true);
     })();
     return () => {
       playerRef.current?.remove();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -63,6 +55,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const change = (file: number) => {
     if (playerRef.current) {
       playerRef.current.remove();
+      playerRef.current = null;
     }
     const p = createAudioPlayer(file);
     p.loop = true;

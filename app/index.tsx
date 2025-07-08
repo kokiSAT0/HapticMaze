@@ -32,12 +32,14 @@ export default function TitleScreen() {
     require("../assets/sounds/弓と矢_調整.mp3")
   );
 
-  // タイトル画面では常に基本BGMに戻す
+  // タイトル画面表示時に基本BGMへ切り替える
   React.useEffect(() => {
-    audio.changeBgm(require("../assets/sounds/降りしきる、白_調整.mp3"));
+    if (audio.bgmReady) {
+      audio.changeBgm(require("../assets/sounds/降りしきる、白_調整.mp3"));
+    }
     // audio インスタンスは固定のため依存なし
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [audio.bgmReady]);
 
   // 初回起動時：言語選択モーダル
   React.useEffect(() => {
