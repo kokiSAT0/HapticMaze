@@ -11,6 +11,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import { useSnackbar } from "@/src/hooks/useSnackbar";
 
 interface BgmContextValue {
   volume: number;
@@ -28,17 +29,25 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const [volume, setVolume] = useState(1);
   const [ready, setReady] = useState(false);
+  const { show: showSnackbar } = useSnackbar();
 
   useEffect(() => {
     // マウント時は音声モードの設定だけを行い、BGM は再生しない
     (async () => {
-      await setAudioModeAsync({ playsInSilentMode: true });
-      setReady(true);
+      try {
+        await setAudioModeAsync({ playsInSilentMode: true });
+      } catch (e) {
+        // 設定に失敗した場合はユーザーへ通知し詳細をログ出力
+        showSnackbar("オーディオ設定に失敗しました");
+        console.error("setAudioModeAsync error", e);
+      } finally {
+        setReady(true);
+      }
     })();
     return () => {
       playerRef.current?.remove();
     };
-  }, []);
+  }, [showSnackbar]);
 
   useEffect(() => {
     if (playerRef.current) playerRef.current.volume = volume;
