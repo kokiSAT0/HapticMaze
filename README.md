@@ -105,6 +105,17 @@ mazesense/
 pnpm exec node scripts/update-maze-import.js
 ```
 
+## デバッグ用オプション
+
+ステージ開始時に表示される黒画面のバナーをスキップしたい場合は
+`.env` に次の行を追加します。
+
+```bash
+EXPO_PUBLIC_DISABLE_STAGE_BANNER=true
+```
+
+値を `false` または未設定にすると通常通りバナーが表示されます。
+
 ## β版の配布について
 
 現在のバージョンはテスト目的の β 版です。TestFlight もしくは Google Play の内部

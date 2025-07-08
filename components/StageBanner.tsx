@@ -2,6 +2,11 @@ import React, { useEffect } from "react";
 import { Modal, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 
+// 環境変数 EXPO_PUBLIC_DISABLE_STAGE_BANNER が 'true' のとき
+// ステージバナーを表示せず即座に onFinish を呼び出す
+const DISABLE_STAGE_BANNER =
+  process.env.EXPO_PUBLIC_DISABLE_STAGE_BANNER === "true";
+
 /**
  * ステージ番号を表示するオーバーレイコンポーネント
  * visible が true の間だけ表示し、2 秒後に onFinish を呼び出す
@@ -15,12 +20,19 @@ export function StageBanner({
   stage: number;
   onFinish: () => void;
 }) {
+  // ステージバナーを無効化している場合、表示要求があれば即終了する
+  useEffect(() => {
+    if (DISABLE_STAGE_BANNER && visible) {
+      onFinish();
+    }
+  }, [visible, onFinish]);
+
   useEffect(() => {
     // 表示状態やステージ番号が変わるたびにログを出す
     console.log(
       `[StageBanner] visible=${visible}, stage=${stage}`
     );
-    if (!visible) return;
+    if (!visible || DISABLE_STAGE_BANNER) return;
     // 初期化処理がすぐ終わっても最低 2 秒は表示する
     // 2000 は 2 秒をミリ秒で表した数値
     const id = setTimeout(() => {
@@ -33,7 +45,7 @@ export function StageBanner({
     };
   }, [visible, stage, onFinish]);
 
-  if (!visible) return null;
+  if (!visible || DISABLE_STAGE_BANNER) return null;
   return (
     <Modal
       transparent
