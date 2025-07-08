@@ -18,7 +18,7 @@ export default function ResetConfirmScreen() {
   const levelId = typeof params.level === 'string' ? params.level : undefined;
   const { newGame } = useGame();
   const { t } = useLocale();
-  const { change } = useBgm();
+  const { change, bgmReady } = useBgm();
   const { show: showSnackbar } = useSnackbar();
 
   const start = async () => {
@@ -32,10 +32,12 @@ export default function ResetConfirmScreen() {
       return;
     }
     await clearGame({ showError: showSnackbar });
-    if (levelId === 'level2') {
-      change(require('../assets/sounds/日没廃校_調整.mp3'));
-    } else {
-      change(require('../assets/sounds/降りしきる、白_調整.mp3'));
+    if (bgmReady) {
+      if (levelId === 'level2') {
+        change(require('../assets/sounds/日没廃校_調整.mp3'));
+      } else {
+        change(require('../assets/sounds/降りしきる、白_調整.mp3'));
+      }
     }
     newGame(
       level.size,
