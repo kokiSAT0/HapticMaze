@@ -270,9 +270,12 @@ export default function TitleScreen() {
             </ThemedText>
             <PlainButton
               title={t("yes")}
-              /* モーダルを閉じる前に遷移を完了させることで画面のちらつきを防ぐ */
+              /* モーダルを閉じてから遷移を開始する */
               onPress={async () => {
                 console.log('[TitleScreen] confirmReset yes', pendingLevel);
+                // モーダルを閉じたことをログに記録
+                console.log('[TitleScreen] confirmReset close');
+                setConfirmReset(false);
                 if (pendingLevel) await confirmStart(pendingLevel);
               }}
               accessibilityLabel={t("yes")}
