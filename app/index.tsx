@@ -52,12 +52,9 @@ export default function TitleScreen() {
     })();
   }, []);
 
-  // confirmReset が閉じたタイミングをログ出力
-  // useEffect は状態変化に応じて副作用を実行する React の仕組み
+  // confirmReset の表示状態を監視して開閉をログに残す
   React.useEffect(() => {
-    if (!confirmReset) {
-      console.log('[TitleScreen] confirmReset closed');
-    }
+    console.log('[TitleScreen] confirmReset', confirmReset ? 'open' : 'closed');
   }, [confirmReset]);
 
   const select = (lang: Lang) => {
@@ -65,7 +62,8 @@ export default function TitleScreen() {
     setShowLang(false);
   };
 
-  const startLevel = (id: string) => {
+  // 実際の遷移完了を待つため async 関数に変更
+  const startLevel = async (id: string) => {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
     // ゲーム開始直前にログを出してどのレベルを選んだか記録する
@@ -86,9 +84,11 @@ export default function TitleScreen() {
       level.biasedSpawn,
       level.id
     );
-    router.replace("/play");
-    // 画面遷移後もログを残してデバッグしやすくする
-    console.log('[TitleScreen] startLevel replaced', id);
+    // 画面遷移開始をログ
+    console.log('[TitleScreen] navigate begin');
+    await router.replace("/play");
+    // 遷移完了も記録する
+    console.log('[TitleScreen] navigate end', id);
   };
 
   const startLevelFromStart = (id: string) => {
@@ -111,7 +111,7 @@ export default function TitleScreen() {
     console.log('[TitleScreen] confirmStart begin', id);
     await clearGame();
     setHasSave(false);
-    startLevel(id);
+    await startLevel(id);
     // 処理完了をログ出力
     console.log('[TitleScreen] confirmStart end', id);
   };
@@ -270,12 +270,9 @@ export default function TitleScreen() {
             </ThemedText>
             <PlainButton
               title={t("yes")}
-              /* はいを押したときは先にログを出し、その後ゲーム開始処理を待つ */
+              /* モーダルを閉じる前に遷移を完了させることで画面のちらつきを防ぐ */
               onPress={async () => {
                 console.log('[TitleScreen] confirmReset yes', pendingLevel);
-                // まずモーダルを閉じる。非同期処理で待たされても画面が即時反応
-                // するようにするため
-                setConfirmReset(false);
                 if (pendingLevel) await confirmStart(pendingLevel);
               }}
               accessibilityLabel={t("yes")}
