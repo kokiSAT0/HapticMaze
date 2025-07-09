@@ -26,7 +26,6 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const { show: showSnackbar } = useSnackbar();
 
   // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
   useEffect(() => {
