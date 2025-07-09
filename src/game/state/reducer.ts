@@ -44,6 +44,9 @@ export function reducer(state: State, action: Action): State {
         state.wallLifetimeFn,
         state.biasedSpawn,
         state.levelId,
+        state.respawnStock,
+        state.totalSteps,
+        state.totalBumps,
       );
     case 'newMaze':
       return createFirstStage(

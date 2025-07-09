@@ -51,6 +51,8 @@ export function createFirstStage(
     biasedSpawn,
     levelId,
     3,
+    0,
+    0,
   );
 }
 
@@ -97,6 +99,8 @@ export function nextStageState(state: State): State {
     state.biasedSpawn,
     state.levelId,
     stock,
+    state.totalSteps,
+    state.totalBumps,
   );
 }
 

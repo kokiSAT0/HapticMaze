@@ -23,6 +23,10 @@ export interface GameState {
   pos: Vec2;
   steps: number;
   bumps: number;
+  /** ゲーム全体で移動した総歩数 */
+  totalSteps: number;
+  /** ゲーム全体でぶつかった回数 */
+  totalBumps: number;
   path: Vec2[];
   /** 衝突した縦壁と残りターン数 */
   hitV: Map<string, number>;
@@ -85,6 +89,8 @@ export function initState(
   biasedSpawn: boolean = true,
   levelId?: string,
   respawnStock: number = 3,
+  totalSteps: number = 0,
+  totalBumps: number = 0,
 ): State {
   const maze = prepMaze(m);
   const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
@@ -118,5 +124,7 @@ export function initState(
     biasedSpawn,
     levelId,
     respawnStock,
+    totalSteps,
+    totalBumps,
   };
 }

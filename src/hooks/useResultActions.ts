@@ -121,8 +121,8 @@ export function useResultActions({
       if (state.levelId) {
         const current = {
           stage: state.stage,
-          steps: state.steps,
-          bumps: state.bumps,
+          steps: state.totalSteps,
+          bumps: state.totalBumps,
         };
         updateScore(current, state.finalStage);
       } else {
@@ -139,8 +139,8 @@ export function useResultActions({
       if (state.levelId) {
         const current = {
           stage: state.stage - 1,
-          steps: state.steps,
-          bumps: state.bumps,
+          steps: state.totalSteps,
+          bumps: state.totalBumps,
         };
         updateScore(current, false);
       } else {
@@ -154,8 +154,8 @@ export function useResultActions({
     state.finalStage,
     state.stage,
     maze.size,
-    state.steps,
-    state.bumps,
+    state.totalSteps,
+    state.totalBumps,
     showBanner,
     state.levelId,
     updateScore,

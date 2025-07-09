@@ -12,6 +12,8 @@ export interface StoredState {
   pos: State['pos'];
   steps: number;
   bumps: number;
+  totalSteps?: number;
+  totalBumps?: number;
   path: State['path'];
   hitV: [string, number | null][];
   hitH: [string, number | null][];
@@ -39,6 +41,8 @@ export function encodeState(state: State): StoredState {
     pos: state.pos,
     steps: state.steps,
     bumps: state.bumps,
+    totalSteps: state.totalSteps,
+    totalBumps: state.totalBumps,
     path: state.path,
     hitV: Array.from(state.hitV.entries()),
     hitH: Array.from(state.hitH.entries()),
@@ -69,6 +73,8 @@ export function decodeState(data: StoredState): State {
     pos: data.pos,
     steps: data.steps,
     bumps: data.bumps,
+    totalSteps: data.totalSteps ?? 0,
+    totalBumps: data.totalBumps ?? 0,
     path: data.path,
     hitV: new Map(
       data.hitV.map(([k, v]) => [k, v === null ? Infinity : v]),

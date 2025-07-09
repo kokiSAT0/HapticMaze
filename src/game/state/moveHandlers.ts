@@ -106,12 +106,16 @@ export function updatePlayerPathIfMoved(state: State, newPos: { x: number; y: nu
 export function handleMoveAction(state: State, dir: Dir): State {
   const player = handlePlayerMove(state, dir);
   const enemyResult = updateEnemies(state, player.pos);
+  const stepDiff = player.steps - state.steps;
+  const bumpDiff = player.bumps - state.bumps;
 
   return {
     ...state,
     pos: player.pos,
     steps: player.steps,
     bumps: player.bumps,
+    totalSteps: state.totalSteps + stepDiff,
+    totalBumps: state.totalBumps + bumpDiff,
     path: updatePlayerPathIfMoved(state, player.pos, player.steps),
     hitV: player.hitV,
     hitH: player.hitH,
