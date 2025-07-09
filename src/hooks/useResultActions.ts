@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
 import { useResultState } from "@/src/hooks/useResultState";
+import { clearGame } from "@/src/game/saveGame";
 import { useStageEffects } from "@/src/hooks/useStageEffects";
 import { useLocale } from "@/src/locale/LocaleContext";
 import type { MazeData } from "@/src/types/maze";
@@ -15,6 +16,7 @@ interface Options {
   nextStage: () => void;
   resetRun: () => void;
   router: ReturnType<typeof useRouter>;
+  showSnackbar?: (msg: string) => void;
   pauseBgm: () => void;
   resumeBgm: () => void;
 }
@@ -28,6 +30,7 @@ export function useResultActions({
   nextStage,
   resetRun,
   router,
+  showSnackbar,
   pauseBgm,
   resumeBgm,
 }: Options) {
@@ -195,6 +198,8 @@ export function useResultActions({
     if (gameOver) {
       // ゲームオーバー時はランをリセットしてタイトルへ戻る
       resetRun();
+      // 中断データを削除して再開できないようにする
+      await clearGame(showSnackbar ? { showError: showSnackbar } : undefined);
       // 表示フラグを戻して次のゲームに影響しないようにする
       setShowResult(false);
       setGameOver(false);

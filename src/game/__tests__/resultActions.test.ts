@@ -9,13 +9,16 @@ jest.mock('react', () => ({
 // 状態管理フックをモック
 let showResult = true;
 let stageClear = true;
+let gameOver = false;
 const setShowResult = jest.fn((v: boolean) => {
   showResult = v;
 });
 const setStageClear = jest.fn((v: boolean) => {
   stageClear = v;
 });
-const setGameOver = jest.fn();
+const setGameOver = jest.fn((v: boolean) => {
+  gameOver = v;
+});
 const setGameClear = jest.fn();
 const setDebugAll = jest.fn();
 const setNewRecord = jest.fn();
@@ -38,7 +41,7 @@ jest.mock('@/src/hooks/useResultState', () => ({
   useResultState: () => ({
     showResult,
     setShowResult,
-    gameOver: false,
+    gameOver,
     setGameOver,
     stageClear,
     setStageClear,
@@ -83,12 +86,17 @@ jest.mock('@/src/hooks/useStageEffects', () => ({
   useStageEffects: () => ({ loadAdIfNeeded, showAd }),
 }));
 
+// clearGame 関数をモックして呼び出し確認に使う
+const clearGame = jest.fn();
+jest.mock('@/src/game/saveGame', () => ({ clearGame }));
+
 import { useResultActions } from '@/src/hooks/useResultActions';
 
 describe('handleOk の広告表示後処理', () => {
   beforeEach(() => {
     showResult = true;
     stageClear = true;
+    gameOver = false;
     adShown = false;
     jest.clearAllMocks();
   });
@@ -229,5 +237,30 @@ describe('handleOk の広告表示後処理', () => {
     expect(nextStage).not.toHaveBeenCalled();
     expect(showResult).toBe(true);
     expect(stageClear).toBe(true);
+  });
+
+  test('ゲームオーバー時はセーブデータを削除してタイトルへ戻る', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // ゲームオーバー状態を再現する
+    gameOver = true;
+
+    const actions = useResultActions({
+      state: { stage: 1 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+
+    expect(clearGame).toHaveBeenCalled();
+    expect(resetRun).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalledWith('/');
   });
 });
