@@ -39,23 +39,34 @@ export function handlePlayerMove(state: State, dir: Dir) {
 /**
  * 全ての敵を1ターン進め、捕まったかどうか判定する。
  */
-export function updateEnemies(state: State, playerPos: { x: number; y: number }) {
+// プレイヤーが移動する前と後の座標を受け取り、
+// 移動前に見えていた位置を記録できるようにする
+export function updateEnemies(
+  state: State,
+  playerPos: { x: number; y: number },
+  prevPlayerPos?: { x: number; y: number },
+) {
   const newVisited: Map<string, number>[] = [];
   const movedEnemies: Enemy[] = state.enemies.map((e, i) => {
     const mover = getEnemyMover(e.behavior ?? state.enemyBehavior);
     const visited = new Map(state.enemyVisited[i]);
-    if (e.cooldown > 0) {
-      let targetEnemy = e;
-      if (e.behavior === 'sight' || e.behavior === 'smart') {
-        // 視界チェックのみ行い、ターゲット更新
-        if (inSight(e.pos, playerPos, state.maze)) {
-          targetEnemy = { ...e, target: { ...playerPos } };
-        }
+    // 移動前のプレイヤー位置が見えていればその座標を記録する
+    // 移動後も見えていればそちらを優先する
+    let current: Enemy = e;
+    if (e.behavior === 'sight' || e.behavior === 'smart') {
+      if (prevPlayerPos && inSight(e.pos, prevPlayerPos, state.maze)) {
+        current = { ...current, target: { ...prevPlayerPos } };
       }
-      newVisited.push(visited);
-      return { ...targetEnemy, cooldown: e.cooldown - 1 };
+      if (inSight(e.pos, playerPos, state.maze)) {
+        current = { ...current, target: { ...playerPos } };
+      }
     }
-    let current = e;
+
+    if (e.cooldown > 0) {
+      newVisited.push(visited);
+      return { ...current, cooldown: e.cooldown - 1 };
+    }
+
     for (let r = 0; r < e.repeat; r++) {
       current = mover(current, state.maze, visited, playerPos);
       const key = `${current.pos.x},${current.pos.y}`;
@@ -105,7 +116,8 @@ export function updatePlayerPathIfMoved(state: State, newPos: { x: number; y: nu
  */
 export function handleMoveAction(state: State, dir: Dir): State {
   const player = handlePlayerMove(state, dir);
-  const enemyResult = updateEnemies(state, player.pos);
+  // updateEnemies へは移動前の座標も渡す
+  const enemyResult = updateEnemies(state, player.pos, state.pos);
   const stepDiff = player.steps - state.steps;
   const bumpDiff = player.bumps - state.bumps;
 
