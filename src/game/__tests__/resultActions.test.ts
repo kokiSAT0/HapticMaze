@@ -104,7 +104,6 @@ describe('handleOk の広告表示後処理', () => {
       nextStage,
       resetRun,
       router,
-      showSnackbar: jest.fn(),
       pauseBgm: jest.fn(),
       resumeBgm: jest.fn(),
     });
@@ -131,7 +130,6 @@ describe('handleOk の広告表示後処理', () => {
       nextStage,
       resetRun,
       router,
-      showSnackbar: jest.fn(),
       pauseBgm: jest.fn(),
       resumeBgm: jest.fn(),
     });
@@ -158,7 +156,6 @@ describe('handleOk の広告表示後処理', () => {
       nextStage,
       resetRun,
       router,
-      showSnackbar: jest.fn(),
       pauseBgm: jest.fn(),
       resumeBgm: jest.fn(),
     });
@@ -186,7 +183,6 @@ describe('handleOk の広告表示後処理', () => {
       nextStage,
       resetRun,
       router,
-      showSnackbar: jest.fn(),
       pauseBgm: jest.fn(),
       resumeBgm: jest.fn(),
     });
@@ -222,7 +218,6 @@ describe('handleOk の広告表示後処理', () => {
       nextStage,
       resetRun,
       router,
-      showSnackbar: jest.fn(),
       pauseBgm: jest.fn(),
       resumeBgm: jest.fn(),
     });

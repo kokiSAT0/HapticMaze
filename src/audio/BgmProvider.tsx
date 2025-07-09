@@ -11,7 +11,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { useSnackbar } from "@/src/hooks/useSnackbar";
+import { useHandleError } from "@/src/utils/handleError";
 
 interface BgmContextValue {
   volume: number;
@@ -29,7 +29,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const [volume, setVolume] = useState(1);
   const [ready, setReady] = useState(false);
-  const { show: showSnackbar } = useSnackbar();
+  const handleError = useHandleError();
 
   useEffect(() => {
     // マウント時は音声モードの設定だけを行い、BGM は再生しない
@@ -38,8 +38,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
         await setAudioModeAsync({ playsInSilentMode: true });
       } catch (e) {
         // 設定に失敗した場合はユーザーへ通知し詳細をログ出力
-        showSnackbar("オーディオ設定に失敗しました");
-        console.error("setAudioModeAsync error", e);
+        handleError("オーディオ設定に失敗しました", e);
       } finally {
         setReady(true);
       }
@@ -47,7 +46,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     return () => {
       playerRef.current?.remove();
     };
-  }, [showSnackbar]);
+  }, [handleError]);
 
   useEffect(() => {
     if (playerRef.current) playerRef.current.volume = volume;
@@ -63,8 +62,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       if (playerRef.current?.paused) playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合はユーザーへ知らせてログに残す
-      showSnackbar("BGM の再生に失敗しました");
-      console.error("BGM resume error", e);
+      handleError("BGM の再生に失敗しました", e);
     }
   };
 
@@ -87,8 +85,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       playerRef.current = p;
     } catch (e) {
       // プレイヤー作成や再生でエラーが起きた場合の処理
-      showSnackbar("BGM の再生に失敗しました");
-      console.error("BGM change error", e);
+      handleError("BGM の再生に失敗しました", e);
     }
   };
 
