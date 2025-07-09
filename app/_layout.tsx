@@ -16,6 +16,9 @@ import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 
+import { ErrorBoundary } from '@/src/components/ErrorBoundary';
+
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   // スナックバー表示用フック。エラー通知に利用する
@@ -23,6 +26,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const { show: showSnackbar } = useSnackbar();
 
   // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
   useEffect(() => {
@@ -44,27 +48,29 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <BgmProvider>
-        <SeVolumeProvider>
-          <LocaleProvider>
-            <ResultStateProvider>
-              <GameProvider>
-              <Stack>
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="practice" options={{ headerShown: false }} />
-                <Stack.Screen name="scores" options={{ headerShown: false }} />
-                <Stack.Screen name="play" options={{ headerShown: false }} />
-                <Stack.Screen name="stage" options={{ headerShown: false }} />
-                <Stack.Screen name="reset" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </GameProvider>
-            </ResultStateProvider>
-          </LocaleProvider>
-          <StatusBar style="auto" />
-        </SeVolumeProvider>
-      </BgmProvider>
-    </ThemeProvider>
+    <ErrorBoundary onError={showSnackbar}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <BgmProvider>
+          <SeVolumeProvider>
+            <LocaleProvider>
+              <ResultStateProvider>
+                <GameProvider>
+                <Stack>
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="practice" options={{ headerShown: false }} />
+                  <Stack.Screen name="scores" options={{ headerShown: false }} />
+                  <Stack.Screen name="play" options={{ headerShown: false }} />
+                  <Stack.Screen name="stage" options={{ headerShown: false }} />
+                  <Stack.Screen name="reset" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </GameProvider>
+              </ResultStateProvider>
+            </LocaleProvider>
+            <StatusBar style="auto" />
+          </SeVolumeProvider>
+        </BgmProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
