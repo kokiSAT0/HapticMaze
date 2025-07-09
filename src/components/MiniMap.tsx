@@ -17,6 +17,7 @@ import {
   renderVisitedGoals,
 } from "./mini-map/Paths";
 import { renderEnemies } from "./mini-map/Enemies";
+import { prepMaze, type MazeSets } from "@/src/game/state";
 
 // AnimatedRect はコンポーネント外で一度だけ作成しておく
 // これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
@@ -75,6 +76,8 @@ export function MiniMap({
   visitedGoals,
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
+  // MazeData から壁検索しやすい形へ変換
+  const mazeSets = React.useMemo<MazeSets>(() => prepMaze(maze), [maze]);
   const style = useAnimatedStyle(() => ({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
@@ -145,7 +148,7 @@ export function MiniMap({
           r={cell * 0.3}
           fill="white"
         />
-        {renderEnemies({ enemies, cell, showAll })}
+        {renderEnemies({ enemies, cell, showAll, playerPos: pos, maze: mazeSets })}
       </Svg>
     </Animated.View>
   );
