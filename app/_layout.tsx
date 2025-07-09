@@ -58,6 +58,7 @@ export default function RootLayout() {
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="practice" options={{ headerShown: false }} />
                   <Stack.Screen name="scores" options={{ headerShown: false }} />
+                  <Stack.Screen name="options" options={{ headerShown: false }} />
                   <Stack.Screen name="play" options={{ headerShown: false }} />
                   <Stack.Screen name="stage" options={{ headerShown: false }} />
                   <Stack.Screen name="reset" options={{ headerShown: false }} />
