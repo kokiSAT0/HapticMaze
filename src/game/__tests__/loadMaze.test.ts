@@ -24,4 +24,17 @@ describe('loadMaze', () => {
     const maze = loadMaze(10);
     expect(maze).toBeDefined();
   });
+
+  test('無効なサイズはエラーを出して 10 を返す', () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const showError = jest.fn();
+
+    const maze = loadMaze(7, { showError });
+
+    expect(spy).toHaveBeenCalled();
+    expect(showError).toHaveBeenCalledWith('迷路サイズは 5 または 10 を指定してください');
+    expect(maze.size).toBe(10);
+
+    spy.mockRestore();
+  });
 });

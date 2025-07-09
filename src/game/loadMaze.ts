@@ -6,11 +6,24 @@ import type { MazeData } from '@/src/types/maze';
 let pool5: MazeData[] = [...mazeSet5];
 let pool10: MazeData[] = [...mazeSet10];
 
+export interface LoadMazeOptions {
+  /** エラー時に呼び出されるコールバック */
+  showError?: (msg: string) => void;
+}
+
 /**
  * 指定したサイズの迷路をランダムに返す
  * @param size 迷路の一辺の長さ
  */
-export function loadMaze(size: number = 10): MazeData {
+export function loadMaze(size: number = 10, opts: LoadMazeOptions = {}): MazeData {
+  // 5 でも 10 でもない場合はエラー扱い
+  if (size !== 5 && size !== 10) {
+    console.error('loadMaze: invalid size', size);
+    opts.showError?.('迷路サイズは 5 または 10 を指定してください');
+    // 初心者向け: 不正な値はデフォルトの10に置き換える
+    size = 10;
+  }
+
   // サイズに応じてプールを選択する
   const pool = size === 5 ? pool5 : pool10;
   // プールが空なら元のセットから再初期化
