@@ -95,29 +95,38 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const change = (file: number) => {
     const run = async () => {
       try {
-        // 同じファイルなら再読み込みせずそのまま
+        // すでに同じ曲が流れている場合は何もしない
         if (playerRef.current && currentFileRef.current === file) {
           if (playerRef.current.paused) playerRef.current.play();
           return;
         }
 
         if (playerRef.current) {
-          // フェードアウト後に BGM を切り替える
-          const orig = playerRef.current.volume;
-          await fadeVolume(playerRef.current, orig, 0, 500);
-          playerRef.current.replace(file);
-          playerRef.current.loop = true;
-          playerRef.current.volume = 0;
-          playerRef.current.play();
-          await fadeVolume(playerRef.current, 0, volume, 500);
+          // 新しいプレイヤーを用意して同時にフェードさせる
+          const current = playerRef.current;
+          const orig = current.volume;
+          const next = createAudioPlayer(file);
+          next.loop = true;
+          next.volume = 0;
+          next.play();
+
+          // 旧プレイヤーをフェードアウト、新プレイヤーをフェードイン
+          await Promise.all([
+            fadeVolume(current, orig, 0, 500),
+            fadeVolume(next, 0, volume, 500),
+          ]);
+
+          current.remove();
+          playerRef.current = next;
         } else {
-          // 初回のみプレイヤーを生成
+          // 初回再生時はプレイヤーを一つだけ作成
           const p = createAudioPlayer(file);
           p.loop = true;
           p.volume = volume;
           p.play();
           playerRef.current = p;
         }
+
         currentFileRef.current = file;
       } catch (e) {
         // プレイヤー作成や再生でエラーが起きた場合の処理
