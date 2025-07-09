@@ -195,12 +195,29 @@ export function useResultActions({
     if (gameOver) {
       // ゲームオーバー時はランをリセットしてタイトルへ戻る
       resetRun();
+      // 表示フラグを戻して次のゲームに影響しないようにする
+      setShowResult(false);
+      setGameOver(false);
+      setStageClear(false);
+      setGameClear(false);
+      setNewRecord(false);
+      setAdShown(false);
+      okLockedRef.current = false;
+      setOkLocked(false);
       router.replace("/");
       // 早期 return で以降の処理を行わない
       return;
     } else if (gameClear) {
       // ゲームクリア時も同様にタイトルへ戻る
       resetRun();
+      setShowResult(false);
+      setGameOver(false);
+      setStageClear(false);
+      setGameClear(false);
+      setNewRecord(false);
+      setAdShown(false);
+      okLockedRef.current = false;
+      setOkLocked(false);
       router.replace("/");
       return;
     }
