@@ -1,6 +1,9 @@
 import React from 'react';
 import { Circle, Line } from 'react-native-svg';
 import type { Enemy } from '@/src/types/enemy';
+import type { Vec2 } from '@/src/types/maze';
+import type { MazeSets } from '@/src/game/state';
+import { inSight } from '@/src/game/enemyAI';
 
 // 敵描画に関する処理
 
@@ -29,19 +32,34 @@ export interface EnemiesProps {
   enemies: Enemy[];
   cell: number;
   showAll: boolean;
+  playerPos: Vec2;
+  maze: MazeSets;
 }
 
 // 敵本体と放射線を描画
-export function renderEnemies({ enemies, cell, showAll }: EnemiesProps): (React.JSX.Element | null)[] {
+export function renderEnemies({ enemies, cell, showAll, playerPos, maze }: EnemiesProps): (React.JSX.Element | null)[] {
   const lineMap = { random: 4, slow: 6, sight: 24, fast: 12 } as const;
   return enemies.map((e, i) => {
     if (!e.visible && !showAll) return null;
     const cx = (e.pos.x + 0.5) * cell;
     const cy = (e.pos.y + 0.5) * cell;
     const lines = enemyLines(cx, cy, cell * 0.35, lineMap[e.kind ?? 'random']);
+    // 敵がプレイヤーを視認しているかどうかを判定
+    // inSight は壁を考慮した直線上の可視判定を行う
+    const seeing = inSight(e.pos, playerPos, maze);
+    let color = 'white';
+    if (e.behavior === 'sight' || e.behavior === 'smart') {
+      if (seeing) {
+        // 視認中は赤色
+        color = 'red';
+      } else if (e.target) {
+        // 直前の視認位置へ向かっている最中は黄色
+        color = 'yellow';
+      }
+    }
     return (
       <React.Fragment key={`enemy${i}`}>
-        <Circle cx={cx} cy={cy} r={cell * 0.1} fill="white" />
+        <Circle cx={cx} cy={cy} r={cell * 0.1} fill={color} />
         {lines}
       </React.Fragment>
     );
