@@ -46,6 +46,8 @@ const messages = {
     best: "Best: {{stage}}ステージ / {{steps}} steps / {{bumps}} bumps",
     highScores: "ハイスコア",
     openHighScores: "ハイスコア一覧を開く",
+    options: "オプション",
+    openOptions: "設定を開く",
     volumeSettings: "音量設定",
     noRecord: "記録なし",
     // ハイスコアを更新したときに表示するメッセージ
@@ -95,6 +97,8 @@ const messages = {
     best: "Best: {{stage}} stages / {{steps}} steps / {{bumps}} bumps",
     highScores: "High Scores",
     openHighScores: "View High Scores",
+    options: "Options",
+    openOptions: "Open settings",
     volumeSettings: "Volume Settings",
     noRecord: "No record",
     // Message shown when a new high score is achieved
