@@ -50,13 +50,13 @@ describe('biasedPickFrom', () => {
 });
 
 describe('shouldChangeMap', () => {
-  test('3 の倍数ステージで迷路を変更する', () => {
-    expect(shouldChangeMap(3)).toBe(true);
-    expect(shouldChangeMap(6)).toBe(true);
+  test('指定間隔ごとに迷路を変更する', () => {
+    expect(shouldChangeMap(5, 5)).toBe(true);
+    expect(shouldChangeMap(10, 5)).toBe(true);
   });
 
   test('それ以外のステージでは迷路を維持する', () => {
-    expect(shouldChangeMap(1)).toBe(false);
-    expect(shouldChangeMap(2)).toBe(false);
+    expect(shouldChangeMap(1, 5)).toBe(false);
+    expect(shouldChangeMap(4, 5)).toBe(false);
   });
 });

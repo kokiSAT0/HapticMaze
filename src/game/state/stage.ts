@@ -20,6 +20,7 @@ export function createFirstStage(
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
   levelId?: string,
+  stagePerMap: number = 3,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -50,7 +51,7 @@ export function createFirstStage(
     wallLifetimeFn,
     biasedSpawn,
     levelId,
-    3,
+    stagePerMap,
     0,
     0,
   );
@@ -59,7 +60,7 @@ export function createFirstStage(
 // 前ステージのゴールを次ステージのスタートに設定し、未使用マスから新たなゴールを選ぶ
 export function nextStageState(state: State): State {
   const size = state.mazeRaw.size;
-  const changeMap = shouldChangeMap(state.stage);
+  const changeMap = shouldChangeMap(state.stage, state.stagePerMap);
   const base = changeMap ? loadMaze(size) : state.mazeRaw;
   const start = { x: state.mazeRaw.goal[0], y: state.mazeRaw.goal[1] };
   const visited = new Set(state.visitedGoals);
@@ -98,6 +99,7 @@ export function nextStageState(state: State): State {
     state.wallLifetimeFn,
     state.biasedSpawn,
     state.levelId,
+    state.stagePerMap,
     stock,
     state.totalSteps,
     state.totalBumps,
@@ -116,5 +118,6 @@ export function restartRun(state: State): State {
     state.wallLifetimeFn,
     state.biasedSpawn,
     state.levelId,
+    state.stagePerMap,
   );
 }

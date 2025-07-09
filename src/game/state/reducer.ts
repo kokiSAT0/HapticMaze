@@ -21,6 +21,7 @@ export type Action =
       wallLifetimeFn?: (stage: number) => number;
       biasedSpawn?: boolean;
       levelId?: string;
+      stagePerMap?: number;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' }
@@ -44,6 +45,7 @@ export function reducer(state: State, action: Action): State {
         state.wallLifetimeFn,
         state.biasedSpawn,
         state.levelId,
+        state.stagePerMap,
         state.respawnStock,
         state.totalSteps,
         state.totalBumps,
@@ -59,6 +61,7 @@ export function reducer(state: State, action: Action): State {
         action.wallLifetimeFn,
         action.biasedSpawn ?? state.biasedSpawn,
         action.levelId,
+        action.stagePerMap ?? state.stagePerMap,
       );
     case 'nextStage':
       return nextStageState(state);

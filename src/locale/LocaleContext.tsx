@@ -19,6 +19,7 @@ const messages = {
   ja: {
     practiceMode: "練習モード",
     openPractice: "練習モードを開く",
+    tutorial: "チュートリアル",
     easy: "イージー",
     normal: "ノーマル",
     hard: "ハード",
@@ -71,6 +72,7 @@ const messages = {
   en: {
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
+    tutorial: "Tutorial",
     easy: "Easy",
     normal: "Normal",
     hard: "Hard",

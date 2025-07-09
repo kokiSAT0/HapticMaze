@@ -28,6 +28,7 @@ const GameContext = createContext<
         wallLifetimeFn?: (stage: number) => number,
         biasedSpawn?: boolean,
         levelId?: string,
+        stagePerMap?: number,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -64,6 +65,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     wallLifetimeFn?: (stage: number) => number,
     biasedSpawn?: boolean,
     levelId?: string,
+    stagePerMap?: number,
   ) =>
     send({
       type: 'newMaze',
@@ -76,6 +78,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       wallLifetimeFn,
       biasedSpawn,
       levelId,
+      stagePerMap,
     });
   const nextStage = () => send({ type: 'nextStage' });
   const resetRun = () => send({ type: 'resetRun' });
