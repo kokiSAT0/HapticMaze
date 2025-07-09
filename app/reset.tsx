@@ -43,7 +43,7 @@ export default function ResetConfirmScreen() {
     }
     await clearGame({ showError: showSnackbar });
     const bgmFile =
-      levelId === 'level2'
+      levelId === 'hard'
         ? require('../assets/sounds/日没廃校_調整.mp3')
         : require('../assets/sounds/降りしきる、白_調整.mp3');
     // bgmReady が false の場合は pendingBgm に保持し、準備完了後に再生
