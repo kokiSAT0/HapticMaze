@@ -20,6 +20,16 @@ export default function ResetConfirmScreen() {
   const { t } = useLocale();
   const { change, bgmReady } = useBgm();
   const { show: showSnackbar } = useSnackbar();
+  // BGM変更が間に合わなかった場合に備えて一時的に保持
+  const [pendingBgm, setPendingBgm] = React.useState<number>();
+
+  // bgmReady が true になったタイミングで再度 change() を実行
+  React.useEffect(() => {
+    if (bgmReady && pendingBgm) {
+      change(pendingBgm);
+      setPendingBgm(undefined);
+    }
+  }, [bgmReady, pendingBgm, change]);
 
   const start = async () => {
     if (!levelId) {
@@ -32,12 +42,15 @@ export default function ResetConfirmScreen() {
       return;
     }
     await clearGame({ showError: showSnackbar });
+    const bgmFile =
+      levelId === 'level2'
+        ? require('../assets/sounds/日没廃校_調整.mp3')
+        : require('../assets/sounds/降りしきる、白_調整.mp3');
+    // bgmReady が false の場合は pendingBgm に保持し、準備完了後に再生
     if (bgmReady) {
-      if (levelId === 'level2') {
-        change(require('../assets/sounds/日没廃校_調整.mp3'));
-      } else {
-        change(require('../assets/sounds/降りしきる、白_調整.mp3'));
-      }
+      change(bgmFile);
+    } else {
+      setPendingBgm(bgmFile);
     }
     newGame(
       level.size,
