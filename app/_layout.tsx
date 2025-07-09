@@ -15,10 +15,14 @@ import { ResultStateProvider } from '@/src/hooks/useResultState';
 import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
+
 import { ErrorBoundary } from '@/src/components/ErrorBoundary';
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  // スナックバー表示用フック。エラー通知に利用する
+  const { show: showSnackbar } = useSnackbar();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -28,9 +32,15 @@ export default function RootLayout() {
   useEffect(() => {
     if (!DISABLE_ADS && Platform.OS !== 'web') {
       // OS は Android/iOS のいずれか。ここで初期化しないと広告が表示されないことがある
-      mobileAds().initialize();
+      try {
+        mobileAds().initialize();
+      } catch (e) {
+        // エラー内容をログに出し、ユーザーにも通知する
+        console.error(e);
+        showSnackbar('広告初期化に失敗しました');
+      }
     }
-  }, []);
+  }, [showSnackbar]);
 
   if (!loaded) {
     // Async font loading only occurs in development.
