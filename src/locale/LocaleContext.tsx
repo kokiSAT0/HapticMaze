@@ -68,6 +68,7 @@ const messages = {
     confirmReset: "中断中のゲームデータを削除して新しいゲームを開始しますか？",
     yes: "はい",
     cancel: "キャンセル",
+    back: "戻る",
   },
   en: {
     practiceMode: "Practice Mode",
@@ -121,6 +122,7 @@ const messages = {
     confirmReset: "Delete saved game and start new?",
     yes: "Yes",
     cancel: "Cancel",
+    back: "Back",
   },
 } as const;
 
