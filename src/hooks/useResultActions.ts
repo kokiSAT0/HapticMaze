@@ -196,9 +196,13 @@ export function useResultActions({
       // ゲームオーバー時はランをリセットしてタイトルへ戻る
       resetRun();
       router.replace("/");
+      // 早期 return で以降の処理を行わない
+      return;
     } else if (gameClear) {
+      // ゲームクリア時も同様にタイトルへ戻る
       resetRun();
       router.replace("/");
+      return;
     }
 
     // ステージクリア直後で広告未表示なら広告を表示
