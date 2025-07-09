@@ -79,6 +79,7 @@ export default function TitleScreen() {
       level.enemyCountsFn,
       level.wallLifetimeFn,
       level.biasedSpawn,
+      level.biasedGoal,
       level.id,
       level.stagePerMap
     );

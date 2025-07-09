@@ -30,6 +30,7 @@ export interface StoredState {
   playerPathLength: number | null;
   wallLifetime: number | null;
   biasedSpawn: boolean;
+  biasedGoal: boolean;
   levelId?: string;
   respawnStock: number;
   stagePerMap: number;
@@ -60,6 +61,7 @@ export function encodeState(state: State): StoredState {
     playerPathLength: state.playerPathLength,
     wallLifetime: state.wallLifetime,
     biasedSpawn: state.biasedSpawn,
+    biasedGoal: state.biasedGoal,
     levelId: state.levelId,
     respawnStock: state.respawnStock,
     stagePerMap: state.stagePerMap,
@@ -101,6 +103,7 @@ export function decodeState(data: StoredState): State {
     wallLifetime: data.wallLifetime === null ? Infinity : data.wallLifetime,
     wallLifetimeFn: level?.wallLifetimeFn,
     biasedSpawn: data.biasedSpawn,
+    biasedGoal: level?.biasedGoal ?? true,
     levelId: data.levelId,
     respawnStock: data.respawnStock,
     stagePerMap: level?.stagePerMap ?? 3,
