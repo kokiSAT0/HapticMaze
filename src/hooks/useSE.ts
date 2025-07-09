@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useSeVolume } from '@/src/audio/SeVolumeProvider';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
 
 /**
  * 効果音(SE)を管理するためのフック。
@@ -11,12 +12,21 @@ export function useSE(soundFile: number) {
   const playerRef = useRef<AudioPlayer | null>(null);
   // グローバルな SE 音量を取得
   const { volume, setVolume } = useSeVolume();
+  // ユーザーへメッセージを表示するための関数
+  const { show: showSnackbar } = useSnackbar();
 
   // 初期化時に効果音を読み込む
   useEffect(() => {
-    const p = createAudioPlayer(soundFile);
-    p.volume = volume;
-    playerRef.current = p;
+    try {
+      // 音声ファイルからプレイヤーを作成
+      const p = createAudioPlayer(soundFile);
+      p.volume = volume;
+      playerRef.current = p;
+    } catch (e) {
+      // プレイヤー生成に失敗したらユーザーへ通知
+      showSnackbar("BGM の再生に失敗しました");
+      console.error("createAudioPlayer error", e);
+    }
     return () => {
       playerRef.current?.remove();
     };
@@ -35,9 +45,15 @@ export function useSE(soundFile: number) {
    */
   const play = (vol?: number) => {
     if (!playerRef.current) return;
-    if (vol !== undefined) playerRef.current.volume = vol;
-    playerRef.current.seekTo(0);
-    playerRef.current.play();
+    try {
+      if (vol !== undefined) playerRef.current.volume = vol;
+      playerRef.current.seekTo(0);
+      playerRef.current.play();
+    } catch (e) {
+      // 再生に失敗した場合のエラーハンドリング
+      showSnackbar("BGM の再生に失敗しました");
+      console.error("SE play error", e);
+    }
   };
 
   return { volume, setVolume, play } as const;
