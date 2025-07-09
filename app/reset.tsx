@@ -78,6 +78,7 @@ export default function ResetConfirmScreen() {
       level.enemyCountsFn,
       level.wallLifetimeFn,
       level.biasedSpawn,
+      level.biasedGoal,
       level.id,
       level.stagePerMap,
     );

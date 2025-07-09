@@ -1,5 +1,9 @@
 import type { EnemyCounts } from '@/src/types/enemy';
-import { level1EnemyCounts, levelWallLifetime } from '@/src/game/level1';
+import {
+  level1EnemyCounts,
+  normalWallLifetime,
+  hardWallLifetime,
+} from '@/src/game/level1';
 import { tutorialEnemyCounts } from '@/src/game/tutorial';
 
 // 各レベルの設定をまとめた型
@@ -24,6 +28,8 @@ export interface LevelConfig {
   enemyCountsFn?: (stage: number) => EnemyCounts;
   /** 敵スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn?: boolean;
+  /** ゴールをスタートから遠ざけるかどうか */
+  biasedGoal?: boolean;
   /** プレイヤー周囲の壁を常に表示するか */
   showAdjacentWalls?: boolean;
   /** ステージごとに周囲表示の有無を決める関数 */
@@ -48,6 +54,7 @@ export const LEVELS: LevelConfig[] = [
     wallLifetime: Infinity,
     enemyCountsFn: tutorialEnemyCounts,
     biasedSpawn: false,
+    biasedGoal: true,
     showAdjacentWallsFn: (stage) => stage <= 5,
     stagePerMap: 5,
   },
@@ -63,10 +70,10 @@ export const LEVELS: LevelConfig[] = [
     playerPathLength: 7,
     // 壁表示は無限大
     wallLifetime: Infinity,
-    wallLifetimeFn: levelWallLifetime,
     enemyCountsFn: level1EnemyCounts,
-    biasedSpawn: false,
-    showAdjacentWalls: true,
+    biasedSpawn: true,
+    biasedGoal: false,
+    showAdjacentWallsFn: (stage) => stage <= 30,
   },
   {
     id: 'normal',
@@ -76,9 +83,10 @@ export const LEVELS: LevelConfig[] = [
     enemyPathLength: 5,
     playerPathLength: 7,
     wallLifetime: Infinity,
-    wallLifetimeFn: levelWallLifetime,
+    wallLifetimeFn: normalWallLifetime,
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
+    biasedGoal: false,
   },
   {
     id: 'hard',
@@ -88,8 +96,9 @@ export const LEVELS: LevelConfig[] = [
     enemyPathLength: 5,
     playerPathLength: 7,
     wallLifetime: Infinity,
-    wallLifetimeFn: levelWallLifetime,
+    wallLifetimeFn: hardWallLifetime,
     enemyCountsFn: level1EnemyCounts,
-    biasedSpawn: true,
+    biasedSpawn: false,
+    biasedGoal: true,
   },
 ];

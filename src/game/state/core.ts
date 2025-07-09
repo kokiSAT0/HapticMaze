@@ -60,6 +60,8 @@ export interface GameState {
   wallLifetimeFn?: (stage: number) => number;
   /** スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn: boolean;
+  /** ゴールをスタートから遠ざけるかどうか */
+  biasedGoal: boolean;
   /** 現在のレベル識別子。練習モードは undefined */
   levelId?: string;
   /** 何ステージごとに新しい迷路へ切り替えるか */
@@ -89,6 +91,7 @@ export function initState(
   enemyCountsFn?: (stage: number) => EnemyCounts,
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
+  biasedGoal: boolean = true,
   levelId?: string,
   stagePerMap: number = 3,
   respawnStock: number = 3,
@@ -125,6 +128,7 @@ export function initState(
     wallLifetime: life,
     wallLifetimeFn,
     biasedSpawn,
+    biasedGoal,
     levelId,
     stagePerMap,
     respawnStock,

@@ -27,6 +27,7 @@ const GameContext = createContext<
         enemyCountsFn?: (stage: number) => EnemyCounts,
         wallLifetimeFn?: (stage: number) => number,
         biasedSpawn?: boolean,
+        biasedGoal?: boolean,
         levelId?: string,
         stagePerMap?: number,
       ) => void;
@@ -64,6 +65,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     enemyCountsFn?: (stage: number) => EnemyCounts,
     wallLifetimeFn?: (stage: number) => number,
     biasedSpawn?: boolean,
+    biasedGoal?: boolean,
     levelId?: string,
     stagePerMap?: number,
   ) =>
@@ -77,6 +79,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       enemyCountsFn,
       wallLifetimeFn,
       biasedSpawn,
+      biasedGoal,
       levelId,
       stagePerMap,
     });

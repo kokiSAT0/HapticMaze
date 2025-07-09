@@ -20,6 +20,7 @@ export type Action =
       enemyCountsFn?: (stage: number) => EnemyCounts;
       wallLifetimeFn?: (stage: number) => number;
       biasedSpawn?: boolean;
+      biasedGoal?: boolean;
       levelId?: string;
       stagePerMap?: number;
     }
@@ -44,6 +45,7 @@ export function reducer(state: State, action: Action): State {
         state.enemyCountsFn,
         state.wallLifetimeFn,
         state.biasedSpawn,
+        state.biasedGoal,
         state.levelId,
         state.stagePerMap,
         state.respawnStock,
@@ -62,6 +64,7 @@ export function reducer(state: State, action: Action): State {
         action.biasedSpawn ?? state.biasedSpawn,
         action.levelId,
         action.stagePerMap ?? state.stagePerMap,
+        action.biasedGoal ?? state.biasedGoal,
       );
     case 'nextStage':
       return nextStageState(state);

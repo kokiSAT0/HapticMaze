@@ -33,6 +33,7 @@ export default function PracticeScreen() {
       undefined,
       undefined,
       true,
+      true,
       'practice',
       3,
     );

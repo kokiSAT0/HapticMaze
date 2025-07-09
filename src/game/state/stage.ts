@@ -21,13 +21,16 @@ export function createFirstStage(
   biasedSpawn: boolean = true,
   levelId?: string,
   stagePerMap: number = 3,
+  biasedGoal: boolean = true,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
   const candidates = allCells(base.size).filter(
     (c) => c.x !== start.x || c.y !== start.y,
   );
-  const goal = biasedPickGoal(start, candidates);
+  const goal = biasedGoal
+    ? biasedPickGoal(start, candidates)
+    : candidates[Math.floor(Math.random() * candidates.length)];
   const maze: MazeData = {
     ...base,
     start: [start.x, start.y],
@@ -50,6 +53,7 @@ export function createFirstStage(
     enemyCountsFn,
     wallLifetimeFn,
     biasedSpawn,
+    biasedGoal,
     levelId,
     stagePerMap,
     0,
@@ -73,7 +77,9 @@ export function nextStageState(state: State): State {
   if (cells.length === 0) {
     return { ...state, finalStage: true };
   }
-  const goal = biasedPickGoal(start, cells);
+  const goal = state.biasedGoal
+    ? biasedPickGoal(start, cells)
+    : cells[Math.floor(Math.random() * cells.length)];
   const maze: MazeData = {
     ...base,
     start: [start.x, start.y],
@@ -98,6 +104,7 @@ export function nextStageState(state: State): State {
     state.enemyCountsFn,
     state.wallLifetimeFn,
     state.biasedSpawn,
+    state.biasedGoal,
     state.levelId,
     state.stagePerMap,
     stock,
@@ -119,5 +126,6 @@ export function restartRun(state: State): State {
     state.biasedSpawn,
     state.levelId,
     state.stagePerMap,
+    state.biasedGoal,
   );
 }
