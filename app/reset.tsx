@@ -6,10 +6,10 @@ import { PlainButton } from '@/components/PlainButton';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LEVELS } from '@/constants/levels';
-import { clearGame } from '@/src/game/saveGame';
+import { clearGame, loadGame } from '@/src/game/saveGame';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useGame } from '@/src/game/useGame';
-import { useLocale } from '@/src/locale/LocaleContext';
+import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
 
 export default function ResetConfirmScreen() {
@@ -20,8 +20,25 @@ export default function ResetConfirmScreen() {
   const { t } = useLocale();
   const { change, bgmReady } = useBgm();
   const { show: showSnackbar } = useSnackbar();
+  // 中断データの難易度とステージを保持する
+  const [suspendInfo, setSuspendInfo] = React.useState<{
+    levelId?: string;
+    stage: number;
+  } | null>(null);
   // BGM変更が間に合わなかった場合に備えて一時的に保持
   const [pendingBgm, setPendingBgm] = React.useState<number>();
+
+  // コンポーネント表示時に保存データを読み込む
+  React.useEffect(() => {
+    (async () => {
+      const data = await loadGame({ showError: showSnackbar });
+      if (data) {
+        setSuspendInfo({ levelId: data.levelId, stage: data.stage });
+      }
+    })();
+    // showSnackbar は変化しない想定のため依存から除外
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // bgmReady が true になったタイミングで再度 change() を実行
   React.useEffect(() => {
@@ -72,6 +89,16 @@ export default function ResetConfirmScreen() {
       <ThemedText type="title" lightColor="#fff" darkColor="#fff">
         {t('confirmReset')}
       </ThemedText>
+      {suspendInfo && (
+        <ThemedText type="defaultSemiBold" lightColor="#fff" darkColor="#fff">
+          {t('suspendInfo', {
+            level: suspendInfo.levelId
+              ? t(suspendInfo.levelId as MessageKey)
+              : '?',
+            stage: suspendInfo.stage,
+          })}
+        </ThemedText>
+      )}
       <PlainButton title={t('yes')} onPress={start} accessibilityLabel={t('yes')} />
       <PlainButton
         title={t('backToTitle')}
