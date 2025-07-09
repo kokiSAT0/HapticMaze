@@ -18,9 +18,9 @@ const score = (stage: number, steps: number, bumps: number): HighScore => ({
 describe('loadHighScore', () => {
   test('保存済みデータを正しく読み込む', async () => {
     const data = score(2, 10, 1);
-    await AsyncStorage.setItem('highscore:level1', JSON.stringify(data));
+    await AsyncStorage.setItem('highscore:normal', JSON.stringify(data));
 
-    const result = await loadHighScore('level1');
+    const result = await loadHighScore('normal');
     expect(result).toEqual(data);
   });
 });
@@ -30,8 +30,8 @@ describe('saveHighScore', () => {
     const data = score(1, 5, 0);
     const spy = jest.spyOn(AsyncStorage, 'setItem');
 
-    await saveHighScore('level2', data);
-    expect(spy).toHaveBeenCalledWith('highscore:level2', JSON.stringify(data));
+    await saveHighScore('hard', data);
+    expect(spy).toHaveBeenCalledWith('highscore:hard', JSON.stringify(data));
   });
 });
 

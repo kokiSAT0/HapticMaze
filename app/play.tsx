@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { EdgeOverlay } from "@/components/EdgeOverlay";
 import { playStyles } from "@/src/styles/playStyles";
 import { UI } from "@/constants/ui";
+import { LEVELS } from "@/constants/levels";
 
 export default function PlayScreen() {
   const { t } = useLocale();
@@ -43,6 +44,10 @@ export default function PlayScreen() {
     handleRespawn,
     handleExit,
   } = usePlayLogic();
+
+  // レベル設定から周囲の壁表示フラグを取得
+  const levelCfg = LEVELS.find((lv) => lv.id === state.levelId);
+  const showAdjWalls = levelCfg?.showAdjacentWalls ?? false;
 
   // useEffect は指定した値が変わるたびに実行される React の仕組みです。
   // ここではプレイ画面の主な状態とバナー状態をログに出して
@@ -134,6 +139,7 @@ export default function PlayScreen() {
           hitH={state.hitH}
           playerPathLength={state.playerPathLength}
           wallLifetime={state.wallLifetime}
+          adjacentWalls={showAdjWalls}
           // ミニマップを300pxで表示する
           size={300}
         />

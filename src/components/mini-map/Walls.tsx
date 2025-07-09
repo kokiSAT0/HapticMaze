@@ -113,3 +113,47 @@ export function renderHitWalls({ cell, hitV, hitH, wallLifetime }: HitWallProps)
   return lines;
 }
 
+export interface AdjacentWallProps {
+  maze: import("@/src/game/state").MazeSets;
+  pos: import("@/src/types/maze").Vec2;
+  cell: number;
+}
+
+// プレイヤー周囲の壁を描画する
+export function renderAdjacentWalls({ maze, pos, cell }: AdjacentWallProps): React.JSX.Element[] {
+  const lines: React.JSX.Element[] = [];
+  const { x, y } = pos;
+  const last = maze.size - 1;
+  const addV = (vx: number, vy: number) => {
+    lines.push(
+      <Line
+        key={`av${vx},${vy}`}
+        x1={(vx + 1) * cell}
+        y1={vy * cell}
+        x2={(vx + 1) * cell}
+        y2={vy * cell + cell}
+        stroke={WALL_COLOR}
+        strokeWidth={1}
+      />,
+    );
+  };
+  const addH = (hx: number, hy: number) => {
+    lines.push(
+      <Line
+        key={`ah${hx},${hy}`}
+        x1={hx * cell}
+        y1={(hy + 1) * cell}
+        x2={hx * cell + cell}
+        y2={(hy + 1) * cell}
+        stroke={WALL_COLOR}
+        strokeWidth={1}
+      />,
+    );
+  };
+  if (x <= 0 || maze.v_walls.has(`${x - 1},${y}`)) addV(x - 1, y);
+  if (x >= last || maze.v_walls.has(`${x},${y}`)) addV(x, y);
+  if (y <= 0 || maze.h_walls.has(`${x},${y - 1}`)) addH(x, y - 1);
+  if (y >= last || maze.h_walls.has(`${x},${y}`)) addH(x, y);
+  return lines;
+}
+

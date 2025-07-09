@@ -65,7 +65,7 @@ export default function TitleScreen() {
     if (!level) return;
     // ゲーム開始直前にログを出してどのレベルを選んだか記録する
     console.log('[TitleScreen] startLevel', id);
-    if (id === 'level2') {
+    if (id === 'hard') {
       audio.changeBgm(require('../assets/sounds/日没廃校_調整.mp3'));
     } else {
       audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));

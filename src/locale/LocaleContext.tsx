@@ -19,8 +19,9 @@ const messages = {
   ja: {
     practiceMode: "練習モード",
     openPractice: "練習モードを開く",
-    level1: "レベル1",
-    level2: "レベル2",
+    easy: "イージー",
+    normal: "ノーマル",
+    hard: "ハード",
     startLevel: "{{name}}を開始",
     enemyRandom: "等速・ランダム",
     enemySlow: "鈍足・視認",
@@ -70,8 +71,9 @@ const messages = {
   en: {
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
-    level1: "Level 1",
-    level2: "Level 2",
+    easy: "Easy",
+    normal: "Normal",
+    hard: "Hard",
     startLevel: "Start {{name}}",
     enemyRandom: "Normal Random",
     enemySlow: "Slow Vision",

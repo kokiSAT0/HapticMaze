@@ -23,6 +23,8 @@ export interface LevelConfig {
   enemyCountsFn?: (stage: number) => EnemyCounts;
   /** 敵スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn?: boolean;
+  /** プレイヤー周囲の壁を常に表示するか */
+  showAdjacentWalls?: boolean;
 }
 
 /**
@@ -32,8 +34,8 @@ export interface LevelConfig {
  */
 export const LEVELS: LevelConfig[] = [
   {
-    id: 'level1',
-    name: 'レベル1',
+    id: 'easy',
+    name: 'イージー',
     // 10×10 マップを使用
     size: 10,
     // 初回は関数から得た設定を使うため 0 で初期化
@@ -46,10 +48,23 @@ export const LEVELS: LevelConfig[] = [
     wallLifetimeFn: levelWallLifetime,
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: false,
+    showAdjacentWalls: true,
   },
   {
-    id: 'level2',
-    name: 'レベル2',
+    id: 'normal',
+    name: 'ノーマル',
+    size: 10,
+    enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength: 5,
+    playerPathLength: 7,
+    wallLifetime: Infinity,
+    wallLifetimeFn: levelWallLifetime,
+    enemyCountsFn: level1EnemyCounts,
+    biasedSpawn: true,
+  },
+  {
+    id: 'hard',
+    name: 'ハード',
     size: 10,
     enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,

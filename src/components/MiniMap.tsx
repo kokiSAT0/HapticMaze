@@ -10,7 +10,7 @@ import Svg, { Circle, Rect } from "react-native-svg";
 
 import type { Enemy } from "@/src/types/enemy";
 import type { MazeData, Vec2 } from "@/src/types/maze";
-import { renderWalls, renderHitWalls } from "./mini-map/Walls";
+import { renderWalls, renderHitWalls, renderAdjacentWalls } from "./mini-map/Walls";
 import {
   renderPath,
   renderEnemyPaths,
@@ -55,6 +55,8 @@ export interface MiniMapProps {
    * "x,y" 形式の文字列で座標を保持する
    */
   visitedGoals?: Set<string>;
+  /** プレイヤー周囲の壁を常に表示する */
+  adjacentWalls?: boolean;
 }
 
 // MiniMap コンポーネント
@@ -74,6 +76,7 @@ export function MiniMap({
   playerPathLength = Infinity,
   wallLifetime = Infinity,
   visitedGoals,
+  adjacentWalls = false,
 }: MiniMapProps) {
   const cell = size / maze.size; // 各マスの大きさ
   // MazeData から壁検索しやすい形へ変換
@@ -116,6 +119,7 @@ export function MiniMap({
         />
         {renderWalls({ maze, cell, size, showAll })}
         {renderHitWalls({ cell, hitV, hitH, wallLifetime })}
+        {adjacentWalls && renderAdjacentWalls({ maze: mazeSets, pos, cell })}
         {renderPath({ path, cell, playerPathLength })}
         {renderEnemyPaths({ enemyPaths, enemies, cell, showAll })}
         {renderVisitedGoals({ visitedGoals, cell, showResult, showAll })}
