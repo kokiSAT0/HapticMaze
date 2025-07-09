@@ -7,10 +7,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useLocale, type Lang } from '@/src/locale/LocaleContext';
 import { useAudioControls } from '@/src/hooks/useAudioControls';
+import { useColorInvert } from '@/src/hooks/useColorInvert';
 
 export default function OptionsScreen() {
   const router = useRouter();
   const { t, changeLang } = useLocale();
+  const { invert, toggle } = useColorInvert();
 
   const [showLang, setShowLang] = React.useState(false);
   const [showVolume, setShowVolume] = React.useState(false);
@@ -41,6 +43,11 @@ export default function OptionsScreen() {
         title={t('changeLang')}
         onPress={() => setShowLang(true)}
         accessibilityLabel={t('changeLang')}
+      />
+      <PlainButton
+        title={`${t('invertColor')}: ${invert ? t('on') : t('off')}`}
+        onPress={toggle}
+        accessibilityLabel={t('invertColor')}
       />
       <PlainButton
         title={t('backToTitle')}

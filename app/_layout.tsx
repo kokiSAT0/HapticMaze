@@ -15,6 +15,7 @@ import { ResultStateProvider } from '@/src/hooks/useResultState';
 import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
+import { ColorInvertProvider } from '@/src/hooks/useColorInvert';
 
 import { ErrorBoundary } from '@/src/components/ErrorBoundary';
 
@@ -48,12 +49,13 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary onError={showSnackbar}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <BgmProvider>
-          <SeVolumeProvider>
-            <LocaleProvider>
-              <ResultStateProvider>
-                <GameProvider>
+      <ColorInvertProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <BgmProvider>
+            <SeVolumeProvider>
+              <LocaleProvider>
+                <ResultStateProvider>
+                  <GameProvider>
                 <Stack>
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="practice" options={{ headerShown: false }} />
@@ -70,7 +72,8 @@ export default function RootLayout() {
             <StatusBar style="auto" />
           </SeVolumeProvider>
         </BgmProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </ColorInvertProvider>
     </ErrorBoundary>
   );
 }
