@@ -6,6 +6,16 @@ import { UI } from '@/constants/ui';
 import type { Vec2 } from '@/src/types/maze';
 import { distance } from './math';
 
+// Expo Haptics の呼び出しが失敗してもアプリが止まらないようにする
+async function safeImpact(style: Haptics.ImpactFeedbackStyle) {
+  try {
+    await Haptics.impactAsync(style);
+  } catch (e) {
+    // 初心者向け: エラー内容を表示しておくと原因調査に役立つ
+    console.error('Haptics.impactAsync failed:', e);
+  }
+}
+
 export interface FeedbackOptions {
   /** 最大距離。未指定ならゴール座標から算出した値を使う */
   maxDist?: number;
@@ -51,9 +61,11 @@ export function applyDistanceFeedback(
 
   const { style, duration } = impact;
 
-  Haptics.impactAsync(style);
+  // 振動処理は失敗することがあるので try/catch 付きの関数を使う
+  void safeImpact(style);
   const id = setInterval(() => {
-    Haptics.impactAsync(style);
+    // setInterval でも同様に安全なラッパーを使用
+    void safeImpact(style);
   }, 50);
   setTimeout(() => clearInterval(id), duration);
 
@@ -79,9 +91,10 @@ export function applyBumpFeedback(
   const showTime = opts.showTime ?? UI.feedback.bumpShowTime;
 
   setColor(UI.colors.bump);
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  // 壁にぶつかったときも安全に振動させる
+  void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
   const id = setInterval(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);
   setTimeout(() => clearInterval(id), showTime);
 
