@@ -45,7 +45,8 @@ const messages = {
     steps: "Steps: {{count}}",
     bumps: "Bumps: {{count}}",
     stage: "Stage: {{current}}/{{total}}",
-    best: "Best: {{stage}}ステージ / {{steps}} steps / {{bumps}} bumps",
+    // ハイスコア表示用のテンプレート。"Best:" の文言は不要なので省く
+    best: "{{stage}}ステージ / {{steps}} steps / {{bumps}} bumps",
     highScores: "ハイスコア",
     openHighScores: "ハイスコア一覧を開く",
     options: "オプション",
@@ -100,7 +101,8 @@ const messages = {
     steps: "Steps: {{count}}",
     bumps: "Bumps: {{count}}",
     stage: "Stage: {{current}}/{{total}}",
-    best: "Best: {{stage}} stages / {{steps}} steps / {{bumps}} bumps",
+    // Template for high score display. "Best:" is redundant so omit it
+    best: "{{stage}} stages / {{steps}} steps / {{bumps}} bumps",
     highScores: "High Scores",
     openHighScores: "View High Scores",
     options: "Options",
