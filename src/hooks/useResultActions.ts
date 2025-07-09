@@ -15,7 +15,6 @@ interface Options {
   nextStage: () => void;
   resetRun: () => void;
   router: ReturnType<typeof useRouter>;
-  showSnackbar: (msg: string) => void;
   pauseBgm: () => void;
   resumeBgm: () => void;
 }
@@ -29,7 +28,6 @@ export function useResultActions({
   nextStage,
   resetRun,
   router,
-  showSnackbar,
   pauseBgm,
   resumeBgm,
 }: Options) {
@@ -73,7 +71,6 @@ export function useResultActions({
   const { loadAdIfNeeded, showAd } = useStageEffects({
     pauseBgm,
     resumeBgm,
-    showSnackbar,
   });
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない

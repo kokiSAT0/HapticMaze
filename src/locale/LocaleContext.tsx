@@ -7,7 +7,7 @@ import React, {
   type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSnackbar } from '@/src/hooks/useSnackbar';
+import { useHandleError } from '@/src/utils/handleError';
 
 export type Lang = "ja" | "en";
 
@@ -148,7 +148,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>("ja");
   const [ready, setReady] = useState(false);
   const [firstLaunch, setFirstLaunch] = useState(false);
-  const { show: showSnackbar } = useSnackbar();
+  const handleError = useHandleError();
 
   useEffect(() => {
     (async () => {
@@ -161,22 +161,20 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
           setFirstLaunch(true);
         }
       } catch (e) {
-        console.error(e);
-        showSnackbar('言語設定の読み込みに失敗しました');
+        handleError('言語設定の読み込みに失敗しました', e);
       } finally {
         // エラーの有無に関わらず ready にする
         setReady(true);
       }
     })();
-  }, [showSnackbar]);
+  }, [handleError]);
 
   const changeLang = async (l: Lang) => {
     setLang(l);
     try {
       await AsyncStorage.setItem(STORAGE_KEY, l);
     } catch (e) {
-      console.error(e);
-      showSnackbar('言語設定を保存できませんでした');
+      handleError('言語設定を保存できませんでした', e);
     }
     setFirstLaunch(false);
   };
