@@ -62,6 +62,8 @@ export interface GameState {
   biasedSpawn: boolean;
   /** 現在のレベル識別子。練習モードは undefined */
   levelId?: string;
+  /** 何ステージごとに新しい迷路へ切り替えるか */
+  stagePerMap: number;
   /** 敵をリスポーンできる残り回数 */
   respawnStock: number;
 }
@@ -88,6 +90,7 @@ export function initState(
   wallLifetimeFn?: (stage: number) => number,
   biasedSpawn: boolean = true,
   levelId?: string,
+  stagePerMap: number = 3,
   respawnStock: number = 3,
   totalSteps: number = 0,
   totalBumps: number = 0,
@@ -123,6 +126,7 @@ export function initState(
     wallLifetimeFn,
     biasedSpawn,
     levelId,
+    stagePerMap,
     respawnStock,
     totalSteps,
     totalBumps,

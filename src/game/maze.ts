@@ -149,11 +149,15 @@ export function allCells(size: number): Vec2[] {
 }
 
 /** 新しい迷路を読み込むまでのステージ間隔 */
-export const STAGE_PER_MAP = 3;
+/** デフォルトのマップ更新間隔 */
+export const DEFAULT_STAGE_PER_MAP = 3;
 
 /**
  * ステージ番号から迷路を変更すべきか判定
  */
-export function shouldChangeMap(stage: number): boolean {
-  return stage % STAGE_PER_MAP === 0;
+export function shouldChangeMap(
+  stage: number,
+  perMap: number = DEFAULT_STAGE_PER_MAP,
+): boolean {
+  return stage % perMap === 0;
 }

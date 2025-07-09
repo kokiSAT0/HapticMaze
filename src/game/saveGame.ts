@@ -32,6 +32,7 @@ export interface StoredState {
   biasedSpawn: boolean;
   levelId?: string;
   respawnStock: number;
+  stagePerMap: number;
 }
 
 // State から保存用データへ変換
@@ -61,6 +62,7 @@ export function encodeState(state: State): StoredState {
     biasedSpawn: state.biasedSpawn,
     levelId: state.levelId,
     respawnStock: state.respawnStock,
+    stagePerMap: state.stagePerMap,
   };
 }
 
@@ -101,6 +103,7 @@ export function decodeState(data: StoredState): State {
     biasedSpawn: data.biasedSpawn,
     levelId: data.levelId,
     respawnStock: data.respawnStock,
+    stagePerMap: level?.stagePerMap ?? 3,
   };
 }
 

@@ -47,7 +47,9 @@ export default function PlayScreen() {
 
   // レベル設定から周囲の壁表示フラグを取得
   const levelCfg = LEVELS.find((lv) => lv.id === state.levelId);
-  const showAdjWalls = levelCfg?.showAdjacentWalls ?? false;
+  const showAdjWalls = levelCfg?.showAdjacentWallsFn
+    ? levelCfg.showAdjacentWallsFn(state.stage)
+    : levelCfg?.showAdjacentWalls ?? false;
 
   // useEffect は指定した値が変わるたびに実行される React の仕組みです。
   // ここではプレイ画面の主な状態とバナー状態をログに出して

@@ -79,7 +79,8 @@ export default function TitleScreen() {
       level.enemyCountsFn,
       level.wallLifetimeFn,
       level.biasedSpawn,
-      level.id
+      level.id,
+      level.stagePerMap
     );
     // 画面遷移開始をログ
     console.log('[TitleScreen] navigate begin');

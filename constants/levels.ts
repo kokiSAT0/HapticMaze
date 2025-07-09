@@ -1,5 +1,6 @@
 import type { EnemyCounts } from '@/src/types/enemy';
 import { level1EnemyCounts, levelWallLifetime } from '@/src/game/level1';
+import { tutorialEnemyCounts } from '@/src/game/tutorial';
 
 // 各レベルの設定をまとめた型
 export interface LevelConfig {
@@ -25,6 +26,10 @@ export interface LevelConfig {
   biasedSpawn?: boolean;
   /** プレイヤー周囲の壁を常に表示するか */
   showAdjacentWalls?: boolean;
+  /** ステージごとに周囲表示の有無を決める関数 */
+  showAdjacentWallsFn?: (stage: number) => boolean;
+  /** 何ステージごとに迷路を更新するか */
+  stagePerMap?: number;
 }
 
 /**
@@ -33,6 +38,19 @@ export interface LevelConfig {
  * レベル3・レベル4は仕様変更により削除済み。
  */
 export const LEVELS: LevelConfig[] = [
+  {
+    id: 'tutorial',
+    name: 'チュートリアル',
+    size: 5,
+    enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength: 5,
+    playerPathLength: 7,
+    wallLifetime: Infinity,
+    enemyCountsFn: tutorialEnemyCounts,
+    biasedSpawn: false,
+    showAdjacentWallsFn: (stage) => stage <= 5,
+    stagePerMap: 5,
+  },
   {
     id: 'easy',
     name: 'イージー',

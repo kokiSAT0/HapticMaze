@@ -62,6 +62,7 @@ export default function ResetConfirmScreen() {
       level.wallLifetimeFn,
       level.biasedSpawn,
       level.id,
+      level.stagePerMap,
     );
     router.replace('/play');
   };
