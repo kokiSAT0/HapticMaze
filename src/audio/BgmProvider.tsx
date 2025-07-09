@@ -58,25 +58,38 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   };
 
   const resume = () => {
-    if (playerRef.current?.paused) playerRef.current.play();
+    try {
+      // paused が true のときのみ再生を再開
+      if (playerRef.current?.paused) playerRef.current.play();
+    } catch (e) {
+      // 再生に失敗した場合はユーザーへ知らせてログに残す
+      showSnackbar("BGM の再生に失敗しました");
+      console.error("BGM resume error", e);
+    }
   };
 
   const change = (file: number) => {
-    // 既にプレイヤーが存在する場合はソースだけを入れ替えることで
-    // 新しいプレイヤーが増えないようにする
-    if (playerRef.current) {
-      playerRef.current.replace(file);
-      playerRef.current.loop = true;
-      playerRef.current.volume = volume;
-      playerRef.current.play();
-      return;
+    try {
+      // 既にプレイヤーが存在する場合はソースだけを入れ替えることで
+      // 新しいプレイヤーが増えないようにする
+      if (playerRef.current) {
+        playerRef.current.replace(file);
+        playerRef.current.loop = true;
+        playerRef.current.volume = volume;
+        playerRef.current.play();
+        return;
+      }
+      // 初回のみプレイヤーを生成
+      const p = createAudioPlayer(file);
+      p.loop = true;
+      p.volume = volume;
+      p.play();
+      playerRef.current = p;
+    } catch (e) {
+      // プレイヤー作成や再生でエラーが起きた場合の処理
+      showSnackbar("BGM の再生に失敗しました");
+      console.error("BGM change error", e);
     }
-    // 初回のみプレイヤーを生成
-    const p = createAudioPlayer(file);
-    p.loop = true;
-    p.volume = volume;
-    p.play();
-    playerRef.current = p;
   };
 
   return (
