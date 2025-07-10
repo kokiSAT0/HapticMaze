@@ -94,6 +94,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       first.current = false;
       return;
     }
+    // ステージ 1 で手数が 0 のときはセーブ不要なので保存処理をしない
+    if (
+      state.stage === 1 &&
+      state.steps === 0 &&
+      state.totalSteps === 0
+    ) {
+      return;
+    }
     saveGame(state, { showError: showSnackbar });
   }, [state, showSnackbar]);
 
