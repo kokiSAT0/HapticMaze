@@ -75,6 +75,7 @@ export function useResultActions({
   const { loadAdIfNeeded, showAd } = useStageEffects({
     pauseBgm,
     resumeBgm,
+    levelId: state.levelId,
   });
   const okLockedRef = useRef(false);
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
