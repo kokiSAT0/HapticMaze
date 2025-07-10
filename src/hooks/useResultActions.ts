@@ -1,5 +1,6 @@
 import type { useRouter } from "expo-router";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { shouldChangeMap } from "@/src/game/maze";
 
 import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
@@ -102,7 +103,9 @@ export function useResultActions({
     // バナー表示中は旧ステージの判定をスキップする
     // showBanner が true の間は StageScreen でも判定が発火しないようにする
     if (bannerActiveRef.current || showBanner) return;
-    const willChangeMap = state.stage % maze.size === 0;
+    // 次のステージで迷路が切り替わるかを判定
+    // tutorial は 5, それ以降は 3 ステージごとに切り替わる
+    const willChangeMap = shouldChangeMap(state.stage, state.stagePerMap);
     if (state.pos.x === maze.goal[0] && state.pos.y === maze.goal[1]) {
       setStageClear(true);
       setGameOver(false);
@@ -156,6 +159,7 @@ export function useResultActions({
     maze.goal,
     state.finalStage,
     state.stage,
+    state.stagePerMap,
     maze.size,
     state.totalSteps,
     state.totalBumps,
