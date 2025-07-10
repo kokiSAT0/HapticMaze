@@ -24,11 +24,11 @@ export function DPad({
         <Pressable
           disabled={disabled}
           onPress={() => onPress('Up')}
-          style={styles.btn}
+          style={[styles.btn, disabled && styles.disabledBtn]}
           accessibilityLabel="上へ移動"
         >
           {/* \u25B2: 三角形の記号を表示 */}
-          <Text style={styles.txt}>▲</Text>
+          <Text style={[styles.txt, disabled && styles.disabledTxt]}>▲</Text>
         </Pressable>
         <View style={styles.spacer} />
       </View>
@@ -37,19 +37,19 @@ export function DPad({
         <Pressable
           disabled={disabled}
           onPress={() => onPress('Left')}
-          style={styles.btn}
+          style={[styles.btn, disabled && styles.disabledBtn]}
           accessibilityLabel="左へ移動"
         >
-          <Text style={styles.txt}>◀</Text>
+          <Text style={[styles.txt, disabled && styles.disabledTxt]}>◀</Text>
         </Pressable>
         <View style={styles.spacer} />
         <Pressable
           disabled={disabled}
           onPress={() => onPress('Right')}
-          style={styles.btn}
+          style={[styles.btn, disabled && styles.disabledBtn]}
           accessibilityLabel="右へ移動"
         >
-          <Text style={styles.txt}>▶</Text>
+          <Text style={[styles.txt, disabled && styles.disabledTxt]}>▶</Text>
         </Pressable>
       </View>
       {/* 三段目: 下ボタンを中央に配置 */}
@@ -58,10 +58,10 @@ export function DPad({
         <Pressable
           disabled={disabled}
           onPress={() => onPress('Down')}
-          style={styles.btn}
+          style={[styles.btn, disabled && styles.disabledBtn]}
           accessibilityLabel="下へ移動"
         >
-          <Text style={styles.txt}>▼</Text>
+          <Text style={[styles.txt, disabled && styles.disabledTxt]}>▼</Text>
         </Pressable>
         <View style={styles.spacer} />
       </View>
@@ -95,5 +95,12 @@ const styles = StyleSheet.create({
   txt: {
     color: 'white',
     fontSize: 24,
+  },
+  // disabled が true のときに適用するスタイル
+  disabledBtn: {
+    opacity: 0.5,
+  },
+  disabledTxt: {
+    color: '#666',
   },
 });
