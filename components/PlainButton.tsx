@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: UI.colors.buttonText,
+    fontSize: 18,
   },
   pressed: {
     opacity: 0.7,

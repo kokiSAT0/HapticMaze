@@ -50,7 +50,7 @@ export function ResultModal({
       <ThemedText style={styles.text}>{stageText}</ThemedText>
       {highScore && (
         <ThemedText style={styles.text}>
-          {t("best", {
+          {t("result", {
             stage: highScore.stage,
             steps: highScore.steps,
             bumps: highScore.bumps,
