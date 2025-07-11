@@ -6,12 +6,33 @@ import { ThemedText } from '@/components/ThemedText';
 import { PlainButton } from '@/components/PlainButton';
 import { useRunRecords } from '@/src/hooks/useRunRecords';
 import { useLocale } from '@/src/locale/LocaleContext';
+import { useBgm } from '@/src/hooks/useBgm';
+import { showInterstitial } from '@/src/ads/interstitial';
+import { useHandleError } from '@/src/utils/handleError';
 import { UI } from '@/constants/ui';
 
 export default function GameResultScreen() {
   const { records } = useRunRecords();
   const { t } = useLocale();
   const router = useRouter();
+  // BGM 制御フック。広告表示中は音を止めるために利用
+  const { pause: pauseBgm, resume: resumeBgm } = useBgm();
+  // 例外処理を共通化したフック。エラー通知とログ出力を行う
+  const handleError = useHandleError();
+
+  /** ホームへ戻るボタンの処理。広告を見てから遷移する */
+  const handleBack = async () => {
+    try {
+      pauseBgm();
+      await showInterstitial();
+    } catch (e) {
+      // 広告が表示できなかった場合はユーザーへ知らせる
+      handleError('広告を表示できませんでした', e);
+    } finally {
+      resumeBgm();
+      router.replace('/');
+    }
+  };
 
   const totals = records.reduce(
     (acc, r) => {
@@ -45,7 +66,7 @@ export default function GameResultScreen() {
       </ThemedText>
       <PlainButton
         title={t('backToTitle')}
-        onPress={() => router.replace('/')}
+        onPress={handleBack}
         accessibilityLabel={t('backToTitle')}
       />
     </ThemedView>
