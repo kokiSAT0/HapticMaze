@@ -57,3 +57,20 @@ export function isBetterScore(oldScore: HighScore | null, newScore: HighScore): 
   if (newScore.steps > oldScore.steps) return false;
   return newScore.bumps < oldScore.bumps;
 }
+
+/**
+ * 全レベルのハイスコアを削除する補助関数。
+ * LEVELS から取得した ID を使いまとめて削除する。
+ */
+export async function clearAllHighScores(
+  levelIds: string[],
+  opts?: HighScoreOptions,
+): Promise<void> {
+  try {
+    const keys = levelIds.map((id) => PREFIX + id);
+    await AsyncStorage.multiRemove(keys);
+  } catch (e) {
+    console.error('clearAllHighScores error', e);
+    opts?.showError?.('ハイスコアを削除できませんでした');
+  }
+}
