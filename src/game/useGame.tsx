@@ -13,6 +13,10 @@ import {
   type State,
 } from './state';
 
+// 環境変数 EXPO_PUBLIC_START_AT_FINAL_STAGE が 'true' のとき
+// ゲーム開始時に最終ステージまで一気に進める
+const START_FINAL = process.env.EXPO_PUBLIC_START_AT_FINAL_STAGE === 'true';
+
 const GameContext = createContext<
   | {
       state: GameState;
@@ -74,7 +78,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     levelId?: string,
     stagePerMap?: number,
     respawnMax?: number,
-  ) =>
+  ) => {
     send({
       type: 'newMaze',
       maze: loadMaze(size),
@@ -92,6 +96,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
       stagePerMap,
       respawnMax,
     });
+    // フラグが有効なら最終ステージまで進める
+    if (START_FINAL) {
+      const total = size * size;
+      for (let i = 1; i < total; i++) {
+        send({ type: 'nextStage' });
+      }
+    }
+  };
   const nextStage = () => send({ type: 'nextStage' });
   const resetRun = () => send({ type: 'resetRun' });
   const respawnEnemies = () => send({ type: 'respawnEnemies', playerPos: state.pos });

@@ -126,6 +126,14 @@ EXPO_PUBLIC_UNLOCK_ALL_LEVELS=true
 
 通常は `false` のままで構いません。
 
+ゲーム開始時にいきなり最終ステージへ進みたい場合は次の設定を追加します。
+
+```bash
+EXPO_PUBLIC_START_AT_FINAL_STAGE=true
+```
+
+デバッグ目的でのみ使用してください。
+
 ## β版の配布について
 
 現在のバージョンはテスト目的の β 版です。TestFlight もしくは Google Play の内部
