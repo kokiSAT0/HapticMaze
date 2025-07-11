@@ -1,7 +1,7 @@
-import React from 'react';
-import { Defs, Line, LinearGradient, Stop, Polygon } from 'react-native-svg';
-import type { Enemy } from '@/src/types/enemy';
-import type { Vec2 } from '@/src/types/maze';
+import type { Enemy } from "@/src/types/enemy";
+import type { Vec2 } from "@/src/types/maze";
+import React from "react";
+import { Defs, Line, LinearGradient, Polygon, Stop } from "react-native-svg";
 
 // 軌跡描画に関する関数群
 
@@ -12,7 +12,11 @@ export interface PathProps {
 }
 
 // プレイヤーの移動履歴を描画
-export function renderPath({ path, cell, playerPathLength }: PathProps): React.JSX.Element[] | null {
+export function renderPath({
+  path,
+  cell,
+  playerPathLength,
+}: PathProps): React.JSX.Element[] | null {
   if (path.length < 2) return null;
   const segments: React.JSX.Element[] = [];
   for (let i = 0; i < path.length - 1; i++) {
@@ -73,7 +77,12 @@ export interface EnemyPathsProps {
 }
 
 // 敵の移動履歴を描画
-export function renderEnemyPaths({ enemyPaths, enemies, cell, showAll }: EnemyPathsProps): React.JSX.Element[] {
+export function renderEnemyPaths({
+  enemyPaths,
+  enemies,
+  cell,
+  showAll,
+}: EnemyPathsProps): React.JSX.Element[] {
   const lines: React.JSX.Element[] = [];
   enemyPaths.forEach((p, idx) => {
     const enemy = enemies[idx];
@@ -122,25 +131,31 @@ export interface VisitedProps {
 }
 
 // 過去のゴール位置をダイヤ型で表示
-export function renderVisitedGoals({ visitedGoals, cell, showResult, showAll }: VisitedProps): React.JSX.Element[] | null {
+export function renderVisitedGoals({
+  visitedGoals,
+  cell,
+  showResult,
+  showAll,
+}: VisitedProps): React.JSX.Element[] | null {
   if (!visitedGoals || (!showResult && !showAll)) return null;
   const diamonds: React.JSX.Element[] = [];
   visitedGoals.forEach((k) => {
-    const [x, y] = k.split(',').map(Number);
+    const [x, y] = k.split(",").map(Number);
     // 中心座標を計算
     const cx = (x + 0.5) * cell;
     const cy = (y + 0.5) * cell;
     // 半径を小さめに設定する
-    const r = cell * 0.25;
+    const r = cell * 0.15;
     // Polygon でダイヤ型を描く
     diamonds.push(
       <Polygon
         key={`vg${k}`}
-        points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`}
+        points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${
+          cx - r
+        },${cy}`}
         fill="white"
       />
     );
   });
   return diamonds;
 }
-
