@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { Modal, StyleSheet, View ,TextStyle, ViewStyle } from "react-native";
 import { PlainButton } from "@/components/PlainButton";
 import { useRouter } from "expo-router";
 import { useGame } from "@/src/game/useGame";
