@@ -8,6 +8,9 @@ import { ThemedView } from '@/components/ThemedView';
 import { useLocale } from '@/src/locale/LocaleContext';
 import { UI } from '@/constants/ui';
 
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
 export default function RulesScreen() {
   const router = useRouter();
   const { t } = useLocale();
@@ -21,10 +24,12 @@ export default function RulesScreen() {
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('ruleIntro')}
       </ThemedText>
+        <Ionicons name="refresh" size={24} color="#fff" />
       {/* リスポーンボタンの説明 */}
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('respawnUsage')}
       </ThemedText>
+        <MaterialIcons name= "visibility" size={24} color="#fff"/>
       {/* 可視化ボタンの説明 */}
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('revealUsage')}
