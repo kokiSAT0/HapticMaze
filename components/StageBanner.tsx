@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 
@@ -22,14 +22,21 @@ export function StageBanner({
 }) {
   // onFinish が複数回実行されないようフラグを保持する
   const calledRef = React.useRef(false);
+  // 最新の onFinish を保持するための参照。依存配列から onFinish を外せる
+  const finishRef = useRef(onFinish);
+
+  // onFinish が変わったら参照を更新するだけに留める
+  useEffect(() => {
+    finishRef.current = onFinish;
+  }, [onFinish]);
 
   // ステージバナーを無効化している場合、表示要求があれば即終了する
   useEffect(() => {
     if (DISABLE_STAGE_BANNER && visible && !calledRef.current) {
       calledRef.current = true;
-      onFinish();
+      finishRef.current();
     }
-  }, [visible, onFinish]);
+  }, [visible]);
 
   useEffect(() => {
     // 表示状態やステージ番号が変わるたびにログを出す
@@ -42,14 +49,14 @@ export function StageBanner({
       console.log(`[StageBanner] onFinish stage=${stage}`);
       if (!calledRef.current) {
         calledRef.current = true;
-        onFinish();
+        finishRef.current();
       }
     }, 2000);
     return () => {
       console.log(`[StageBanner] cleanup stage=${stage}`);
       clearTimeout(id);
     };
-  }, [visible, stage, onFinish]);
+  }, [visible, stage]);
 
   if (!visible || DISABLE_STAGE_BANNER) return null;
   return (
