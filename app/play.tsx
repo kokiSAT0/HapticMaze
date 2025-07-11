@@ -104,8 +104,14 @@ export default function PlayScreen() {
   const gray = Math.round((state.respawnStock / 3) * 255);
   const resetColor = `rgb(${gray},${gray},${gray})`;
 
-  // 全表示ボタンの処理。未使用ならそのままON、2回目以降は広告後にON
+  // 全表示ボタンの処理
+  // debugAll が true なら広告なしで OFF にする
+  // OFF → ON は初回のみ無償、それ以降は広告視聴が必要
   const handleRevealAll = async () => {
+    if (debugAll) {
+      setDebugAll(false);
+      return;
+    }
     if (revealUsed === 0) {
       setDebugAll(true);
       setRevealUsed(1);
@@ -152,7 +158,11 @@ export default function PlayScreen() {
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
         onPress={handleRevealAll}
         accessibilityLabel={
-          revealUsed === 0 ? t("showMazeAll") : t("watchAdForReveal")
+          debugAll
+            ? t("hideMazeAll")
+            : revealUsed === 0
+            ? t("showMazeAll")
+            : t("watchAdForReveal")
         }
       >
         {/* debugAll の状態に応じてアイコンを変更 */}
