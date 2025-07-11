@@ -112,10 +112,10 @@ export function level1EnemyCounts(stage: number): EnemyCounts {
 
 /**
  * ノーマル用の壁寿命設定です。
- * 52ステージ目以降は20ターンで壁が消えます。
+ * 52ステージ目以降は50ターンで壁が消えます。
  */
 export function normalWallLifetime(stage: number): number {
-  return stage >= 52 ? 20 : Infinity;
+  return stage >= 52 ? 50 : Infinity;
 }
 
 /**
@@ -124,9 +124,9 @@ export function normalWallLifetime(stage: number): number {
  */
 export function hardWallLifetime(stage: number): number {
   if (stage <= 21) return Infinity;
-  if (stage <= 51) return 20;
-  if (stage <= 72) return 15;
-  if (stage <= 90) return 10;
-  if (stage <= 100) return 1;
+  if (stage <= 51) return 40;
+  if (stage <= 72) return 30;
+  if (stage <= 90) return 20;
+  if (stage <= 100) return 10;
   return Infinity;
 }
