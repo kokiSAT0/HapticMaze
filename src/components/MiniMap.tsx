@@ -123,18 +123,6 @@ export function MiniMap({
         {renderPath({ path, cell, playerPathLength })}
         {renderEnemyPaths({ enemyPaths, enemies, cell, showAll })}
         {renderVisitedGoals({ visitedGoals, cell, showResult, showAll })}
-        {/* スタート位置は枠線のみで表示する */}
-        {showAll && (
-          <Rect
-            x={(maze.start[0] + 0.25) * cell}
-            y={(maze.start[1] + 0.25) * cell}
-            width={cell * 0.5}
-            height={cell * 0.5}
-            stroke="white" // 枠線の色
-            strokeWidth={1} // 枠線の太さ
-            fill="none" // 塗りつぶさず透明にする
-          />
-        )}
         {showAll && (
           // ゴール位置は塗りつぶし四角で表示する
           <Rect
