@@ -16,6 +16,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { LEVELS } from "@/constants/levels";
 import { useAudioControls } from "@/src/hooks/useAudioControls";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
+import { UI } from "@/constants/ui";
 
 export default function TitleScreen() {
   const router = useRouter();
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 20,
+    gap: UI.screenGap,
   },
   modalWrapper: {
     flex: 1,
@@ -219,8 +220,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
   modalContent: {
-    gap: 16,
-    padding: 24,
+    gap: UI.modalGap,
+    padding: UI.modalPadding,
     backgroundColor: "#000",
   },
   volumeRow: {
