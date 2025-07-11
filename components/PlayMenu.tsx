@@ -7,6 +7,7 @@ import { UI } from '@/constants/ui';
 import { useBgm } from '@/src/hooks/useBgm';
 import { showInterstitial } from '@/src/ads/interstitial';
 import { useHandleError } from '@/src/utils/handleError';
+import { useRunRecords } from '@/src/hooks/useRunRecords';
 
 /**
  * プレイ中に表示するメニューコンポーネント
@@ -62,6 +63,7 @@ export function PlayMenu({
   accIncSe: string;
   accDecSe: string;
 }) {
+  const { incReveal } = useRunRecords();
   // BGM 制御を取得し広告表示中は音を止める
   const { pause: pauseBgm, resume: resumeBgm } = useBgm();
   const handleError = useHandleError();
@@ -75,12 +77,14 @@ export function PlayMenu({
       if (revealUsed === 0) {
         setRevealUsed(1);
         setDebugAll(true);
+        incReveal();
         return;
       }
       try {
         pauseBgm();
         await showInterstitial();
         setDebugAll(true);
+        incReveal();
       } catch (e) {
         // 広告が出なかった場合はエラーメッセージを表示
         handleError('広告を表示できませんでした', e);

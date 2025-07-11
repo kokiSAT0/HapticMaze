@@ -11,6 +11,7 @@ import { useLocale } from "@/src/locale/LocaleContext";
 import type { MazeData } from "@/src/types/maze";
 import type { InterstitialAd } from "react-native-google-mobile-ads";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
+import { useRunRecords } from "@/src/hooks/useRunRecords";
 
 interface Options {
   state: GameState;
@@ -39,6 +40,9 @@ export function useResultActions({
   const { highScore, newRecord, setNewRecord, updateScore } = useHighScore(
     state.levelId
   );
+
+  // 各ステージの記録を保持するコンテキスト
+  const { addRecord, reset } = useRunRecords();
 
   const {
     showResult,
@@ -103,6 +107,13 @@ export function useResultActions({
     }
   }, [state.stage, state.steps, showBanner, bannerStage, bannerShown, setBannerStage, setShowBanner, setBannerShown]);
 
+  // ステージ1開始時は前回の記録をリセットする
+  useEffect(() => {
+    if (state.stage === 1 && state.steps === 0 && state.totalSteps === 0) {
+      reset();
+    }
+  }, [state.stage, state.steps, state.totalSteps, reset]);
+
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
     // バナー表示中やリザルト表示中は判定をスキップする
@@ -125,7 +136,11 @@ export function useResultActions({
       loadAdIfNeeded(state.stage).then((ad) => {
         loadedAdRef.current = ad;
         // 広告が無ければ最初から「次のステージへ」と表示する
-        setOkLabel(ad ? t("showAd") : t("nextStage"));
+        if (state.finalStage) {
+          setOkLabel(t("goGameResult"));
+        } else {
+          setOkLabel(ad ? t("showAd") : t("nextStage"));
+        }
         okLockedRef.current = false;
         setOkLocked(false);
       });
@@ -210,6 +225,7 @@ export function useResultActions({
     });
 
     if (gameOver) {
+      addRecord(state.stage, state.steps, state.bumps);
       // === ゲームオーバー時の処理 ===
       // 1. ランを初期状態へ戻す
       resetRun();
@@ -235,7 +251,8 @@ export function useResultActions({
       // ここで return して以降の処理を行わない
       return;
     } else if (gameClear) {
-      // ゲームクリア時も同様にタイトルへ戻る
+      // ゲームクリア時はリザルト一覧へ遷移
+      addRecord(state.stage, state.steps, state.bumps);
       resetRun();
       // ゲームオーバーと同じく中断データを削除する
       await clearGame(showSnackbar ? { showError: showSnackbar } : undefined);
@@ -247,7 +264,7 @@ export function useResultActions({
       setAdShown(false);
       okLockedRef.current = false;
       setOkLocked(false);
-      router.replace("/");
+      router.replace("/game-result");
       return;
     }
 
@@ -269,6 +286,7 @@ export function useResultActions({
     setBannerStage(state.stage + 1);
     // ステージクリア時はここでステージを進める
     if (wasStageClear) {
+      addRecord(state.stage, state.steps, state.bumps);
       nextStage();
     }
     // バナー表示で演出を行う
@@ -332,6 +350,8 @@ export function useResultActions({
     setRevealUsed(0);
     // 初期ステージへ戻るのでバナー表示済みフラグもリセットする
     setBannerShown(false);
+    // ステージ記録もリセットする
+    reset();
     resetRun();
   };
 
@@ -349,6 +369,7 @@ export function useResultActions({
     setRevealUsed(0);
     // 次回開始時にステージバナーを表示するためフラグを戻す
     setBannerShown(false);
+    reset();
     router.replace("/");
   };
 
