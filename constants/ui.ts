@@ -59,6 +59,15 @@ export const UI = {
     bumpWidth: 50,
     bumpShowTime: 300,
   },
+  // -------------------
+  // ホーム(タイトル)画面専用の設定
+  // -------------------
+  titleScreen: {
+    // タイトル文字のサイズ
+    titleFontSize: 32,
+    // ボタンなど縦並び要素の余白
+    optionGap: 20,
+  },
 } as const;
 
 export type UIValues = typeof UI;
