@@ -3,7 +3,13 @@
 
 import mockAsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loadHighScore, saveHighScore, isBetterScore, type HighScore } from '../highScore';
+import {
+  loadHighScore,
+  saveHighScore,
+  isBetterScore,
+  clearAllHighScores,
+  type HighScore,
+} from '../highScore';
 
 // ライブラリが用意しているモックを適用
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
@@ -58,5 +64,18 @@ describe('isBetterScore', () => {
     expect(
       isBetterScore(score(2, 5, 0), score(1, 10, 1))
     ).toBe(false);
+  });
+});
+
+describe('clearAllHighScores', () => {
+  test('指定した ID のハイスコアを削除する', async () => {
+    const data = score(1, 5, 0);
+    await AsyncStorage.setItem('highscore:easy', JSON.stringify(data));
+    await AsyncStorage.setItem('highscore:hard', JSON.stringify(data));
+
+    await clearAllHighScores(['easy', 'hard']);
+
+    expect(await AsyncStorage.getItem('highscore:easy')).toBeNull();
+    expect(await AsyncStorage.getItem('highscore:hard')).toBeNull();
   });
 });
