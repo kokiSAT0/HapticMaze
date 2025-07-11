@@ -5,7 +5,8 @@ import { PlainButton } from '@/components/PlainButton';
 import { ThemedText } from '@/components/ThemedText';
 import { UI } from '@/constants/ui';
 import { useBgm } from '@/src/hooks/useBgm';
-import { useStageEffects } from '@/src/hooks/useStageEffects';
+import { showInterstitial } from '@/src/ads/interstitial';
+import { useHandleError } from '@/src/utils/handleError';
 
 /**
  * プレイ中に表示するメニューコンポーネント
@@ -63,7 +64,7 @@ export function PlayMenu({
 }) {
   // BGM 制御を取得し広告表示中は音を止める
   const { pause: pauseBgm, resume: resumeBgm } = useBgm();
-  const { showAd } = useStageEffects({ pauseBgm, resumeBgm });
+  const handleError = useHandleError();
 
   /**
    * 全表示スイッチの処理
@@ -76,8 +77,16 @@ export function PlayMenu({
         setDebugAll(true);
         return;
       }
-      const shown = await showAd(null);
-      if (shown) setDebugAll(true);
+      try {
+        pauseBgm();
+        await showInterstitial();
+        setDebugAll(true);
+      } catch (e) {
+        // 広告が出なかった場合はエラーメッセージを表示
+        handleError('広告を表示できませんでした', e);
+      } finally {
+        resumeBgm();
+      }
     } else {
       setDebugAll(false);
     }
