@@ -26,7 +26,9 @@ export const playStyles = StyleSheet.create({
   resetBtn: {
     position: 'absolute',
     top: UI.dpadSpacing,
-    right: 44,
+    // 可視化ボタンとの距離を広げるためさらに左へ配置
+    // right 値を大きくするほど画面右端から離れる
+    right: 64,
     padding: 4,
   },
   // ミニマップを画面上 1/3 より40px上の位置に中央揃えで配置
