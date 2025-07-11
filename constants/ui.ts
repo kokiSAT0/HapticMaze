@@ -25,11 +25,11 @@ export const UI = {
   dpadButtonSize: 48,
   dpadSpacing: 10,
   // 画面内の各ボタン間隔をまとめて調整するための値
-  screenGap: 20,
+  screenGap: 16,
   // モーダル内要素の間隔
-  modalGap: 16,
+  modalGap: 20,
   // モーダルの内側余白
-  modalPadding: 24,
+  modalPadding: 12,
   miniMapSize: 300,
   modalWidth: 250,
   // リザルトパネル専用の横幅
@@ -39,7 +39,7 @@ export const UI = {
   // 文字サイズを一箇所で管理する
   fonts: {
     default: 16,
-    title: 32,
+    title: 34,
     subtitle: 20,
     linkLine: 30,
   },
