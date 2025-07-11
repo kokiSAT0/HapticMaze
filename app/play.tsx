@@ -1,5 +1,5 @@
+import React, { useEffect, useRef } from "react";
 import { View, Pressable, useWindowDimensions } from "react-native";
-import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -86,7 +86,14 @@ export default function PlayScreen() {
   ]);
 
   // ステージバナー表示フラグが立ったら専用ページへ移動
+  // 初回レンダー時は前フレームの値がまだ反映されていない可能性があるため
+  // フラグが更新されるまで処理をスキップする
+  const bannerFirstRef = useRef(true);
   useEffect(() => {
+    if (bannerFirstRef.current) {
+      bannerFirstRef.current = false;
+      return;
+    }
     // bannerStage が 0 のときは表示データが無いので遷移しない
     if (showBanner && bannerStage > 0) {
       router.replace(`/stage?stage=${bannerStage}`);
