@@ -23,6 +23,7 @@ export type Action =
       biasedGoal?: boolean;
       levelId?: string;
       stagePerMap?: number;
+      respawnMax?: number;
     }
   | { type: 'nextStage' }
   | { type: 'resetRun' }
@@ -48,6 +49,7 @@ export function reducer(state: State, action: Action): State {
         state.biasedGoal,
         state.levelId,
         state.stagePerMap,
+        state.respawnMax,
         state.respawnStock,
         state.totalSteps,
         state.totalBumps,
@@ -64,6 +66,7 @@ export function reducer(state: State, action: Action): State {
         action.biasedSpawn ?? state.biasedSpawn,
         action.levelId,
         action.stagePerMap ?? state.stagePerMap,
+        action.respawnMax ?? state.respawnMax,
         action.biasedGoal ?? state.biasedGoal,
       );
     case 'nextStage':

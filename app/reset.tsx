@@ -81,6 +81,7 @@ export default function ResetConfirmScreen() {
       level.biasedGoal,
       level.id,
       level.stagePerMap,
+      level.respawnMax,
     );
     router.replace('/play');
   };
