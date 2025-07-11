@@ -82,7 +82,7 @@ export function reducer(state: State, action: Action): State {
         enemies,
         enemyVisited: enemies.map((e) => new Map([[`${e.pos.x},${e.pos.y}`, 1]])),
         enemyPaths: enemies.map((e) => [{ ...e.pos }]),
-        respawnStock: state.respawnStock - 1,
+        respawnStock: Math.max(state.respawnStock - 1, 0),
       };
     }
     case 'move': {
