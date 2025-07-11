@@ -106,8 +106,21 @@ export default function PlayScreen() {
   const isEmpty = state.respawnStock <= 0;
   // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
   const baseGray = parseInt(UI.colors.icon.replace('#', '').substring(0, 2), 16);
-  const ratio = Math.min(state.respawnStock / state.respawnMax, 1);
+  // respawnMax が 0 または未設定なら無制限とみなして白に近づける
+  const ratio =
+    state.respawnMax && state.respawnMax > 0
+      ? Math.min(state.respawnStock / state.respawnMax, 1)
+      : 1;
   const gray = Math.round(baseGray + ratio * (255 - baseGray));
+  if (__DEV__) {
+    // DEBUG: 計算結果をコンソールに出力して確認する
+    console.log('respawn color', {
+      stock: state.respawnStock,
+      max: state.respawnMax,
+      ratio,
+      gray,
+    });
+  }
   const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
   const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
 
