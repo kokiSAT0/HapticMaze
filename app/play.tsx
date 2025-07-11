@@ -14,6 +14,7 @@ import { EdgeOverlay } from "@/components/EdgeOverlay";
 import { playStyles } from "@/src/styles/playStyles";
 import { UI } from "@/constants/ui";
 import { LEVELS } from "@/constants/levels";
+import { cmToDp } from "@/src/utils/layout";
 
 export default function PlayScreen() {
   const { t } = useLocale();
@@ -80,10 +81,14 @@ export default function PlayScreen() {
     }
   }, [showBanner, bannerStage, router]);
 
-  const dpadTop = height * (2 / 3);
-  // ミニマップはリザルトパネルと重ならないよう少し上に配置する
-  // mapTop は画面高さの 1/3 から 80px 引いた位置
-  const mapTop = height / 3 - 80;
+  // 1cm を dp に変換し、UI 位置調整に利用
+  const oneCm = cmToDp(1);
+
+  // DPad は画面下 1/3 の位置から 1cm 上へずらす
+  const dpadTop = height * (2 / 3) - oneCm;
+  // ミニマップも同様に 1cm 上へ移動させる
+  // mapTop は画面高さの 1/3 から 80px 引いた位置を基準とする
+  const mapTop = height / 3 - 80 - oneCm;
   // リザルトパネルは DPad と同じ位置に表示する
   const resultTop = dpadTop;
   // リセットボタンの色。使用回数に応じて白から黒へ変化させる
