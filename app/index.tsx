@@ -159,11 +159,11 @@ export default function TitleScreen() {
         Maze Sense
       </ThemedText>
 
-      <PlainButton
+      {/* <PlainButton
         title={t("practiceMode")}
         onPress={() => router.push("/practice")}
         accessibilityLabel={t("openPractice")}
-      />
+      /> */}
 
       {hasSave && (
         <PlainButton
