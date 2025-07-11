@@ -222,6 +222,8 @@ export function useResultActions({
       setGameClear(false);
       setNewRecord(false);
       setAdShown(false);
+      // ゲームオーバー後は可視化状態を引き継がないようリセット
+      setDebugAll(false);
       // 4. OK ボタンのロック状態も解除
       okLockedRef.current = false;
       setOkLocked(false);
