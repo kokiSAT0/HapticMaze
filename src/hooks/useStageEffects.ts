@@ -24,9 +24,11 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
   const loadAdIfNeeded = useCallback(
     async (stage: number): Promise<InterstitialAd | null> => {
       // 広告を出す条件:
-      // チュートリアルでは5の倍数、その他では6の倍数ステージのクリア時
+      // チュートリアルでは10の倍数、その他では6の倍数ステージのクリア時
+      // "% 10" は「10で割った余り」を計算する演算子(mod演算)です
+      // 余りが0のとき「10の倍数」と判定できます
       const shouldShow =
-        levelId === 'tutorial' ? stage % 5 === 0 : stage % 6 === 0;
+        levelId === 'tutorial' ? stage % 10 === 0 : stage % 6 === 0;
       console.log("loadAdIfNeeded", { stage, shouldShow });
       if (!shouldShow || DISABLE_ADS) return null;
       return loadInterstitial();
