@@ -8,6 +8,7 @@ import { PlainButton } from '@/components/PlainButton';
 import { LEVELS } from '@/constants/levels';
 import { loadHighScore, type HighScore } from '@/src/game/highScore';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
+import { UI } from '@/constants/ui';
 import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 
 export default function ScoresScreen() {
@@ -58,5 +59,5 @@ export default function ScoresScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: UI.screenGap },
 });
