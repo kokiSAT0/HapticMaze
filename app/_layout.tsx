@@ -12,6 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
 import { LocaleProvider } from '@/src/locale/LocaleContext';
 import { ResultStateProvider } from '@/src/hooks/useResultState';
+import { RunRecordProvider } from '@/src/hooks/useRunRecords';
 import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
@@ -53,6 +54,7 @@ export default function RootLayout() {
           <SeVolumeProvider>
             <LocaleProvider>
               <ResultStateProvider>
+                <RunRecordProvider>
                 <GameProvider>
                 <Stack>
                   <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -63,9 +65,11 @@ export default function RootLayout() {
                   <Stack.Screen name="play" options={{ headerShown: false }} />
                   <Stack.Screen name="stage" options={{ headerShown: false }} />
                   <Stack.Screen name="reset" options={{ headerShown: false }} />
+                  <Stack.Screen name="game-result" options={{ headerShown: false }} />
                   <Stack.Screen name="+not-found" />
                 </Stack>
               </GameProvider>
+              </RunRecordProvider>
               </ResultStateProvider>
             </LocaleProvider>
             <StatusBar style="auto" />

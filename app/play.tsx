@@ -18,6 +18,7 @@ import { EdgeOverlay } from "@/components/EdgeOverlay";
 import { playStyles } from "@/src/styles/playStyles";
 import { UI } from "@/constants/ui";
 import { LEVELS } from "@/constants/levels";
+import { useRunRecords } from "@/src/hooks/useRunRecords";
 import { cmToDp } from "@/src/utils/layout";
 
 export default function PlayScreen() {
@@ -25,6 +26,7 @@ export default function PlayScreen() {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const router = useRouter();
+  const { incRespawn, incReveal } = useRunRecords();
   const {
     state,
     maze,
@@ -142,12 +144,14 @@ export default function PlayScreen() {
     if (revealUsed === 0) {
       setDebugAll(true);
       setRevealUsed(1);
+      incReveal();
       return;
     }
     try {
       pauseBgm();
       await showInterstitial();
       setDebugAll(true);
+      incReveal();
     } catch (e) {
       // 広告表示に失敗したらメッセージを出しておく
       handleError("広告を表示できませんでした", e);
@@ -175,7 +179,10 @@ export default function PlayScreen() {
       {/* 右上のリセットアイコン。敵だけを再配置する */}
       <Pressable
         style={[playStyles.resetBtn, { top: insets.top + 10 }]}
-        onPress={handleRespawn}
+        onPress={() => {
+          incRespawn();
+          handleRespawn();
+        }}
         accessibilityLabel="敵をリスポーン"
       >
         {/* リスポーン回数が 0 回ならアウトライン表示に切り替える */}

@@ -62,6 +62,12 @@ const messages = {
     showAd: "広告を表示して次に進む",
     watchAdForReveal: "広告を見るともう一度全表示できます",
     nextStage: "次のステージへ",
+    goGameResult: "ゲームリザルトへ進む",
+    gameResults: "ゲームリザルト",
+    stageRecord:
+      "ステージ{{stage}}: {{steps}}ターン {{bumps}}衝突 リスポーン{{respawns}}回 可視化{{reveals}}回",
+    totalStats:
+      "合計 {{steps}}ターン {{bumps}}衝突 リスポーン{{respawns}}回 可視化{{reveals}}回",
     changeLang: "Language",
     selectLang: "言語を選択してください",
     japanese: "日本語",
@@ -132,6 +138,12 @@ const messages = {
     showAd: "Show ad and continue",
     watchAdForReveal: "Watch an ad to reveal again",
     nextStage: "Next stage",
+    goGameResult: "View Game Results",
+    gameResults: "Game Results",
+    stageRecord:
+      "Stage {{stage}}: {{steps}} steps {{bumps}} bumps respawns {{respawns}} reveals {{reveals}}",
+    totalStats:
+      "Total {{steps}} steps {{bumps}} bumps respawns {{respawns}} reveals {{reveals}}",
     changeLang: "Language",
     selectLang: "Select language",
     japanese: "Japanese",
