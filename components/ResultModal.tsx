@@ -77,7 +77,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     gap: UI.dpadSpacing,
-    width: UI.modalWidth,
+    // 結果画面の横幅。狭すぎると文字が折り返されるため調整可
+    width: UI.resultModalWidth,
     alignSelf: 'center',
   },
   text: {
