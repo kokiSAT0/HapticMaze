@@ -2,12 +2,12 @@ import React, { useCallback, useRef } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { StageBanner } from '@/components/StageBanner';
-import { usePlayLogic } from '@/src/hooks/usePlayLogic';
+import { useResultState } from '@/src/hooks/useResultState';
 
 export default function StageScreen() {
   const { stage } = useLocalSearchParams<{ stage?: string }>();
   const router = useRouter();
-  const { handleBannerFinish, handleBannerDismiss } = usePlayLogic();
+  const { setShowBanner, setBannerStage, setOkLocked } = useResultState();
   const stageNum = Number(stage) || 1;
 
   // handleFinish が複数回呼ばれないようフラグを保持する
@@ -21,14 +21,15 @@ export default function StageScreen() {
     // 一度実行したら何もしない
     if (finishedRef.current) return;
     finishedRef.current = true;
-    handleBannerFinish();
-    handleBannerDismiss();
+    setShowBanner(false);
+    setBannerStage(0);
+    setOkLocked(false);
     // 状態更新が反映される前に遷移すると再度バナーが表示されてしまうため
     // わずかに遅らせてから Play 画面へ戻る
     setTimeout(() => {
       router.replace('/play');
     }, 0);
-  }, [handleBannerFinish, handleBannerDismiss, router]);
+  }, [router, setShowBanner, setBannerStage, setOkLocked]);
 
   return (
     <StageBanner
