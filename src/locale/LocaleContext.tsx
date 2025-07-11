@@ -7,7 +7,7 @@ import React, {
   type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useHandleError } from '@/src/utils/handleError';
+import { useHandleError } from "@/src/utils/handleError";
 
 export type Lang = "ja" | "en";
 
@@ -42,11 +42,11 @@ const messages = {
     gameClear: "ゲームクリア",
     gameOver: "ゲームオーバー",
     goal: "ゴール！",
-    steps: "Steps: {{count}}",
-    bumps: "Bumps: {{count}}",
-    stage: "Stage: {{current}}/{{total}}",
+    steps: "ターン: {{count}}",
+    bumps: "壁衝突: {{count}}",
+    stage: "ステージ: {{current}}/{{total}}",
     // ハイスコア表示用のテンプレート。"Best:" の文言は不要なので省く
-    best: "{{stage}}ステージ / {{steps}} steps / {{bumps}} bumps",
+    best: "{{stage}}ステージ / {{steps}} ターン / {{bumps}} 衝突",
     highScores: "ハイスコア",
     openHighScores: "ハイスコア一覧を開く",
     options: "オプション",
@@ -66,7 +66,7 @@ const messages = {
     english: "English",
     backToTitle: "タイトルへ戻る",
     continue: "つづきから",
-    startFromBegin: "{{name}}をはじめからプレイ",
+    startFromBegin: "{{name}}",
     confirmReset: "中断中のゲームデータを削除して新しいゲームを開始しますか？",
     suspendInfo: "難易度: {{level}} / ステージ: {{stage}}",
     yes: "はい",
@@ -123,7 +123,7 @@ const messages = {
     english: "English",
     backToTitle: "Back to title",
     continue: "Continue",
-    startFromBegin: "Play {{name}} from start",
+    startFromBegin: "{{name}}",
     confirmReset: "Delete saved game and start new?",
     suspendInfo: "Level: {{level}} / Stage: {{stage}}",
     yes: "Yes",
@@ -139,7 +139,7 @@ export type MessageKey = keyof Messages;
 function translate(
   lang: Lang,
   key: MessageKey,
-  params?: Record<string, string | number>,
+  params?: Record<string, string | number>
 ) {
   let template = messages[lang][key] ?? messages.ja[key];
   if (params) {
@@ -177,7 +177,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
           setFirstLaunch(true);
         }
       } catch (e) {
-        handleError('言語設定の読み込みに失敗しました', e);
+        handleError("言語設定の読み込みに失敗しました", e);
       } finally {
         // エラーの有無に関わらず ready にする
         setReady(true);
@@ -190,7 +190,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, l);
     } catch (e) {
-      handleError('言語設定を保存できませんでした', e);
+      handleError("言語設定を保存できませんでした", e);
     }
     setFirstLaunch(false);
   };
@@ -199,7 +199,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const t = useCallback(
     (key: MessageKey, params?: Record<string, string | number>) =>
       translate(lang, key, params),
-    [lang],
+    [lang]
   );
 
   return (
