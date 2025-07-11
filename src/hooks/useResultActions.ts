@@ -62,6 +62,8 @@ export function useResultActions({
     setBannerStage,
     bannerShown,
     setBannerShown,
+    revealUsed,
+    setRevealUsed,
   } = useResultState();
 
   const { t } = useLocale();
@@ -338,6 +340,8 @@ export function useResultActions({
     setShowMenu,
     debugAll,
     setDebugAll,
+    revealUsed,
+    setRevealUsed,
     okLocked,
     okLabel,
     showBanner,
