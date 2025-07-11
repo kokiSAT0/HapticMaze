@@ -48,7 +48,11 @@ export function ResultModal({
       <ThemedText style={styles.text}>{steps}</ThemedText>
       <ThemedText style={styles.text}>{bumps}</ThemedText>
       <ThemedText style={styles.text}>{stageText}</ThemedText>
-      <ThemedText type="subtitle" style={styles.text}>{t("result")}</ThemedText>
+      {highScore && (
+        <ThemedText type="subtitle" style={styles.text}>
+          {t("result")}
+        </ThemedText>
+          )}
       {highScore && (
         <ThemedText style={styles.text}>
           {t("best", {
