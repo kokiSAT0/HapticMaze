@@ -220,6 +220,8 @@ export function useResultActions({
     } else if (gameClear) {
       // ゲームクリア時も同様にタイトルへ戻る
       resetRun();
+      // ゲームオーバーと同じく中断データを削除する
+      await clearGame(showSnackbar ? { showError: showSnackbar } : undefined);
       setShowResult(false);
       setGameOver(false);
       setStageClear(false);

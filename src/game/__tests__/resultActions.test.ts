@@ -10,6 +10,7 @@ jest.mock('react', () => ({
 let showResult = true;
 let stageClear = true;
 let gameOver = false;
+let gameClear = false;
 const setShowResult = jest.fn((v: boolean) => {
   showResult = v;
 });
@@ -19,7 +20,9 @@ const setStageClear = jest.fn((v: boolean) => {
 const setGameOver = jest.fn((v: boolean) => {
   gameOver = v;
 });
-const setGameClear = jest.fn();
+const setGameClear = jest.fn((v: boolean) => {
+  gameClear = v;
+});
 const setDebugAll = jest.fn();
 const setNewRecord = jest.fn();
 const setOkLocked = jest.fn();
@@ -45,7 +48,7 @@ jest.mock('@/src/hooks/useResultState', () => ({
     setGameOver,
     stageClear,
     setStageClear,
-    gameClear: false,
+    gameClear,
     setGameClear,
     showMenu: false,
     setShowMenu,
@@ -97,6 +100,7 @@ describe('handleOk の広告表示後処理', () => {
     showResult = true;
     stageClear = true;
     gameOver = false;
+    gameClear = false;
     adShown = false;
     jest.clearAllMocks();
   });
@@ -249,6 +253,31 @@ describe('handleOk の広告表示後処理', () => {
 
     const actions = useResultActions({
       state: { stage: 1 } as any,
+      maze: { size: 10 } as any,
+      nextStage,
+      resetRun,
+      router,
+      pauseBgm: jest.fn(),
+      resumeBgm: jest.fn(),
+    });
+
+    await actions.handleOk();
+
+    expect(clearGame).toHaveBeenCalled();
+    expect(resetRun).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalledWith('/');
+  });
+
+  test('ゲームクリア時もセーブデータを削除してタイトルへ戻る', async () => {
+    const nextStage = jest.fn();
+    const resetRun = jest.fn();
+    const router = { replace: jest.fn() };
+
+    // ゲームクリア状態を再現する
+    gameClear = true;
+
+    const actions = useResultActions({
+      state: { stage: 3 } as any,
       maze: { size: 10 } as any,
       nextStage,
       resetRun,
