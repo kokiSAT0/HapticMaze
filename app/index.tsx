@@ -140,7 +140,13 @@ export default function TitleScreen() {
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+      {/* タイトルの文字サイズを定数から調整できるように */}
+      <ThemedText
+        type="title"
+        lightColor="#fff"
+        darkColor="#fff"
+        style={styles.title}
+      >
         Maze Sense
       </ThemedText>
 
@@ -211,7 +217,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: UI.screenGap,
+    // 選択肢間の余白をホーム画面用定数から参照
+    gap: UI.titleScreen.optionGap,
+  },
+  // タイトル文字のサイズを変更しやすくするためのスタイル
+  title: {
+    fontSize: UI.titleScreen.titleFontSize,
+    lineHeight: UI.titleScreen.titleFontSize,
   },
   modalWrapper: {
     flex: 1,
