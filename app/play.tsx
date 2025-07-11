@@ -1,5 +1,6 @@
 import { View, Pressable, useWindowDimensions } from "react-native";
-import React, { useEffect } from "react";
+
+import { useEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -85,6 +86,7 @@ export default function PlayScreen() {
     bannerStage,
   ]);
 
+
   // ステージバナー表示フラグが変化したときだけ遷移するようにする
   // これにより状態更新が遅れた場合でも無限ループを防げる
   const prevBanner = React.useRef(false);
@@ -96,6 +98,7 @@ export default function PlayScreen() {
     } else if (!showBanner && prevBanner.current) {
       // バナーが閉じられたらフラグを戻す
       prevBanner.current = false;
+
     }
   }, [showBanner, bannerStage, router]);
 
