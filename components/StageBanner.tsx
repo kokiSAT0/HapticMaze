@@ -20,24 +20,30 @@ export function StageBanner({
   stage: number;
   onFinish: () => void;
 }) {
+  // onFinish が複数回実行されないようフラグを保持する
+  const calledRef = React.useRef(false);
+
   // ステージバナーを無効化している場合、表示要求があれば即終了する
   useEffect(() => {
-    if (DISABLE_STAGE_BANNER && visible) {
+    if (DISABLE_STAGE_BANNER && visible && !calledRef.current) {
+      calledRef.current = true;
       onFinish();
     }
   }, [visible, onFinish]);
 
   useEffect(() => {
     // 表示状態やステージ番号が変わるたびにログを出す
-    console.log(
-      `[StageBanner] visible=${visible}, stage=${stage}`
-    );
+    console.log(`[StageBanner] visible=${visible}, stage=${stage}`);
     if (!visible || DISABLE_STAGE_BANNER) return;
+    // 新しい表示が始まったのでフラグをリセット
+    calledRef.current = false;
     // 初期化処理がすぐ終わっても最低 2 秒は表示する
-    // 2000 は 2 秒をミリ秒で表した数値
     const id = setTimeout(() => {
       console.log(`[StageBanner] onFinish stage=${stage}`);
-      onFinish();
+      if (!calledRef.current) {
+        calledRef.current = true;
+        onFinish();
+      }
     }, 2000);
     return () => {
       console.log(`[StageBanner] cleanup stage=${stage}`);
