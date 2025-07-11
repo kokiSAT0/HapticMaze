@@ -8,6 +8,8 @@ import { MiniMap } from "@/src/components/MiniMap";
 import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
+import { useBgm } from "@/src/hooks/useBgm";
+import { useStageEffects } from "@/src/hooks/useStageEffects";
 import { ResultModal } from "@/components/ResultModal";
 import { useRouter } from "expo-router";
 import { EdgeOverlay } from "@/components/EdgeOverlay";
@@ -32,6 +34,8 @@ export default function PlayScreen() {
     newRecord,
     debugAll,
     setDebugAll,
+    revealUsed,
+    setRevealUsed,
     borderColor,
     borderW,
     maxBorder,
@@ -45,6 +49,14 @@ export default function PlayScreen() {
     handleRespawn,
     handleExit,
   } = usePlayLogic();
+
+  // BGM 制御用フックを取得し広告表示の際に一時停止できるようにする
+  const { pause: pauseBgm, resume: resumeBgm } = useBgm();
+  const { showAd } = useStageEffects({
+    pauseBgm,
+    resumeBgm,
+    levelId: state.levelId,
+  });
 
   // レベル設定から周囲の壁表示フラグを取得
   const levelCfg = LEVELS.find((lv) => lv.id === state.levelId);
@@ -95,6 +107,17 @@ export default function PlayScreen() {
   const gray = Math.round((state.respawnStock / 3) * 255);
   const resetColor = `rgb(${gray},${gray},${gray})`;
 
+  // 全表示ボタンの処理。未使用ならそのままON、2回目以降は広告後にON
+  const handleRevealAll = async () => {
+    if (revealUsed === 0) {
+      setDebugAll(true);
+      setRevealUsed(1);
+      return;
+    }
+    const shown = await showAd(null);
+    if (shown) setDebugAll(true);
+  };
+
   return (
     <View style={[playStyles.container, { paddingTop: insets.top }]}>
       {/* 左上のホームボタン。家アイコンを表示しタイトルへ戻る */}
@@ -122,8 +145,10 @@ export default function PlayScreen() {
       {/* 全てを可視化するボタン。押す度に表示/非表示を切り替える */}
       <Pressable
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
-        onPress={() => setDebugAll(!debugAll)}
-        accessibilityLabel={t("showMazeAll")}
+        onPress={handleRevealAll}
+        accessibilityLabel={
+          revealUsed === 0 ? t("showMazeAll") : t("watchAdForReveal")
+        }
       >
         {/* debugAll の状態に応じてアイコンを変更 */}
         <MaterialIcons

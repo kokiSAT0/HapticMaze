@@ -25,6 +25,9 @@ interface ResultStateValue {
   // ステージ1バナーを一度だけ表示したかどうか
   bannerShown: boolean;
   setBannerShown: (v: boolean) => void;
+  // 全表示機能を何回使ったかのカウンター
+  revealUsed: number;
+  setRevealUsed: (v: number) => void;
 }
 
 const ResultStateContext = createContext<ResultStateValue | undefined>(undefined);
@@ -50,6 +53,8 @@ function useResultStateImpl(): ResultStateValue {
   const [okLocked, setOkLocked] = useState(false);
   // 各ステージで広告を一度だけ表示したかを記録するフラグ
   const [adShown, setAdShown] = useState(false);
+  // 全表示機能を使った回数を保持するカウンター
+  const [revealUsed, setRevealUsed] = useState(0);
   // ステージ番号を表示する黒画面の表示フラグ
   const [showBanner, setShowBanner] = useState(false);
   // バナーに表示する次のステージ番号
@@ -80,6 +85,8 @@ function useResultStateImpl(): ResultStateValue {
     setBannerStage,
     bannerShown,
     setBannerShown,
+    revealUsed,
+    setRevealUsed,
   } as const;
 }
 

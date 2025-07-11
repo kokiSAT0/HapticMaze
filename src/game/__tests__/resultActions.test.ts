@@ -64,6 +64,8 @@ jest.mock('@/src/hooks/useResultState', () => ({
     setBannerStage,
     bannerShown,
     setBannerShown,
+    revealUsed: 0,
+    setRevealUsed: jest.fn(),
   }),
 }));
 

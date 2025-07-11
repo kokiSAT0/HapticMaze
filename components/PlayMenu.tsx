@@ -4,6 +4,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PlainButton } from '@/components/PlainButton';
 import { ThemedText } from '@/components/ThemedText';
 import { UI } from '@/constants/ui';
+import { useBgm } from '@/src/hooks/useBgm';
+import { useStageEffects } from '@/src/hooks/useStageEffects';
 
 /**
  * プレイ中に表示するメニューコンポーネント
@@ -15,6 +17,8 @@ export function PlayMenu({
   onReset,
   debugAll,
   setDebugAll,
+  revealUsed,
+  setRevealUsed,
   labelReset,
   labelResetAcc,
   labelShowAll,
@@ -38,6 +42,8 @@ export function PlayMenu({
   onReset: () => void;
   debugAll: boolean;
   setDebugAll: (v: boolean) => void;
+  revealUsed: number;
+  setRevealUsed: (v: number) => void;
   labelReset: string;
   labelResetAcc: string;
   labelShowAll: string;
@@ -55,6 +61,27 @@ export function PlayMenu({
   accIncSe: string;
   accDecSe: string;
 }) {
+  // BGM 制御を取得し広告表示中は音を止める
+  const { pause: pauseBgm, resume: resumeBgm } = useBgm();
+  const { showAd } = useStageEffects({ pauseBgm, resumeBgm });
+
+  /**
+   * 全表示スイッチの処理
+   * ON にするときのみ広告判定を行う
+   */
+  const handleToggle = async (v: boolean) => {
+    if (v) {
+      if (revealUsed === 0) {
+        setRevealUsed(1);
+        setDebugAll(true);
+        return;
+      }
+      const shown = await showAd(null);
+      if (shown) setDebugAll(true);
+    } else {
+      setDebugAll(false);
+    }
+  };
   return (
     <Modal transparent visible={visible} animationType="fade">
       {/* 背景をタップすると閉じるオーバーレイ */}
@@ -73,8 +100,12 @@ export function PlayMenu({
             <ThemedText>{labelShowAll}</ThemedText>
             <Switch
               value={debugAll}
-              onValueChange={setDebugAll}
-              accessibilityLabel={labelShowMaze}
+              onValueChange={handleToggle}
+              accessibilityLabel={
+                revealUsed === 0
+                  ? labelShowMaze
+                  : '広告を見るともう一度全表示できます'
+              }
             />
           </View>
           <View style={styles.volumeRow}>
