@@ -23,11 +23,11 @@ export default function StageScreen() {
     finishedRef.current = true;
     handleBannerFinish();
     handleBannerDismiss();
-    // 状態更新が反映される前に遷移すると再度バナーが表示されてしまうため
-    // わずかに遅らせてから Play 画面へ戻る
+    // setState の反映を待ってから画面遷移する
+    // 0ms だと更新が間に合わずループすることがあるため
     setTimeout(() => {
       router.replace('/play');
-    }, 0);
+    }, 30);
   }, [handleBannerFinish, handleBannerDismiss, router]);
 
   return (
