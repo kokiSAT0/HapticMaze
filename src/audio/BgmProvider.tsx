@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import { useHandleError } from "@/src/utils/handleError";
@@ -92,7 +93,8 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const change = (file: number) => {
+  // BGM 切り替え処理。useCallback でメモ化して再レンダリング時の関数生成を防ぐ
+  const change = useCallback((file: number) => {
     const run = async () => {
       try {
         // すでに同じ曲が流れている場合は何もしない
@@ -135,7 +137,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     };
 
     run();
-  };
+    // volume と handleError のみで十分なのでその他は無視
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [volume, handleError]);
 
   return (
     <BgmContext.Provider
