@@ -105,10 +105,11 @@ export default function PlayScreen() {
   // 在庫 0 回でも薄く表示してボタン自体は見えるようにする
   const isEmpty = state.respawnStock <= 0;
   // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
+  // 難易度で上限が変化しても 4 段階で色が変わるようにする
   const baseGray = parseInt(UI.colors.icon.replace('#', '').substring(0, 2), 16);
   const gray = Math.round(
     baseGray +
-      (state.respawnStock / state.respawnMax) * (255 - baseGray),
+      (Math.min(state.respawnStock, 3) / 3) * (255 - baseGray),
   );
   const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
   const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
