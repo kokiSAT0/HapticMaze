@@ -105,9 +105,9 @@ export function useResultActions({
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
-    // バナー表示中は旧ステージの判定をスキップする
-    // showBanner が true の間は StageScreen でも判定が発火しないようにする
-    if (bannerActiveRef.current || showBanner) return;
+    // バナー表示中やリザルト表示中は判定をスキップする
+    // showResult が true の間も処理が繰り返されないようにする
+    if (bannerActiveRef.current || showBanner || showResult) return;
     // 次のステージで迷路が切り替わるかを判定
     // tutorial は 5, それ以降は 3 ステージごとに切り替わる
     const willChangeMap = shouldChangeMap(state.stage, state.stagePerMap);
@@ -172,6 +172,7 @@ export function useResultActions({
     state.totalSteps,
     state.totalBumps,
     showBanner,
+    showResult,
     state.levelId,
     updateScore,
     setNewRecord,
