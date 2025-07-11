@@ -18,6 +18,11 @@ import { useAudioControls } from "@/src/hooks/useAudioControls";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { UI } from "@/constants/ui";
 
+// EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
+// クリア状況に関わらず全難易度を選択可能にする
+const UNLOCK_ALL_LEVELS =
+  process.env.EXPO_PUBLIC_UNLOCK_ALL_LEVELS === "true";
+
 export default function TitleScreen() {
   const router = useRouter();
   const { newGame, loadState } = useGame();
@@ -121,6 +126,8 @@ export default function TitleScreen() {
 
   // 各レベルが選択可能かを判定する関数
   const getLockReason = (id: string): string | null => {
+    // フラグが有効なら常に null を返して全レベル解放
+    if (UNLOCK_ALL_LEVELS) return null;
     if (id === 'normal' && !isCleared('easy')) return t('needClearEasy');
     if (id === 'hard' && !isCleared('normal')) return t('needClearNormal');
     return null;

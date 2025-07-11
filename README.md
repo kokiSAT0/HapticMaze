@@ -118,6 +118,14 @@ EXPO_PUBLIC_DISABLE_STAGE_BANNER=true
 
 値を `false` または未設定にすると通常通りバナーが表示されます。
 
+難易度解放の状態に関係なくすべてのゲームモードを試したい場合は以下を設定します。
+
+```bash
+EXPO_PUBLIC_UNLOCK_ALL_LEVELS=true
+```
+
+通常は `false` のままで構いません。
+
 ## β版の配布について
 
 現在のバージョンはテスト目的の β 版です。TestFlight もしくは Google Play の内部
