@@ -2,6 +2,7 @@ import { View, Pressable, useWindowDimensions } from "react-native";
 import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { DPad } from "@/components/DPad";
 import { MiniMap } from "@/src/components/MiniMap";
@@ -100,9 +101,12 @@ export default function PlayScreen() {
   const mapTop = height / 3 - 80 - oneCm;
   // リザルトパネルは DPad と同じ位置に表示する
   const resultTop = dpadTop;
-  // リセットボタンの色。使用回数に応じて白から黒へ変化させる
+  // リセットボタンの色。残り回数に応じて白から黒へ変化させる。
+  // 0 回のときは押しやすいように線だけ表示するため色を固定
+  const isEmpty = state.respawnStock <= 0;
   const gray = Math.round((state.respawnStock / 3) * 255);
-  const resetColor = `rgb(${gray},${gray},${gray})`;
+  const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
+  const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
 
   // 全表示ボタンの処理。未使用ならそのままON、2回目以降は広告後にON
   const handleRevealAll = async () => {
@@ -145,7 +149,8 @@ export default function PlayScreen() {
         onPress={handleRespawn}
         accessibilityLabel="敵をリスポーン"
       >
-        <MaterialIcons name="refresh" size={24} color={resetColor} />
+        {/* リスポーン回数が 0 回ならアウトライン表示に切り替える */}
+        <Ionicons name={resetIcon} size={24} color={resetColor} />
       </Pressable>
       {/* 全てを可視化するボタン。押す度に表示/非表示を切り替える */}
       <Pressable
