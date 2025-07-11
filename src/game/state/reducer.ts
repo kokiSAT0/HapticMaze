@@ -19,6 +19,8 @@ export type Action =
       wallLifetime?: number;
       enemyCountsFn?: (stage: number) => EnemyCounts;
       wallLifetimeFn?: (stage: number) => number;
+      showAdjacentWalls?: boolean;
+      showAdjacentWallsFn?: (stage: number) => boolean;
       biasedSpawn?: boolean;
       biasedGoal?: boolean;
       levelId?: string;
@@ -45,6 +47,8 @@ export function reducer(state: State, action: Action): State {
         state.wallLifetime,
         state.enemyCountsFn,
         state.wallLifetimeFn,
+        state.showAdjacentWalls,
+        state.showAdjacentWallsFn,
         state.biasedSpawn,
         state.biasedGoal,
         state.levelId,
@@ -63,6 +67,8 @@ export function reducer(state: State, action: Action): State {
         action.wallLifetime ?? state.wallLifetime,
         action.enemyCountsFn,
         action.wallLifetimeFn,
+        action.showAdjacentWalls ?? state.showAdjacentWalls,
+        action.showAdjacentWallsFn,
         action.biasedSpawn ?? state.biasedSpawn,
         action.levelId,
         action.stagePerMap ?? state.stagePerMap,
