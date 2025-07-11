@@ -1,5 +1,5 @@
 import React from 'react';
-import { Defs, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { Defs, Line, LinearGradient, Stop, Polygon } from 'react-native-svg';
 import type { Enemy } from '@/src/types/enemy';
 import type { Vec2 } from '@/src/types/maze';
 
@@ -121,25 +121,26 @@ export interface VisitedProps {
   showAll: boolean;
 }
 
-// 過去のゴール位置を枠のみで表示
+// 過去のゴール位置をダイヤ型で表示
 export function renderVisitedGoals({ visitedGoals, cell, showResult, showAll }: VisitedProps): React.JSX.Element[] | null {
   if (!visitedGoals || (!showResult && !showAll)) return null;
-  const rects: React.JSX.Element[] = [];
+  const diamonds: React.JSX.Element[] = [];
   visitedGoals.forEach((k) => {
     const [x, y] = k.split(',').map(Number);
-    rects.push(
-      <Rect
+    // 中心座標を計算
+    const cx = (x + 0.5) * cell;
+    const cy = (y + 0.5) * cell;
+    // 半径を小さめに設定する
+    const r = cell * 0.25;
+    // Polygon でダイヤ型を描く
+    diamonds.push(
+      <Polygon
         key={`vg${k}`}
-        x={(x + 0.25) * cell}
-        y={(y + 0.25) * cell}
-        width={cell * 0.5}
-        height={cell * 0.5}
-        stroke="white"
-        strokeWidth={1}
-        fill="none"
+        points={`${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`}
+        fill="white"
       />
     );
   });
-  return rects;
+  return diamonds;
 }
 
