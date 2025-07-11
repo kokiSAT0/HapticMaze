@@ -67,13 +67,13 @@ export function reducer(state: State, action: Action): State {
         action.wallLifetime ?? state.wallLifetime,
         action.enemyCountsFn,
         action.wallLifetimeFn,
-        action.showAdjacentWalls ?? state.showAdjacentWalls,
-        action.showAdjacentWallsFn,
         action.biasedSpawn ?? state.biasedSpawn,
         action.levelId,
         action.stagePerMap ?? state.stagePerMap,
         action.respawnMax ?? state.respawnMax,
         action.biasedGoal ?? state.biasedGoal,
+        action.showAdjacentWalls ?? state.showAdjacentWalls,
+        action.showAdjacentWallsFn,
       );
     case 'nextStage':
       return nextStageState(state);
