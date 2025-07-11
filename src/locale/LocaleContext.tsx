@@ -48,7 +48,7 @@ const messages = {
     stage: "ステージ: {{current}}/{{total}}",
     // ハイスコア表示用のテンプレート。"Best:" の文言は不要なので省く
     best: "{{stage}}ステージ / {{steps}} ターン / {{bumps}} 衝突",
-    result: "Your HighScore:{{stage}}ステージ / {{steps}} ターン / {{bumps}} 衝突",
+    result: "Your HighScore",
     highScores: "HighScore",
     openHighScores: "ハイスコア一覧を開く",
     options: "Settings",
