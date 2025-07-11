@@ -58,7 +58,9 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: tutorialEnemyCounts,
     biasedSpawn: false,
     biasedGoal: true,
-    showAdjacentWallsFn: (stage) => stage <= 5,
+    // チュートリアルでは常に周囲の壁を表示する
+    // showAdjacentWalls を true にすることで全ステージに適用される
+    showAdjacentWalls: true,
     stagePerMap: 5,
     respawnMax: 3,
   },
