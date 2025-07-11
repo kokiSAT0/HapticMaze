@@ -81,7 +81,8 @@ export default function TitleScreen() {
       level.biasedSpawn,
       level.biasedGoal,
       level.id,
-      level.stagePerMap
+      level.stagePerMap,
+      level.respawnMax
     );
     // 画面遷移開始をログ
     console.log('[TitleScreen] navigate begin');

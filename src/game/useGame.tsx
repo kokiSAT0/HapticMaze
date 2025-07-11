@@ -30,6 +30,7 @@ const GameContext = createContext<
         biasedGoal?: boolean,
         levelId?: string,
         stagePerMap?: number,
+        respawnMax?: number,
       ) => void;
       nextStage: () => void;
       resetRun: () => void;
@@ -68,6 +69,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     biasedGoal?: boolean,
     levelId?: string,
     stagePerMap?: number,
+    respawnMax?: number,
   ) =>
     send({
       type: 'newMaze',
@@ -82,6 +84,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       biasedGoal,
       levelId,
       stagePerMap,
+      respawnMax,
     });
   const nextStage = () => send({ type: 'nextStage' });
   const resetRun = () => send({ type: 'resetRun' });

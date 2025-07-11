@@ -36,6 +36,8 @@ export interface LevelConfig {
   showAdjacentWallsFn?: (stage: number) => boolean;
   /** 何ステージごとに迷路を更新するか */
   stagePerMap?: number;
+  /** 敵をリスポーンできる最大回数 */
+  respawnMax?: number;
 }
 
 /**
@@ -58,6 +60,7 @@ export const LEVELS: LevelConfig[] = [
     biasedGoal: true,
     showAdjacentWallsFn: (stage) => stage <= 5,
     stagePerMap: 5,
+    respawnMax: 3,
   },
   {
     id: 'easy',
@@ -75,6 +78,7 @@ export const LEVELS: LevelConfig[] = [
     biasedSpawn: true,
     biasedGoal: false,
     showAdjacentWallsFn: (stage) => stage <= 30,
+    respawnMax: 3,
   },
   {
     id: 'normal',
@@ -89,6 +93,7 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
     biasedGoal: false,
+    respawnMax: 2,
   },
   {
     id: 'hard',
@@ -103,5 +108,6 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: false,
     biasedGoal: true,
+    respawnMax: 1,
   },
 ];

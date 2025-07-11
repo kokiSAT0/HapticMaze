@@ -21,6 +21,7 @@ export function createFirstStage(
   biasedSpawn: boolean = true,
   levelId?: string,
   stagePerMap: number = 3,
+  respawnMax: number = 3,
   biasedGoal: boolean = true,
 ): State {
   const visited = new Set<string>();
@@ -56,7 +57,9 @@ export function createFirstStage(
     biasedGoal,
     levelId,
     stagePerMap,
-    3, // 新規ゲーム開始時のリスポーン回数は常に最大(3)
+    respawnMax,
+    respawnMax, // 新規ゲーム開始時は最大回数でスタート
+    0,
     0,
   );
 }
@@ -89,7 +92,7 @@ export function nextStageState(state: State): State {
   const hitV = changeMap ? new Map<string, number>() : new Map(state.hitV);
   const hitH = changeMap ? new Map<string, number>() : new Map(state.hitH);
   const nextWallLife = state.wallLifetimeFn?.(state.stage + 1) ?? state.wallLifetime;
-  const stock = Math.min(state.respawnStock + 1, 3);
+  const stock = Math.min(state.respawnStock + 1, state.respawnMax);
   return initState(
     maze,
     state.stage + 1,
@@ -107,6 +110,7 @@ export function nextStageState(state: State): State {
     state.biasedGoal,
     state.levelId,
     state.stagePerMap,
+    state.respawnMax,
     stock,
     state.totalSteps,
     state.totalBumps,
@@ -126,6 +130,7 @@ export function restartRun(state: State): State {
     state.biasedSpawn,
     state.levelId,
     state.stagePerMap,
+    state.respawnMax,
     state.biasedGoal,
   );
 }

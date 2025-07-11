@@ -203,21 +203,27 @@ export function useResultActions({
     });
 
     if (gameOver) {
-      // ゲームオーバー時はランをリセットしてタイトルへ戻る
+      // === ゲームオーバー時の処理 ===
+      // 1. ランを初期状態へ戻す
       resetRun();
-      // 中断データを削除して再開できないようにする
+      // 2. 中断セーブを削除して続きから再開できないようにする
       await clearGame(showSnackbar ? { showError: showSnackbar } : undefined);
-      // 表示フラグを戻して次のゲームに影響しないようにする
+      // 3. 各種表示フラグをリセットする
       setShowResult(false);
       setGameOver(false);
       setStageClear(false);
       setGameClear(false);
       setNewRecord(false);
       setAdShown(false);
+      // 4. OK ボタンのロック状態も解除
       okLockedRef.current = false;
       setOkLocked(false);
-      router.replace("/");
-      // 早期 return で以降の処理を行わない
+      // 5. 念のためバナー表示も強制終了
+      setShowBanner(false);
+      bannerActiveRef.current = false;
+      // 6. ホーム画面へ戻る
+      await router.replace("/");
+      // ここで return して以降の処理を行わない
       return;
     } else if (gameClear) {
       // ゲームクリア時も同様にタイトルへ戻る

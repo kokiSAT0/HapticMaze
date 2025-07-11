@@ -2,6 +2,7 @@ import { View, Pressable, useWindowDimensions } from "react-native";
 import { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { DPad } from "@/components/DPad";
 import { MiniMap } from "@/src/components/MiniMap";
@@ -100,12 +101,33 @@ export default function PlayScreen() {
   const mapTop = height / 3 - 80 - oneCm;
   // リザルトパネルは DPad と同じ位置に表示する
   const resultTop = dpadTop;
-  // リセットボタンの色。使用回数に応じて白から黒へ変化させる
-  const gray = Math.round((state.respawnStock / 3) * 255);
-  const resetColor = `rgb(${gray},${gray},${gray})`;
+  // リセットボタンの色。残り回数に応じて明るさを段階的に変える
+  // 在庫 0 回でも薄く表示してボタン自体は見えるようにする
+  const isEmpty = state.respawnStock <= 0;
+  // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
+  const baseGray = parseInt(UI.colors.icon.replace('#', '').substring(0, 2), 16);
+  const gray = Math.round(
+    baseGray +
+      (state.respawnStock / state.respawnMax) * (255 - baseGray),
+  );
+  const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
+  const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
 
-  // 全表示ボタンの処理。未使用ならそのままON、2回目以降は広告後にON
+  // 可視化ボタンの色設定
+  // 広告なしで利用できるときは濃い白、それ以外は半透明の白にする
+  const revealColor =
+    revealUsed === 0 || debugAll
+      ? UI.colors.revealFree
+      : UI.colors.revealAd;
+
+  // 全表示ボタンの処理
+  // debugAll が true なら広告なしで OFF にする
+  // OFF → ON は初回のみ無償、それ以降は広告視聴が必要
   const handleRevealAll = async () => {
+    if (debugAll) {
+      setDebugAll(false);
+      return;
+    }
     if (revealUsed === 0) {
       setDebugAll(true);
       setRevealUsed(1);
@@ -145,21 +167,26 @@ export default function PlayScreen() {
         onPress={handleRespawn}
         accessibilityLabel="敵をリスポーン"
       >
-        <MaterialIcons name="refresh" size={24} color={resetColor} />
+        {/* リスポーン回数が 0 回ならアウトライン表示に切り替える */}
+        <Ionicons name={resetIcon} size={24} color={resetColor} />
       </Pressable>
       {/* 全てを可視化するボタン。押す度に表示/非表示を切り替える */}
       <Pressable
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
         onPress={handleRevealAll}
         accessibilityLabel={
-          revealUsed === 0 ? t("showMazeAll") : t("watchAdForReveal")
+          debugAll
+            ? t("hideMazeAll")
+            : revealUsed === 0
+            ? t("showMazeAll")
+            : t("watchAdForReveal")
         }
       >
         {/* debugAll の状態に応じてアイコンを変更 */}
         <MaterialIcons
           name={debugAll ? "visibility-off" : "visibility"}
           size={24}
-          color={UI.colors.icon}
+          color={revealColor}
         />
       </Pressable>
       <View style={[playStyles.miniMapWrapper, { top: mapTop }]}>
