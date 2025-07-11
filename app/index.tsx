@@ -81,6 +81,8 @@ export default function TitleScreen() {
       level.wallLifetime,
       level.enemyCountsFn,
       level.wallLifetimeFn,
+      level.showAdjacentWalls,
+      level.showAdjacentWallsFn,
       level.biasedSpawn,
       level.biasedGoal,
       level.id,

@@ -29,6 +29,7 @@ export interface StoredState {
   enemyPathLength: number | null;
   playerPathLength: number | null;
   wallLifetime: number | null;
+  showAdjacentWalls: boolean;
   biasedSpawn: boolean;
   biasedGoal: boolean;
   levelId?: string;
@@ -61,6 +62,7 @@ export function encodeState(state: State): StoredState {
     enemyPathLength: state.enemyPathLength,
     playerPathLength: state.playerPathLength,
     wallLifetime: state.wallLifetime,
+    showAdjacentWalls: state.showAdjacentWalls,
     biasedSpawn: state.biasedSpawn,
     biasedGoal: state.biasedGoal,
     levelId: state.levelId,
@@ -103,7 +105,9 @@ export function decodeState(data: StoredState): State {
     playerPathLength:
       data.playerPathLength === null ? Infinity : data.playerPathLength,
     wallLifetime: data.wallLifetime === null ? Infinity : data.wallLifetime,
+    showAdjacentWalls: data.showAdjacentWalls,
     wallLifetimeFn: level?.wallLifetimeFn,
+    showAdjacentWallsFn: level?.showAdjacentWallsFn,
     biasedSpawn: data.biasedSpawn,
     biasedGoal: level?.biasedGoal ?? true,
     levelId: data.levelId,

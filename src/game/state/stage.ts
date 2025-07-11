@@ -23,6 +23,8 @@ export function createFirstStage(
   stagePerMap: number = 3,
   respawnMax: number = 3,
   biasedGoal: boolean = true,
+  showAdjacentWalls: boolean = false,
+  showAdjacentWallsFn?: (stage: number) => boolean,
 ): State {
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -53,6 +55,8 @@ export function createFirstStage(
     wallLifetime,
     enemyCountsFn,
     wallLifetimeFn,
+    showAdjacentWallsFn ? showAdjacentWallsFn(1) : showAdjacentWalls,
+    showAdjacentWallsFn,
     biasedSpawn,
     biasedGoal,
     levelId,
@@ -106,6 +110,10 @@ export function nextStageState(state: State): State {
     nextWallLife,
     state.enemyCountsFn,
     state.wallLifetimeFn,
+    state.showAdjacentWallsFn
+      ? state.showAdjacentWallsFn(state.stage + 1)
+      : state.showAdjacentWalls,
+    state.showAdjacentWallsFn,
     state.biasedSpawn,
     state.biasedGoal,
     state.levelId,
@@ -127,6 +135,8 @@ export function restartRun(state: State): State {
     state.wallLifetime,
     state.enemyCountsFn,
     state.wallLifetimeFn,
+    state.showAdjacentWalls,
+    state.showAdjacentWallsFn,
     state.biasedSpawn,
     state.levelId,
     state.stagePerMap,
