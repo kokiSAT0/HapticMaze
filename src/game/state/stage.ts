@@ -56,7 +56,7 @@ export function createFirstStage(
     biasedGoal,
     levelId,
     stagePerMap,
-    0,
+    3, // 新規ゲーム開始時のリスポーン回数は常に最大(3)
     0,
   );
 }
