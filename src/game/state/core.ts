@@ -68,6 +68,8 @@ export interface GameState {
   stagePerMap: number;
   /** 敵をリスポーンできる残り回数 */
   respawnStock: number;
+  /** リスポーン回数の上限 */
+  respawnMax: number;
 }
 
 // Provider が保持する全体の状態
@@ -94,7 +96,8 @@ export function initState(
   biasedGoal: boolean = true,
   levelId?: string,
   stagePerMap: number = 3,
-  respawnStock: number = 3,
+  respawnMax: number = 3,
+  respawnStock: number = respawnMax,
   totalSteps: number = 0,
   totalBumps: number = 0,
 ): State {
@@ -132,6 +135,7 @@ export function initState(
     levelId,
     stagePerMap,
     respawnStock,
+    respawnMax,
     totalSteps,
     totalBumps,
   };

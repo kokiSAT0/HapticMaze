@@ -33,6 +33,7 @@ export interface StoredState {
   biasedGoal: boolean;
   levelId?: string;
   respawnStock: number;
+  respawnMax: number;
   stagePerMap: number;
 }
 
@@ -64,6 +65,7 @@ export function encodeState(state: State): StoredState {
     biasedGoal: state.biasedGoal,
     levelId: state.levelId,
     respawnStock: state.respawnStock,
+    respawnMax: state.respawnMax,
     stagePerMap: state.stagePerMap,
   };
 }
@@ -106,6 +108,7 @@ export function decodeState(data: StoredState): State {
     biasedGoal: level?.biasedGoal ?? true,
     levelId: data.levelId,
     respawnStock: data.respawnStock,
+    respawnMax: level?.respawnMax ?? data.respawnMax,
     stagePerMap: level?.stagePerMap ?? 3,
   };
 }

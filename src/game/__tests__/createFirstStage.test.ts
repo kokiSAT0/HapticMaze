@@ -13,5 +13,6 @@ describe('createFirstStage', () => {
     };
     const state = createFirstStage(maze);
     expect(state.respawnStock).toBe(3);
+    expect(state.respawnMax).toBe(3);
   });
 });

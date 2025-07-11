@@ -101,10 +101,12 @@ export default function PlayScreen() {
   const mapTop = height / 3 - 80 - oneCm;
   // リザルトパネルは DPad と同じ位置に表示する
   const resultTop = dpadTop;
-  // リセットボタンの色。残り回数に応じて白から黒へ変化させる。
-  // 0 回のときは押しやすいように線だけ表示するため色を固定
+  // リセットボタンの色。残り回数の割合で明るさを変える
+  // 在庫 0 回でも薄く表示してボタン自体は見えるようにする
   const isEmpty = state.respawnStock <= 0;
-  const gray = Math.round((state.respawnStock / 3) * 255);
+  const gray = Math.round(
+    (state.respawnStock / state.respawnMax) * 255,
+  );
   const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
   const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
 
