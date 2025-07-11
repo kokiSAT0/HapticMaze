@@ -75,6 +75,14 @@ const messages = {
     yes: "はい",
     cancel: "キャンセル",
     back: "戻る",
+    howToPlay: "ルール説明",
+    openHowToPlay: "ルール説明を開く",
+    ruleIntro:
+      "このゲームでは10×10の迷路を上下左右に移動し、振動とミニマップを頼りにゴールを目指します。",
+    respawnUsage:
+      "リスポーンボタンは敵の位置をリセットします。残り回数に注意してヒントとして使ってください。",
+    revealUsage:
+      "可視化ボタンは迷路全体を表示します。1回目は無料で、以降は広告視聴が必要です。",
   },
   en: {
     practiceMode: "Practice Mode",
@@ -135,6 +143,14 @@ const messages = {
     yes: "Yes",
     cancel: "Cancel",
     back: "Back",
+    howToPlay: "How to Play",
+    openHowToPlay: "Open How to Play",
+    ruleIntro:
+      "Move through a 10×10 maze using the D-Pad and aim for the goal. Use vibrations and the mini map to orient yourself.",
+    respawnUsage:
+      "The respawn button resets enemy positions. Use it sparingly as a hint when you get stuck.",
+    revealUsage:
+      "The reveal button shows the entire maze. It's free once; afterward an ad must be watched.",
   },
 } as const;
 

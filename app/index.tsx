@@ -195,6 +195,13 @@ export default function TitleScreen() {
         accessibilityLabel={t("openOptions")}
       />
 
+      {/* 一番下にルール説明ページへのリンクを追加 */}
+      <PlainButton
+        title={t("howToPlay")}
+        onPress={() => router.push("/rules")}
+        accessibilityLabel={t("openHowToPlay")}
+      />
+
       {/* ───── 言語選択モーダル ───── */}
       <Modal transparent visible={showLang} animationType="fade">
         <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
