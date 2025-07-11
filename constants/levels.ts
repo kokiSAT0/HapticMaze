@@ -50,7 +50,8 @@ export const LEVELS: LevelConfig[] = [
     size: 5,
     enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,
-    playerPathLength: 7,
+    // チュートリアルは軌跡を20マス残す
+    playerPathLength: 20,
     wallLifetime: Infinity,
     enemyCountsFn: tutorialEnemyCounts,
     biasedSpawn: false,
@@ -66,8 +67,8 @@ export const LEVELS: LevelConfig[] = [
     // 初回は関数から得た設定を使うため 0 で初期化
     enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,
-    // 自分軌跡は 7 マス表示
-    playerPathLength: 7,
+    // イージーもチュートリアル同様に20マス表示
+    playerPathLength: 20,
     // 壁表示は無限大
     wallLifetime: Infinity,
     enemyCountsFn: level1EnemyCounts,
@@ -81,7 +82,8 @@ export const LEVELS: LevelConfig[] = [
     size: 10,
     enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,
-    playerPathLength: 7,
+    // ノーマルでは10マス分のみ表示
+    playerPathLength: 10,
     wallLifetime: Infinity,
     wallLifetimeFn: normalWallLifetime,
     enemyCountsFn: level1EnemyCounts,
@@ -94,6 +96,7 @@ export const LEVELS: LevelConfig[] = [
     size: 10,
     enemies: { random: 0, slow: 0, sight: 0, fast: 0 },
     enemyPathLength: 5,
+    // ハードは7マス表示のまま
     playerPathLength: 7,
     wallLifetime: Infinity,
     wallLifetimeFn: hardWallLifetime,
