@@ -135,12 +135,12 @@ export function restartRun(state: State): State {
     state.wallLifetime,
     state.enemyCountsFn,
     state.wallLifetimeFn,
-    state.showAdjacentWalls,
-    state.showAdjacentWallsFn,
     state.biasedSpawn,
     state.levelId,
     state.stagePerMap,
     state.respawnMax,
     state.biasedGoal,
+    state.showAdjacentWalls,
+    state.showAdjacentWallsFn,
   );
 }
