@@ -32,6 +32,9 @@ export const UI = {
   modalPadding: 24,
   miniMapSize: 300,
   modalWidth: 250,
+  // リザルトパネル専用の横幅
+  // テキストが折り返されないよう適宜調整する
+  resultModalWidth: 300,
   borderAnimationMax: 50,
   // 文字サイズを一箇所で管理する
   fonts: {
