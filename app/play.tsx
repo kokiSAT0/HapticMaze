@@ -1,4 +1,5 @@
 import { View, Pressable, useWindowDimensions } from "react-native";
+
 import { useEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -85,16 +86,19 @@ export default function PlayScreen() {
     bannerStage,
   ]);
 
-  // ステージバナー表示フラグが立ったら専用ページへ移動する
-  // フラグが変化した瞬間のみ遷移したいので前回の状態を保持しておく
-  const bannerPrev = useRef(false);
+
+  // ステージバナー表示フラグが変化したときだけ遷移するようにする
+  // これにより状態更新が遅れた場合でも無限ループを防げる
+  const prevBanner = React.useRef(false);
   useEffect(() => {
     // bannerStage が 0 のときは表示データが無いので遷移しない
-    if (showBanner && bannerStage > 0 && !bannerPrev.current) {
-      bannerPrev.current = true;
+    if (showBanner && bannerStage > 0 && !prevBanner.current) {
+      prevBanner.current = true;
       router.replace(`/stage?stage=${bannerStage}`);
-    } else if (!showBanner) {
-      bannerPrev.current = false;
+    } else if (!showBanner && prevBanner.current) {
+      // バナーが閉じられたらフラグを戻す
+      prevBanner.current = false;
+
     }
   }, [showBanner, bannerStage, router]);
 
