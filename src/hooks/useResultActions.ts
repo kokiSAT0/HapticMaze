@@ -311,6 +311,10 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
+    // 可視化フラグを初期化
+    setDebugAll(false);
+    // 全表示ボタンの使用回数もリセット
+    setRevealUsed(0);
     // 初期ステージへ戻るのでバナー表示済みフラグもリセットする
     setBannerShown(false);
     resetRun();
@@ -324,6 +328,10 @@ export function useResultActions({
     setGameClear(false);
     setNewRecord(false);
     setAdShown(false);
+    // タイトルへ戻る際に可視化フラグをリセット
+    setDebugAll(false);
+    // こちらも使用回数を初期化する
+    setRevealUsed(0);
     // 次回開始時にステージバナーを表示するためフラグを戻す
     setBannerShown(false);
     router.replace("/");
