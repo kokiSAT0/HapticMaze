@@ -67,7 +67,7 @@ const messages = {
     japanese: "日本語",
     english: "English",
     backToTitle: "タイトルへ戻る",
-    continue: "Continue",
+    continue: "続きから",
     startFromBegin: "{{name}}",
     needClearEasy: "Easyが未クリアです",
     needClearNormal: "Normalが未クリアです",
