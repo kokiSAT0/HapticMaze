@@ -11,6 +11,7 @@ import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useGame } from '@/src/game/useGame';
 import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
+import { UI } from '@/constants/ui';
 
 export default function ResetConfirmScreen() {
   const router = useRouter();
@@ -112,5 +113,5 @@ export default function ResetConfirmScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: UI.screenGap },
 });

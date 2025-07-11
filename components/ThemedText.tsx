@@ -1,4 +1,5 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
+import { UI } from '@/constants/ui';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -35,26 +36,27 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: UI.fonts.default,
+    // 行間はデフォルトサイズの 1.5 倍に設定
+    lineHeight: UI.fonts.default * 1.5,
   },
   defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: UI.fonts.default,
+    lineHeight: UI.fonts.default * 1.5,
     fontWeight: '600',
   },
   title: {
-    fontSize: 32,
+    fontSize: UI.fonts.title,
     fontWeight: 'bold',
-    lineHeight: 32,
+    lineHeight: UI.fonts.title,
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: UI.fonts.subtitle,
     fontWeight: 'bold',
   },
   link: {
-    lineHeight: 30,
-    fontSize: 16,
+    lineHeight: UI.fonts.linkLine,
+    fontSize: UI.fonts.default,
     color: '#0a7ea4',
   },
 });

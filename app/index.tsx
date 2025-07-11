@@ -15,12 +15,15 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { LEVELS } from "@/constants/levels";
 import { useAudioControls } from "@/src/hooks/useAudioControls";
+import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
+import { UI } from "@/constants/ui";
 
 export default function TitleScreen() {
   const router = useRouter();
   const { newGame, loadState } = useGame();
   const { t, firstLaunch, changeLang } = useLocale();
   const { show: showSnackbar } = useSnackbar();
+  const { isCleared } = useLevelUnlock();
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
@@ -114,6 +117,13 @@ export default function TitleScreen() {
     console.log('[TitleScreen] confirmStart end', id);
   };
 
+  // 各レベルが選択可能かを判定する関数
+  const getLockReason = (id: string): string | null => {
+    if (id === 'normal' && !isCleared('easy')) return t('needClearEasy');
+    if (id === 'hard' && !isCleared('normal')) return t('needClearNormal');
+    return null;
+  };
+
   const resumeGame = async () => {
     // 開始をログ出力
     console.log('[TitleScreen] resumeGame begin');
@@ -148,14 +158,24 @@ export default function TitleScreen() {
         />
       )}
 
-      {LEVELS.map((lv) => (
-        <PlainButton
-          key={lv.id}
-          title={t("startFromBegin", { name: t(lv.id as MessageKey) })}
-          onPress={() => startLevelFromStart(lv.id)}
-          accessibilityLabel={t("startFromBegin", { name: t(lv.id as MessageKey) })}
-        />
-      ))}
+      {LEVELS.map((lv) => {
+        const reason = getLockReason(lv.id);
+        return (
+          <PlainButton
+            key={lv.id}
+            title={t("startFromBegin", { name: t(lv.id as MessageKey) })}
+            onPress={() => {
+              if (reason) {
+                showSnackbar(reason);
+              } else {
+                startLevelFromStart(lv.id);
+              }
+            }}
+            disabled={!!reason}
+            accessibilityLabel={t("startFromBegin", { name: t(lv.id as MessageKey) })}
+          />
+        );
+      })}
 
       <PlainButton
         title={t("highScores")}
@@ -191,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 12,
+    gap: UI.screenGap,
   },
   modalWrapper: {
     flex: 1,
@@ -200,8 +220,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
   modalContent: {
-    gap: 16,
-    padding: 24,
+    gap: UI.modalGap,
+    padding: UI.modalPadding,
     backgroundColor: "#000",
   },
   volumeRow: {

@@ -10,6 +10,7 @@ import { useStageEffects } from "@/src/hooks/useStageEffects";
 import { useLocale } from "@/src/locale/LocaleContext";
 import type { MazeData } from "@/src/types/maze";
 import type { InterstitialAd } from "react-native-google-mobile-ads";
+import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 
 interface Options {
   state: GameState;
@@ -67,6 +68,7 @@ export function useResultActions({
   } = useResultState();
 
   const { t } = useLocale();
+  const { markCleared } = useLevelUnlock();
 
   // OK ボタンのラベルを動的に変えるための状態
   const [okLabel, setOkLabel] = useState(t("ok"));
@@ -134,6 +136,9 @@ export function useResultActions({
           bumps: state.totalBumps,
         };
         updateScore(current, state.finalStage);
+        if (state.finalStage) {
+          markCleared(state.levelId);
+        }
       } else {
         setNewRecord(false);
       }
@@ -178,6 +183,7 @@ export function useResultActions({
     setAdShown,
     loadAdIfNeeded,
     t,
+    markCleared,
     setOkLocked,
     setOkLabel,
   ]);

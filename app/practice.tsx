@@ -7,6 +7,7 @@ import { useLocale } from '@/src/locale/LocaleContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { EnemyCounter } from '@/components/EnemyCounter';
+import { UI } from '@/constants/ui';
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -80,5 +81,5 @@ export default function PracticeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 20 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: UI.screenGap },
 });

@@ -24,9 +24,22 @@ export const Colors = {
 export const UI = {
   dpadButtonSize: 48,
   dpadSpacing: 10,
+  // 画面内の各ボタン間隔をまとめて調整するための値
+  screenGap: 20,
+  // モーダル内要素の間隔
+  modalGap: 16,
+  // モーダルの内側余白
+  modalPadding: 24,
   miniMapSize: 300,
   modalWidth: 250,
   borderAnimationMax: 50,
+  // 文字サイズを一箇所で管理する
+  fonts: {
+    default: 16,
+    title: 32,
+    subtitle: 20,
+    linkLine: 30,
+  },
   colors: {
     icon: '#555',
     buttonBg: '#000',
