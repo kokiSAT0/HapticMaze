@@ -34,7 +34,7 @@ export const UI = {
   modalWidth: 250,
   // リザルトパネル専用の横幅
   // テキストが折り返されないよう適宜調整する
-  resultModalWidth: 300,
+  resultModalWidth: 350,
   borderAnimationMax: 50,
   // 文字サイズを一箇所で管理する
   fonts: {
