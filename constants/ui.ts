@@ -38,6 +38,9 @@ export const UI = {
     mapWall: 'gray',
     mapStroke: 'white',
     bump: 'red',
+    // 可視化ボタンの明度調整用カラー
+    revealFree: '#fff',
+    revealAd: 'rgba(255,255,255,0.5)',
   },
   feedback: {
     bumpWidth: 50,

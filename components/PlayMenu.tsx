@@ -110,6 +110,11 @@ export function PlayMenu({
             <Switch
               value={debugAll}
               onValueChange={handleToggle}
+              thumbColor={
+                revealUsed === 0 || debugAll
+                  ? UI.colors.revealFree
+                  : UI.colors.revealAd
+              }
               accessibilityLabel={
                 revealUsed === 0
                   ? labelShowMaze
