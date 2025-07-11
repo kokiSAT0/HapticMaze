@@ -56,8 +56,10 @@ export const LEVELS: LevelConfig[] = [
     playerPathLength: 20,
     wallLifetime: Infinity,
     enemyCountsFn: tutorialEnemyCounts,
-    biasedSpawn: false,
-    biasedGoal: true,
+    // 敵はプレイヤーから離れた位置に出現させる
+    biasedSpawn: true,
+    // ゴール位置は完全ランダムに変更
+    biasedGoal: false,
     // チュートリアルでは常に周囲の壁を表示する
     // showAdjacentWalls を true にすることで全ステージに適用される
     showAdjacentWalls: true,
