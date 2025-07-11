@@ -108,6 +108,13 @@ export default function PlayScreen() {
   const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
   const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
 
+  // 可視化ボタンの色設定
+  // 広告なしで利用できるときは濃い白、それ以外は半透明の白にする
+  const revealColor =
+    revealUsed === 0 || debugAll
+      ? UI.colors.revealFree
+      : UI.colors.revealAd;
+
   // 全表示ボタンの処理
   // debugAll が true なら広告なしで OFF にする
   // OFF → ON は初回のみ無償、それ以降は広告視聴が必要
@@ -174,7 +181,7 @@ export default function PlayScreen() {
         <MaterialIcons
           name={debugAll ? "visibility-off" : "visibility"}
           size={24}
-          color={UI.colors.icon}
+          color={revealColor}
         />
       </Pressable>
       <View style={[playStyles.miniMapWrapper, { top: mapTop }]}>
