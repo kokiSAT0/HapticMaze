@@ -9,7 +9,8 @@ import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { useBgm } from "@/src/hooks/useBgm";
-import { useStageEffects } from "@/src/hooks/useStageEffects";
+import { showInterstitial } from "@/src/ads/interstitial";
+import { useHandleError } from "@/src/utils/handleError";
 import { ResultModal } from "@/components/ResultModal";
 import { useRouter } from "expo-router";
 import { EdgeOverlay } from "@/components/EdgeOverlay";
@@ -52,11 +53,7 @@ export default function PlayScreen() {
 
   // BGM 制御用フックを取得し広告表示の際に一時停止できるようにする
   const { pause: pauseBgm, resume: resumeBgm } = useBgm();
-  const { showAd } = useStageEffects({
-    pauseBgm,
-    resumeBgm,
-    levelId: state.levelId,
-  });
+  const handleError = useHandleError();
 
   // レベル設定から周囲の壁表示フラグを取得
   const levelCfg = LEVELS.find((lv) => lv.id === state.levelId);
@@ -114,8 +111,16 @@ export default function PlayScreen() {
       setRevealUsed(1);
       return;
     }
-    const shown = await showAd(null);
-    if (shown) setDebugAll(true);
+    try {
+      pauseBgm();
+      await showInterstitial();
+      setDebugAll(true);
+    } catch (e) {
+      // 広告表示に失敗したらメッセージを出しておく
+      handleError("広告を表示できませんでした", e);
+    } finally {
+      resumeBgm();
+    }
   };
 
   return (
