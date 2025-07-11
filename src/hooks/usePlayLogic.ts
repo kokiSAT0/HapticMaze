@@ -1,5 +1,7 @@
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import { showInterstitial } from '@/src/ads/interstitial';
+import { useHandleError } from '@/src/utils/handleError';
 
 import { useGame } from '@/src/game/useGame';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
@@ -48,11 +50,19 @@ export function usePlayLogic() {
   // ステージ総数。迷路は正方形なので size×size となる
   const totalStages = maze.size * maze.size;
 
+  const handleError = useHandleError();
+
   // 敵のみをリスポーンする処理
-  const handleRespawn = () => {
+  const handleRespawn = async () => {
     if (state.respawnStock <= 0) {
-      showSnackbar('リスポーン回数がありません');
-      return;
+      try {
+        audio.pauseBgm();
+        await showInterstitial();
+      } catch (e) {
+        handleError('広告を表示できませんでした', e);
+      } finally {
+        audio.resumeBgm();
+      }
     }
     respawnEnemies();
   };
