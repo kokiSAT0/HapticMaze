@@ -112,7 +112,7 @@ export default function OptionsScreen() {
                 />
               </View>
             </View>
-            <PlainButton title={t('cancel')} onPress={() => setShowVolume(false)} accessibilityLabel={t('cancel')} />
+            <PlainButton title={t('back')} onPress={() => setShowVolume(false)} accessibilityLabel={t('cancel')} />
           </ThemedView>
         </View>
       </Modal>
