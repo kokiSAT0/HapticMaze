@@ -81,6 +81,8 @@ export default function TitleScreen() {
       level.wallLifetime,
       level.enemyCountsFn,
       level.wallLifetimeFn,
+      level.showAdjacentWalls,
+      level.showAdjacentWallsFn,
       level.biasedSpawn,
       level.biasedGoal,
       level.id,
@@ -140,7 +142,13 @@ export default function TitleScreen() {
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+      {/* タイトルの文字サイズを定数から調整できるように */}
+      <ThemedText
+        type="title"
+        lightColor="#fff"
+        darkColor="#fff"
+        style={styles.title}
+      >
         Maze Sense
       </ThemedText>
 
@@ -189,6 +197,13 @@ export default function TitleScreen() {
         accessibilityLabel={t("openOptions")}
       />
 
+      {/* 一番下にルール説明ページへのリンクを追加 */}
+      <PlainButton
+        title={t("howToPlay")}
+        onPress={() => router.push("/rules")}
+        accessibilityLabel={t("openHowToPlay")}
+      />
+
       {/* ───── 言語選択モーダル ───── */}
       <Modal transparent visible={showLang} animationType="fade">
         <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
@@ -211,7 +226,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: UI.screenGap,
+    // 選択肢間の余白をホーム画面用定数から参照
+    gap: UI.titleScreen.optionGap,
+  },
+  // タイトル文字のサイズを変更しやすくするためのスタイル
+  title: {
+    fontSize: UI.titleScreen.titleFontSize,
+    lineHeight: UI.titleScreen.titleFontSize,
   },
   modalWrapper: {
     flex: 1,

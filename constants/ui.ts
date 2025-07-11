@@ -32,6 +32,9 @@ export const UI = {
   modalPadding: 12,
   miniMapSize: 300,
   modalWidth: 250,
+  // リザルトパネル専用の横幅
+  // テキストが折り返されないよう適宜調整する
+  resultModalWidth: 300,
   borderAnimationMax: 50,
   // 文字サイズを一箇所で管理する
   fonts: {
@@ -58,6 +61,15 @@ export const UI = {
   feedback: {
     bumpWidth: 50,
     bumpShowTime: 300,
+  },
+  // -------------------
+  // ホーム(タイトル)画面専用の設定
+  // -------------------
+  titleScreen: {
+    // タイトル文字のサイズ
+    titleFontSize: 32,
+    // ボタンなど縦並び要素の余白
+    optionGap: 20,
   },
 } as const;
 
