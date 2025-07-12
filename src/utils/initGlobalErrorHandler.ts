@@ -1,4 +1,5 @@
 import { ErrorUtils } from 'react-native';
+import { logError } from './errorLogger';
 
 /**
  * グローバルエラーハンドラを登録する関数。
@@ -10,7 +11,9 @@ import { ErrorUtils } from 'react-native';
 export function initGlobalErrorHandler(showSnackbar: (msg: string) => void) {
   const defaultHandler = ErrorUtils.getGlobalHandler();
   ErrorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
+    // 予期しないエラーをログに残す
     console.error('Unhandled Error', error);
+    void logError('Unhandled Error', error);
     showSnackbar('予期せぬエラーが発生しました');
     defaultHandler(error, isFatal);
   });
