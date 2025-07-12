@@ -116,28 +116,35 @@ export default function PlayScreen() {
   const mapTop = height / 3 - 80 - oneCm;
   // リザルトパネルは DPad と同じ位置に表示する
   const resultTop = dpadTop;
-  // リセットボタンの色。残り回数に応じて明るさを段階的に変える
-  // 在庫 0 回でも薄く表示してボタン自体は見えるようにする
-  const isEmpty = state.respawnStock <= 0;
-  // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
-  const baseGray = parseInt(UI.colors.icon.replace('#', '').substring(0, 2), 16);
-  // respawnMax が 0 または未設定なら無制限とみなして白に近づける
-  const ratio =
-    state.respawnMax && state.respawnMax > 0
-      ? Math.min(state.respawnStock / state.respawnMax, 1)
-      : 1;
-  const gray = Math.round(baseGray + ratio * (255 - baseGray));
-  if (__DEV__) {
-    // DEBUG: 計算結果をコンソールに出力して確認する
-    console.log('respawn color', {
-      stock: state.respawnStock,
-      max: state.respawnMax,
-      ratio,
-      gray,
-    });
-  }
-  const resetColor = isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`;
-  const resetIcon = isEmpty ? 'refresh-outline' : 'refresh';
+  // リセットボタンの色計算は useMemo でメモ化する
+  // 依存値が変わらない限り再計算されず無駄なレンダーを抑える
+  const { resetColor, resetIcon } = React.useMemo(() => {
+    const isEmpty = state.respawnStock <= 0;
+    // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
+    const baseGray = parseInt(
+      UI.colors.icon.replace('#', '').substring(0, 2),
+      16,
+    );
+    // respawnMax が 0 または未設定なら無制限とみなして白に近づける
+    const ratio =
+      state.respawnMax && state.respawnMax > 0
+        ? Math.min(state.respawnStock / state.respawnMax, 1)
+        : 1;
+    const gray = Math.round(baseGray + ratio * (255 - baseGray));
+    if (__DEV__) {
+      // DEBUG: 計算結果をコンソールに出力して確認する
+      console.log('respawn color', {
+        stock: state.respawnStock,
+        max: state.respawnMax,
+        ratio,
+        gray,
+      });
+    }
+    return {
+      resetColor: isEmpty ? UI.colors.icon : `rgb(${gray},${gray},${gray})`,
+      resetIcon: isEmpty ? 'refresh-outline' : 'refresh',
+    };
+  }, [state.respawnStock, state.respawnMax]);
 
   // 可視化ボタンの色設定
   // 広告なしで利用できるときは濃い白、それ以外は半透明の白にする
