@@ -4,7 +4,7 @@ import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
 import { saveGame } from './saveGame';
 import type { MazeData, Dir } from '@/src/types/maze';
-import type { EnemyCounts } from '@/src/types/enemy';
+import type { NewGameOptions } from '@/src/types/game';
 import {
   reducer,
   createFirstStage,
@@ -22,22 +22,7 @@ const GameContext = createContext<
       state: GameState;
       move: (dir: Dir) => boolean;
       reset: () => void;
-      newGame: (
-        size: number,
-        counts?: EnemyCounts,
-        enemyPathLength?: number,
-        playerPathLength?: number,
-        wallLifetime?: number,
-        enemyCountsFn?: (stage: number) => EnemyCounts,
-        wallLifetimeFn?: (stage: number) => number,
-        showAdjacentWalls?: boolean,
-        showAdjacentWallsFn?: (stage: number) => boolean,
-        biasedSpawn?: boolean,
-        biasedGoal?: boolean,
-        levelId?: string,
-        stagePerMap?: number,
-        respawnMax?: number,
-      ) => void;
+      newGame: (options?: NewGameOptions) => void;
       nextStage: () => void;
       resetRun: () => void;
       respawnEnemies: () => void;
@@ -63,22 +48,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const send = (action: Action) => dispatch(action);
 
   const reset = () => send({ type: 'reset' });
-  const newGame = (
-    size: number = 10,
-    counts?: EnemyCounts,
-    enemyPathLength?: number,
-    playerPathLength?: number,
-    wallLifetime?: number,
-    enemyCountsFn?: (stage: number) => EnemyCounts,
-    wallLifetimeFn?: (stage: number) => number,
-    showAdjacentWalls?: boolean,
-    showAdjacentWallsFn?: (stage: number) => boolean,
-    biasedSpawn?: boolean,
-    biasedGoal?: boolean,
-    levelId?: string,
-    stagePerMap?: number,
-    respawnMax?: number,
-  ) => {
+  const newGame = (options: NewGameOptions = {}) => {
+    const {
+      size = 10,
+      counts,
+      enemyPathLength,
+      playerPathLength,
+      wallLifetime,
+      enemyCountsFn,
+      wallLifetimeFn,
+      showAdjacentWalls,
+      showAdjacentWallsFn,
+      biasedSpawn,
+      biasedGoal,
+      levelId,
+      stagePerMap,
+      respawnMax,
+    } = options;
     send({
       type: 'newMaze',
       maze: loadMaze(size),
