@@ -11,6 +11,9 @@ export const AD_UNIT_ID = process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID ?? TEST_
 // 環境変数 EXPO_PUBLIC_DISABLE_ADS が 'true' のとき広告関連処理を無効化する
 export const DISABLE_ADS = process.env.EXPO_PUBLIC_DISABLE_ADS === 'true';
 
+// インタースティシャル広告の読み込み・表示を待つ最大時間をミリ秒単位で指定する
+const INTERSTITIAL_TIMEOUT_MS = 10000;
+
 /**
  * インタースティシャル広告を読み込みつつ表示する関数
  * 広告が閉じられると解決します
@@ -48,7 +51,7 @@ export async function showInterstitial() {
     timeoutId = setTimeout(() => {
       unsubscribe();
       resolve();
-    }, 10000);
+    }, INTERSTITIAL_TIMEOUT_MS);
 
     ad.load();
   });
@@ -78,7 +81,7 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
     timeoutId = setTimeout(() => {
       unsubscribe();
       resolve(null);
-    }, 10000);
+    }, INTERSTITIAL_TIMEOUT_MS);
     ad.load();
   });
 }
@@ -104,7 +107,7 @@ export async function showLoadedInterstitial(ad: InterstitialAd) {
     timeoutId = setTimeout(() => {
       unsubscribe();
       resolve();
-    }, 10000);
+    }, INTERSTITIAL_TIMEOUT_MS);
     ad.show();
   });
 }
