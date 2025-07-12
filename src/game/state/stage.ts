@@ -6,26 +6,29 @@ import {
 } from '../maze';
 import { loadMaze } from '../loadMaze';
 import type { MazeData } from '@/src/types/maze';
-import type { EnemyCounts } from '@/src/types/enemy';
+import type { NewGameOptions } from '@/src/types/game';
 import { initState, State } from './core';
 
 // ランダムなスタートとゴールを含む MazeData を作成するヘルパー
 export function createFirstStage(
   base: MazeData,
-  counts: EnemyCounts = { random: 0, slow: 0, sight: 0, fast: 0 },
-  enemyPathLength: number = 4,
-  playerPathLength: number = Infinity,
-  wallLifetime: number = Infinity,
-  enemyCountsFn?: (stage: number) => EnemyCounts,
-  wallLifetimeFn?: (stage: number) => number,
-  biasedSpawn: boolean = true,
-  levelId?: string,
-  stagePerMap: number = 3,
-  respawnMax: number = 3,
-  biasedGoal: boolean = true,
-  showAdjacentWalls: boolean = false,
-  showAdjacentWallsFn?: (stage: number) => boolean,
+  options: NewGameOptions = {},
 ): State {
+  const {
+    counts = { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength = 4,
+    playerPathLength = Infinity,
+    wallLifetime = Infinity,
+    enemyCountsFn,
+    wallLifetimeFn,
+    biasedSpawn = true,
+    levelId,
+    stagePerMap = 3,
+    respawnMax = 3,
+    biasedGoal = true,
+    showAdjacentWalls = false,
+    showAdjacentWallsFn,
+  } = options;
   const visited = new Set<string>();
   const start = randomCell(base.size);
   const candidates = allCells(base.size).filter(
@@ -47,22 +50,24 @@ export function createFirstStage(
     1,
     visited,
     finalStage,
+    {
+      counts: stageCounts,
+      enemyPathLength,
+      playerPathLength,
+      wallLifetime,
+      enemyCountsFn,
+      wallLifetimeFn,
+      showAdjacentWalls: showAdjacentWallsFn ? showAdjacentWallsFn(1) : showAdjacentWalls,
+      showAdjacentWallsFn,
+      biasedSpawn,
+      biasedGoal,
+      levelId,
+      stagePerMap,
+      respawnMax,
+    },
     undefined,
     undefined,
-    stageCounts,
-    enemyPathLength,
-    playerPathLength,
-    wallLifetime,
-    enemyCountsFn,
-    wallLifetimeFn,
-    showAdjacentWallsFn ? showAdjacentWallsFn(1) : showAdjacentWalls,
-    showAdjacentWallsFn,
-    biasedSpawn,
-    biasedGoal,
-    levelId,
-    stagePerMap,
     respawnMax,
-    respawnMax, // 新規ゲーム開始時は最大回数でスタート
     0,
     0,
   );
@@ -102,23 +107,25 @@ export function nextStageState(state: State): State {
     state.stage + 1,
     visited,
     finalStage,
+    {
+      counts: state.enemyCountsFn ? state.enemyCountsFn(state.stage + 1) : state.enemyCounts,
+      enemyPathLength: state.enemyPathLength,
+      playerPathLength: state.playerPathLength,
+      wallLifetime: nextWallLife,
+      enemyCountsFn: state.enemyCountsFn,
+      wallLifetimeFn: state.wallLifetimeFn,
+      showAdjacentWalls: state.showAdjacentWallsFn
+        ? state.showAdjacentWallsFn(state.stage + 1)
+        : state.showAdjacentWalls,
+      showAdjacentWallsFn: state.showAdjacentWallsFn,
+      biasedSpawn: state.biasedSpawn,
+      biasedGoal: state.biasedGoal,
+      levelId: state.levelId,
+      stagePerMap: state.stagePerMap,
+      respawnMax: state.respawnMax,
+    },
     hitV,
     hitH,
-    state.enemyCountsFn ? state.enemyCountsFn(state.stage + 1) : state.enemyCounts,
-    state.enemyPathLength,
-    state.playerPathLength,
-    nextWallLife,
-    state.enemyCountsFn,
-    state.wallLifetimeFn,
-    state.showAdjacentWallsFn
-      ? state.showAdjacentWallsFn(state.stage + 1)
-      : state.showAdjacentWalls,
-    state.showAdjacentWallsFn,
-    state.biasedSpawn,
-    state.biasedGoal,
-    state.levelId,
-    state.stagePerMap,
-    state.respawnMax,
     stock,
     state.totalSteps,
     state.totalBumps,
@@ -127,20 +134,19 @@ export function nextStageState(state: State): State {
 
 // ゲームオーバー時に最初からやり直す処理
 export function restartRun(state: State): State {
-  return createFirstStage(
-    state.mazeRaw,
-    state.enemyCountsFn ? state.enemyCountsFn(1) : state.enemyCounts,
-    state.enemyPathLength,
-    state.playerPathLength,
-    state.wallLifetime,
-    state.enemyCountsFn,
-    state.wallLifetimeFn,
-    state.biasedSpawn,
-    state.levelId,
-    state.stagePerMap,
-    state.respawnMax,
-    state.biasedGoal,
-    state.showAdjacentWalls,
-    state.showAdjacentWallsFn,
-  );
+  return createFirstStage(state.mazeRaw, {
+    counts: state.enemyCountsFn ? state.enemyCountsFn(1) : state.enemyCounts,
+    enemyPathLength: state.enemyPathLength,
+    playerPathLength: state.playerPathLength,
+    wallLifetime: state.wallLifetime,
+    enemyCountsFn: state.enemyCountsFn,
+    wallLifetimeFn: state.wallLifetimeFn,
+    biasedSpawn: state.biasedSpawn,
+    levelId: state.levelId,
+    stagePerMap: state.stagePerMap,
+    respawnMax: state.respawnMax,
+    biasedGoal: state.biasedGoal,
+    showAdjacentWalls: state.showAdjacentWalls,
+    showAdjacentWallsFn: state.showAdjacentWallsFn,
+  });
 }

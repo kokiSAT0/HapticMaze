@@ -2,6 +2,7 @@ import { wallSet } from '../maze';
 import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy, EnemyCounts } from '@/src/types/enemy';
+import type { NewGameOptions } from '@/src/types/game';
 import { createEnemies } from './enemy';
 import { addAdjacentWalls } from './utils';
 
@@ -89,27 +90,30 @@ export function initState(
   stage: number,
   visitedGoals: Set<string>,
   finalStage: boolean,
+  options: NewGameOptions = {},
   hitV: Map<string, number> = new Map(),
   hitH: Map<string, number> = new Map(),
-  enemyCounts: EnemyCounts = { random: 0, slow: 0, sight: 0, fast: 0 },
-  enemyPathLength: number = 4,
-  playerPathLength: number = Infinity,
-  wallLifetime: number = Infinity,
-  enemyCountsFn?: (stage: number) => EnemyCounts,
-  wallLifetimeFn?: (stage: number) => number,
-  showAdjacentWalls: boolean = false,
-  showAdjacentWallsFn?: (stage: number) => boolean,
-  biasedSpawn: boolean = true,
-  biasedGoal: boolean = true,
-  levelId?: string,
-  stagePerMap: number = 3,
-  respawnMax: number = 3,
-  respawnStock: number = respawnMax,
+  respawnStock: number = options.respawnMax ?? 3,
   totalSteps: number = 0,
   totalBumps: number = 0,
 ): State {
+  const {
+    counts = { random: 0, slow: 0, sight: 0, fast: 0 },
+    enemyPathLength = 4,
+    playerPathLength = Infinity,
+    wallLifetime = Infinity,
+    enemyCountsFn,
+    wallLifetimeFn,
+    showAdjacentWalls = false,
+    showAdjacentWallsFn,
+    biasedSpawn = true,
+    biasedGoal = true,
+    levelId,
+    stagePerMap = 3,
+    respawnMax = 3,
+  } = options;
   const maze = prepMaze(m);
-  const enemies = createEnemies(enemyCounts, maze, biasedSpawn);
+  const enemies = createEnemies(counts, maze, biasedSpawn);
   const enemyBehavior = selectEnemyBehavior(m.size, finalStage);
   const life = wallLifetimeFn ? wallLifetimeFn(stage) : wallLifetime;
   // 周囲表示が有効なら開始時点で周囲の壁を記録する
@@ -140,7 +144,7 @@ export function initState(
     visitedGoals,
     finalStage,
     enemyBehavior,
-    enemyCounts,
+    enemyCounts: counts,
     enemyCountsFn,
     enemyPathLength,
     playerPathLength,

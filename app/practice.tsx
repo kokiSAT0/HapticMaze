@@ -25,22 +25,18 @@ export default function PracticeScreen() {
   const [wallLife, setWallLife] = React.useState<number>(Infinity);
 
   const start = (size: number) => {
-    newGame(
+    newGame({
       size,
-      { random, slow, sight, fast: 0 },
-      pathLen,
-      playerLen,
-      wallLife,
-      undefined,
-      undefined,
-      true,
-      undefined,
-      true,
-      true,
-      'practice',
-      3,
-      3,
-    );
+      counts: { random, slow, sight, fast: 0 },
+      enemyPathLength: pathLen,
+      playerPathLength: playerLen,
+      wallLifetime: wallLife,
+      biasedSpawn: true,
+      biasedGoal: true,
+      levelId: 'practice',
+      stagePerMap: 3,
+      respawnMax: 3,
+    });
     router.replace('/play');
   };
 

@@ -79,22 +79,22 @@ export default function TitleScreen() {
     } else {
       audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));
     }
-    newGame(
-      level.size,
-      level.enemies,
-      level.enemyPathLength,
-      level.playerPathLength,
-      level.wallLifetime,
-      level.enemyCountsFn,
-      level.wallLifetimeFn,
-      level.showAdjacentWalls,
-      level.showAdjacentWallsFn,
-      level.biasedSpawn,
-      level.biasedGoal,
-      level.id,
-      level.stagePerMap,
-      level.respawnMax
-    );
+    newGame({
+      size: level.size,
+      counts: level.enemies,
+      enemyPathLength: level.enemyPathLength,
+      playerPathLength: level.playerPathLength,
+      wallLifetime: level.wallLifetime,
+      enemyCountsFn: level.enemyCountsFn,
+      wallLifetimeFn: level.wallLifetimeFn,
+      showAdjacentWalls: level.showAdjacentWalls,
+      showAdjacentWallsFn: level.showAdjacentWallsFn,
+      biasedSpawn: level.biasedSpawn,
+      biasedGoal: level.biasedGoal,
+      levelId: level.id,
+      stagePerMap: level.stagePerMap,
+      respawnMax: level.respawnMax,
+    });
     // 画面遷移開始をログ
     devLog('[TitleScreen] navigate begin');
     await router.replace("/play");
