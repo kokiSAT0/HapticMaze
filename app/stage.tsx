@@ -32,10 +32,10 @@ export default function StageScreen() {
     // バナーが再表示されてしまうことがある
     // 少し余裕を持って待機してから Play 画面へ戻す
     setTimeout(() => {
-
-      router.replace('/play');
+      // ref から router を参照して常に同じ関数を使う
+      routerRef.current.replace('/play');
     }, 100);
-  }, [router, setShowBanner, setBannerStage, setOkLocked]);
+  }, [setShowBanner, setBannerStage, setOkLocked]);
 
 
   return (
