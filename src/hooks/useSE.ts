@@ -24,7 +24,8 @@ export function useSE(soundFile: number) {
       playerRef.current = p;
     } catch (e) {
       // プレイヤー生成に失敗したらユーザーへ通知
-      handleError("BGM の再生に失敗しました", e);
+      // エラーメッセージは効果音(SE)用に変更
+      handleError("効果音の再生に失敗しました", e);
     }
     return () => {
       playerRef.current?.remove();
@@ -50,7 +51,8 @@ export function useSE(soundFile: number) {
       playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合のエラーハンドリング
-      handleError("BGM の再生に失敗しました", e);
+      // エラーメッセージを効果音用にする
+      handleError("効果音の再生に失敗しました", e);
     }
   };
 

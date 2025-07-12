@@ -88,7 +88,8 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       if (playerRef.current?.paused) playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合はユーザーへ知らせてログに残す
-      handleError("BGM の再生に失敗しました", e);
+      // メッセージは BGM 用とわかるように微修正
+      handleError("BGMの再生に失敗しました", e);
     }
   };
 
@@ -130,7 +131,8 @@ export function BgmProvider({ children }: { children: ReactNode }) {
         currentFileRef.current = file;
       } catch (e) {
         // プレイヤー作成や再生でエラーが起きた場合の処理
-        handleError("BGM の再生に失敗しました", e);
+        // エラーメッセージを BGM 用に変更
+        handleError("BGMの再生に失敗しました", e);
       }
     };
 
