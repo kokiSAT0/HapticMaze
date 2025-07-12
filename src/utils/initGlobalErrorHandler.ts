@@ -1,4 +1,4 @@
-import { ErrorUtils } from 'react-native';
+import type { ErrorUtils as ErrorUtilsType } from 'react-native/Libraries/vendor/core/ErrorUtils';
 import { logError } from './errorLogger';
 
 /**
@@ -9,6 +9,8 @@ import { logError } from './errorLogger';
  * @param showSnackbar スナックバー表示用の関数
  */
 export function initGlobalErrorHandler(showSnackbar: (msg: string) => void) {
+  // React Native が提供するグローバル ErrorUtils を取得
+  const ErrorUtils = global.ErrorUtils as ErrorUtilsType;
   const defaultHandler = ErrorUtils.getGlobalHandler();
   ErrorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
     // 予期しないエラーをログに残す
