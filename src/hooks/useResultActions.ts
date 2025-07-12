@@ -43,7 +43,8 @@ export function useResultActions({
   );
 
   // 各ステージの記録を保持するコンテキスト
-  const { addRecord, reset } = useRunRecords();
+  // records は記録の配列で、各ステージの歩数などを保持する
+  const { records, addRecord, reset } = useRunRecords();
 
   const {
     showResult,
@@ -119,10 +120,15 @@ export function useResultActions({
 
   // ステージ1開始時は前回の記録をリセットする
   useEffect(() => {
-    if (state.stage === 1 && state.steps === 0 && state.totalSteps === 0) {
+    if (
+      state.stage === 1 &&
+      state.steps === 0 &&
+      state.totalSteps === 0 &&
+      records.length === 0
+    ) {
       reset();
     }
-  }, [state.stage, state.steps, state.totalSteps, reset]);
+  }, [state.stage, state.steps, state.totalSteps, records.length, reset]);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
