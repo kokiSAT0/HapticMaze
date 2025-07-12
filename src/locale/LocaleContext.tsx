@@ -99,7 +99,7 @@ const messages = {
     respawnUsage:
       "敵の位置をリセット",
     revealUsage:
-      "迷路全体を表示します",
+      "迷路全体を表示",
   },
   en: {
     practiceMode: "Practice Mode",
