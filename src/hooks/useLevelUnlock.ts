@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSnackbar } from '@/src/hooks/useSnackbar';
+import { useHandleError } from '@/src/utils/handleError';
 
 /**
  * レベルクリア状況を管理するフック。
@@ -13,7 +13,7 @@ interface UnlockMap {
 const STORAGE_KEY = 'clearedLevels';
 
 export function useLevelUnlock() {
-  const { show: showSnackbar } = useSnackbar();
+  const handleError = useHandleError();
   const [unlocked, setUnlocked] = useState<UnlockMap>({});
 
   // 初回読み込み時に保存データを取得する
@@ -23,11 +23,10 @@ export function useLevelUnlock() {
         const json = await AsyncStorage.getItem(STORAGE_KEY);
         if (json) setUnlocked(JSON.parse(json) as UnlockMap);
       } catch (e) {
-        console.error('load unlock error', e);
-        showSnackbar('進行状況を読み込めませんでした');
+        handleError('進行状況を読み込めませんでした', e);
       }
     })();
-  }, [showSnackbar]);
+  }, [handleError]);
 
   /**
    * レベルクリアを記録して永続化する。
@@ -39,11 +38,10 @@ export function useLevelUnlock() {
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch (e) {
-        console.error('save unlock error', e);
-        showSnackbar('進行状況を保存できませんでした');
+        handleError('進行状況を保存できませんでした', e);
       }
     },
-    [unlocked, showSnackbar],
+    [unlocked, handleError],
   );
 
   /**
