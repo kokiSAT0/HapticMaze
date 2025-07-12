@@ -24,12 +24,12 @@ export default function StageScreen() {
     setShowBanner(false);
     setBannerStage(0);
     setOkLocked(false);
-    // 状態更新が完了する前に画面遷移すると
-    // banner のフラグが戻らずループする場合がある
-    // 少し待ってから Play 画面へ戻る
+    // 状態更新が反映される前に遷移すると
+    // バナーが再表示されてしまうことがある
+    // 少し余裕を持って待機してから Play 画面へ戻す
     setTimeout(() => {
       router.replace('/play');
-    }, 50);
+    }, 100);
   }, [router, setShowBanner, setBannerStage, setOkLocked]);
 
   return (
