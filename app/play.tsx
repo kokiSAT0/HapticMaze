@@ -1,6 +1,7 @@
 import { View, Pressable, useWindowDimensions } from "react-native";
 
-import { useEffect, useRef } from "react";
+// React から必要なフックを個別にインポート
+import { useEffect, useRef, useMemo } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -118,7 +119,7 @@ export default function PlayScreen() {
   const resultTop = dpadTop;
   // リセットボタンの色計算は useMemo でメモ化する
   // 依存値が変わらない限り再計算されず無駄なレンダーを抑える
-  const { resetColor, resetIcon } = React.useMemo(() => {
+  const { resetColor, resetIcon } = useMemo(() => {
     const isEmpty = state.respawnStock <= 0;
     // "#555" (10進で 85) を基準に 0～3 回で白 (255) へ近づける
     const baseGray = parseInt(
