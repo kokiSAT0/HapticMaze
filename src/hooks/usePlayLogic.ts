@@ -1,6 +1,7 @@
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { showInterstitial } from '@/src/ads/interstitial';
+// 広告関連の関数とフラグをまとめて読み込む
+import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 import { useHandleError } from '@/src/utils/handleError';
 
 import { useGame } from '@/src/game/useGame';
@@ -56,13 +57,15 @@ export function usePlayLogic() {
   // 敵のみをリスポーンする処理
   const handleRespawn = async () => {
     if (state.respawnStock <= 0) {
+      // 広告表示がある場合のみ BGM を止める
+      const needMute = !DISABLE_ADS && Platform.OS !== 'web';
       try {
-        audio.pauseBgm();
+        if (needMute) audio.pauseBgm();
         await showInterstitial();
       } catch (e) {
         handleError('広告を表示できませんでした', e);
       } finally {
-        audio.resumeBgm();
+        if (needMute) audio.resumeBgm();
       }
     }
     respawnEnemies();

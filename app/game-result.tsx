@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -7,7 +7,8 @@ import { PlainButton } from '@/components/PlainButton';
 import { useRunRecords } from '@/src/hooks/useRunRecords';
 import { useLocale } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
-import { showInterstitial } from '@/src/ads/interstitial';
+// 広告表示に必要な関数と無効化フラグ
+import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 import { useHandleError } from '@/src/utils/handleError';
 import { UI } from '@/constants/ui';
 
@@ -22,14 +23,16 @@ export default function GameResultScreen() {
 
   /** ホームへ戻るボタンの処理。広告を見てから遷移する */
   const handleBack = async () => {
+    // 広告が表示されるときだけ音を止める
+    const needMute = !DISABLE_ADS && Platform.OS !== 'web';
     try {
-      pauseBgm();
+      if (needMute) pauseBgm();
       await showInterstitial();
     } catch (e) {
       // 広告が表示できなかった場合はユーザーへ知らせる
       handleError('広告を表示できませんでした', e);
     } finally {
-      resumeBgm();
+      if (needMute) resumeBgm();
       router.replace('/');
     }
   };
