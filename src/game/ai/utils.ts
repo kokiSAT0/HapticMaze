@@ -6,9 +6,10 @@ import type { MazeSets } from '../state/core';
 import { canMove, nextPosition } from '../maze';
 
 /**
- * BFS を用いて start から goal までの最短経路を探す
+ * BFS を用いて start から goal までの最短経路を探します。
  * BFS は幅優先探索と呼ばれる探索手法で、
  * 一歩ずつ広げながらゴールにたどり着くルートを見つけます。
+ * ここではキュー (先入れ先出しのデータ構造) を使って探索を行います。
  */
 export function shortestStep(
   start: Vec2,
@@ -17,10 +18,12 @@ export function shortestStep(
 ): { next: Vec2; dist: number } | null {
   const visited = new Set<string>([`${start.x},${start.y}`]);
   type Node = { pos: Vec2; dist: number; first: Vec2 | null };
+  // Array をキューとして利用する。head を進めることで先頭要素の取り出しコストを抑える
   const queue: Node[] = [{ pos: start, dist: 0, first: null }];
+  let head = 0;
 
-  while (queue.length > 0) {
-    const { pos, dist, first } = queue.shift() as Node;
+  while (head < queue.length) {
+    const { pos, dist, first } = queue[head++];
     if (pos.x === goal.x && pos.y === goal.y) {
       return { next: first ?? pos, dist };
     }
