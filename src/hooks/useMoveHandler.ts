@@ -12,6 +12,8 @@ interface Options {
   playMoveSe: () => void;
   playBumpSe: () => void;
   width: number;
+  /** エラー表示用の関数 */
+  showError: (msg: string) => void;
 }
 
 /**
@@ -24,6 +26,7 @@ export function useMoveHandler({
   playMoveSe,
   playBumpSe,
   width,
+  showError,
 }: Options) {
   // 壁衝突時に表示する枠線の色
   const [borderColor, setBorderColor] = useState('transparent');
@@ -58,7 +61,7 @@ export function useMoveHandler({
     if (!move(dir)) {
       // 壁にぶつかったら即座に効果音を鳴らす
       playBumpSe();
-      wait = applyBumpFeedback(borderW, setBorderColor);
+      wait = applyBumpFeedback(borderW, setBorderColor, { showError });
       setTimeout(() => setBorderColor('transparent'), wait);
     } else {
       // 移動成功時も先に効果音を鳴らす
@@ -67,7 +70,7 @@ export function useMoveHandler({
       const { wait: w, id } = applyDistanceFeedback(
         next,
         { x: maze.goal[0], y: maze.goal[1] },
-        { maxDist },
+        { maxDist, showError },
       );
       wait = w;
       intervalRef.current = id;
