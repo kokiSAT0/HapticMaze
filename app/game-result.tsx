@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { PlainButton } from '@/components/PlainButton';
+import { ScoreChart } from '@/components/ScoreChart';
 import { useRunRecords } from '@/src/hooks/useRunRecords';
 import { useLocale } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
@@ -53,6 +54,12 @@ export default function GameResultScreen() {
     { steps: 0, bumps: 0, respawns: 0, reveals: 0 },
   );
 
+  // 各ステージごとのスコアを配列化してグラフ用に整形
+  const stepData = records.map((r) => r.steps);
+  const bumpData = records.map((r) => r.bumps);
+  const respawnData = records.map((r) => r.respawns);
+  const revealData = records.map((r) => r.reveals);
+
   return (
     <ThemedView
       lightColor="#000"
@@ -65,17 +72,38 @@ export default function GameResultScreen() {
         <ThemedText type="title" lightColor="#fff" darkColor="#fff">
           {t('gameResults')}
         </ThemedText>
-        {records.map((r) => (
-          <ThemedText key={r.stage} lightColor="#fff" darkColor="#fff">
-            {t('stageRecord', {
-              stage: r.stage,
-              steps: r.steps,
-              bumps: r.bumps,
-              respawns: r.respawns,
-              reveals: r.reveals,
-            })}
-          </ThemedText>
-        ))}
+        <ThemedText lightColor="#fff" darkColor="#fff">
+          {t('stepsGraph')}
+        </ThemedText>
+        <ScoreChart
+          data={stepData}
+          color="#00f"
+          accessibilityLabel={t('stepsGraph')}
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff">
+          {t('bumpsGraph')}
+        </ThemedText>
+        <ScoreChart
+          data={bumpData}
+          color="#f33"
+          accessibilityLabel={t('bumpsGraph')}
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff">
+          {t('respawnsGraph')}
+        </ThemedText>
+        <ScoreChart
+          data={respawnData}
+          color="#3c3"
+          accessibilityLabel={t('respawnsGraph')}
+        />
+        <ThemedText lightColor="#fff" darkColor="#fff">
+          {t('revealsGraph')}
+        </ThemedText>
+        <ScoreChart
+          data={revealData}
+          color="#ff0"
+          accessibilityLabel={t('revealsGraph')}
+        />
         <ThemedText lightColor="#fff" darkColor="#fff">
           {t('totalStats', totals)}
         </ThemedText>
