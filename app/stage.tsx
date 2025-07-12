@@ -24,6 +24,7 @@ export default function StageScreen() {
     setShowBanner(false);
     setBannerStage(0);
     setOkLocked(false);
+
   }, [setShowBanner, setBannerStage, setOkLocked]);
 
   // バナー非表示になった後で画面遷移する
@@ -32,6 +33,7 @@ export default function StageScreen() {
       router.replace('/play');
     }
   }, [showBanner, router]);
+
 
   return (
     <StageBanner

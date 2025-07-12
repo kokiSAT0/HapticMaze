@@ -89,6 +89,15 @@ export function useResultActions({
   // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
   const bannerActiveRef = useRef(false);
 
+  // showBanner が false になったら bannerActiveRef もリセットする
+  // これにより StageScreen 側でフラグを戻し忘れても
+  // 次の useEffect が正常に動作するようにする
+  useEffect(() => {
+    if (!showBanner) {
+      bannerActiveRef.current = false;
+    }
+  }, [showBanner]);
+
   // ゲーム開始直後にステージ1バナーを表示する
   // 条件: ステージ1かつ移動回数0であること
   // ステージ開始時のバナー表示判定

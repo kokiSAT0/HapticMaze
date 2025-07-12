@@ -91,17 +91,20 @@ export default function PlayScreen() {
   // これにより状態更新が遅れた場合でも無限ループを防げる
   // React をインポートしていないので useRef を直接使う
   const prevBanner = useRef(false);
+  // router オブジェクトは再レンダー時に変わらないため
+  // 依存配列から除外して無駄な再実行を防ぐ
+  const { replace } = router;
   useEffect(() => {
     // bannerStage が 0 のときは表示データが無いので遷移しない
     if (showBanner && bannerStage > 0 && !prevBanner.current) {
       prevBanner.current = true;
-      router.replace(`/stage?stage=${bannerStage}`);
+      replace(`/stage?stage=${bannerStage}`);
     } else if (!showBanner && prevBanner.current) {
       // バナーが閉じられたらフラグを戻す
       prevBanner.current = false;
 
     }
-  }, [showBanner, bannerStage, router]);
+  }, [showBanner, bannerStage, replace]);
 
   // 1cm を dp に変換し、UI 位置調整に利用
   const oneCm = cmToDp(1);
