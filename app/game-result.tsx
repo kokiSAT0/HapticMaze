@@ -77,7 +77,7 @@ export default function GameResultScreen() {
         </ThemedText>
         <ScoreChart
           data={stepData}
-          color="#00f"
+          color="#fff"
           accessibilityLabel={t('stepsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
@@ -85,7 +85,7 @@ export default function GameResultScreen() {
         </ThemedText>
         <ScoreChart
           data={bumpData}
-          color="#f33"
+          color="#fff"
           accessibilityLabel={t('bumpsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
@@ -93,7 +93,7 @@ export default function GameResultScreen() {
         </ThemedText>
         <ScoreChart
           data={respawnData}
-          color="#3c3"
+          color="#fff"
           accessibilityLabel={t('respawnsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
@@ -101,7 +101,7 @@ export default function GameResultScreen() {
         </ThemedText>
         <ScoreChart
           data={revealData}
-          color="#ff0"
+          color="#fff"
           accessibilityLabel={t('revealsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
