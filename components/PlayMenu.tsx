@@ -1,11 +1,12 @@
 import React from 'react';
-import { Modal, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Switch, View, Platform } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { PlainButton } from '@/components/PlainButton';
 import { ThemedText } from '@/components/ThemedText';
 import { UI } from '@/constants/ui';
 import { useBgm } from '@/src/hooks/useBgm';
-import { showInterstitial } from '@/src/ads/interstitial';
+// 広告関連の関数とフラグをインポート
+import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 import { useHandleError } from '@/src/utils/handleError';
 import { useRunRecords } from '@/src/hooks/useRunRecords';
 
@@ -80,8 +81,10 @@ export function PlayMenu({
         incReveal();
         return;
       }
+      // 広告を表示するときだけ BGM を一時停止する
+      const needMute = !DISABLE_ADS && Platform.OS !== 'web';
       try {
-        pauseBgm();
+        if (needMute) pauseBgm();
         await showInterstitial();
         setDebugAll(true);
         incReveal();
@@ -89,7 +92,7 @@ export function PlayMenu({
         // 広告が出なかった場合はエラーメッセージを表示
         handleError('広告を表示できませんでした', e);
       } finally {
-        resumeBgm();
+        if (needMute) resumeBgm();
       }
     } else {
       setDebugAll(false);

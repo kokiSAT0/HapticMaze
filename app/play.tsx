@@ -1,4 +1,4 @@
-import { View, Pressable, useWindowDimensions } from "react-native";
+import { View, Pressable, useWindowDimensions, Platform } from "react-native";
 
 // React から必要なフックを個別にインポート
 import { useEffect, useRef, useMemo } from "react";
@@ -12,7 +12,8 @@ import type { MazeData as MazeView } from "@/src/types/maze";
 import { useLocale } from "@/src/locale/LocaleContext";
 import { usePlayLogic } from "@/src/hooks/usePlayLogic";
 import { useBgm } from "@/src/hooks/useBgm";
-import { showInterstitial } from "@/src/ads/interstitial";
+// 広告表示に使う関数と無効化フラグを読み込む
+import { showInterstitial, DISABLE_ADS } from "@/src/ads/interstitial";
 import { useHandleError } from "@/src/utils/handleError";
 import { ResultModal } from "@/components/ResultModal";
 import { useRouter } from "expo-router";
@@ -169,8 +170,10 @@ export default function PlayScreen() {
       incReveal();
       return;
     }
+    // 広告が出る可能性があるときだけ BGM を止める
+    const needMute = !DISABLE_ADS && Platform.OS !== "web";
     try {
-      pauseBgm();
+      if (needMute) pauseBgm();
       await showInterstitial();
       setDebugAll(true);
       incReveal();
@@ -178,7 +181,7 @@ export default function PlayScreen() {
       // 広告表示に失敗したらメッセージを出しておく
       handleError("広告を表示できませんでした", e);
     } finally {
-      resumeBgm();
+      if (needMute) resumeBgm();
     }
   };
 
