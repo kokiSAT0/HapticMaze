@@ -82,6 +82,8 @@ export const LEVELS: LevelConfig[] = [
     biasedSpawn: true,
     biasedGoal: false,
     showAdjacentWallsFn: (stage) => stage <= 30,
+    // チュートリアル以外は3ステージごとに迷路更新
+    stagePerMap: 3,
     respawnMax: 3,
   },
   {
@@ -97,6 +99,8 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
     biasedGoal: false,
+    // こちらも3ステージで切り替える
+    stagePerMap: 3,
     respawnMax: 2,
   },
   {
@@ -112,6 +116,8 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: false,
     biasedGoal: true,
+    // ハードも同様に3ステージごと
+    stagePerMap: 3,
     respawnMax: 1,
   },
 ];
