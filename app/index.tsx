@@ -17,6 +17,7 @@ import { LEVELS } from "@/constants/levels";
 import { useAudioControls } from "@/src/hooks/useAudioControls";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { UI } from "@/constants/ui";
+import { devLog } from "@/src/utils/logger";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -72,7 +73,7 @@ export default function TitleScreen() {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
     // ゲーム開始直前にログを出してどのレベルを選んだか記録する
-    console.log('[TitleScreen] startLevel', id);
+    devLog('[TitleScreen] startLevel', id);
     if (id === 'hard') {
       audio.changeBgm(require('../assets/sounds/日没廃校_調整.mp3'));
     } else {
@@ -95,15 +96,15 @@ export default function TitleScreen() {
       level.respawnMax
     );
     // 画面遷移開始をログ
-    console.log('[TitleScreen] navigate begin');
+    devLog('[TitleScreen] navigate begin');
     await router.replace("/play");
     // 遷移完了も記録する
-    console.log('[TitleScreen] navigate end', id);
+    devLog('[TitleScreen] navigate end', id);
   };
 
   const startLevelFromStart = (id: string) => {
     // 開始をログ出力
-    console.log('[TitleScreen] startLevelFromStart begin', id);
+    devLog('[TitleScreen] startLevelFromStart begin', id);
     if (hasSave) {
       // 進行中データがある場合は確認ページへ遷移
       router.push(`/reset?level=${id}`);
@@ -111,17 +112,17 @@ export default function TitleScreen() {
       confirmStart(id);
     }
     // 処理完了をログ出力
-    console.log('[TitleScreen] startLevelFromStart end', id);
+    devLog('[TitleScreen] startLevelFromStart end', id);
   };
 
   const confirmStart = async (id: string) => {
     // 開始をログ出力
-    console.log('[TitleScreen] confirmStart begin', id);
+    devLog('[TitleScreen] confirmStart begin', id);
     await clearGame({ showError: showSnackbar });
     setHasSave(false);
     await startLevel(id);
     // 処理完了をログ出力
-    console.log('[TitleScreen] confirmStart end', id);
+    devLog('[TitleScreen] confirmStart end', id);
   };
 
   // 各レベルが選択可能かを判定する関数
@@ -135,16 +136,16 @@ export default function TitleScreen() {
 
   const resumeGame = async () => {
     // 開始をログ出力
-    console.log('[TitleScreen] resumeGame begin');
+    devLog('[TitleScreen] resumeGame begin');
     const data = await loadGame({ showError: showSnackbar });
     if (!data) {
-      console.log('[TitleScreen] resumeGame no data');
+      devLog('[TitleScreen] resumeGame no data');
       return;
     }
     loadState(data);
     router.replace("/play");
     // 処理完了をログ出力
-    console.log('[TitleScreen] resumeGame end');
+    devLog('[TitleScreen] resumeGame end');
   };
 
   return (
