@@ -27,7 +27,9 @@ export function useSE(soundFile: number) {
       playerRef.current = p;
     } catch (e) {
       // プレイヤー生成に失敗したらユーザーへ通知
+
       handleError(t('playbackFailure'), e);
+
     }
     return () => {
       playerRef.current?.remove();
@@ -53,7 +55,9 @@ export function useSE(soundFile: number) {
       playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合のエラーハンドリング
+
       handleError(t('playbackFailure'), e);
+
     }
   };
 

@@ -90,7 +90,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       if (playerRef.current?.paused) playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合はユーザーへ知らせてログに残す
+
       handleError(t('playbackFailure'), e);
+
     }
   };
 
@@ -132,7 +134,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
         currentFileRef.current = file;
       } catch (e) {
         // プレイヤー作成や再生でエラーが起きた場合の処理
+
         handleError(t('playbackFailure'), e);
+
       }
     };
 

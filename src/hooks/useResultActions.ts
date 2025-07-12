@@ -1,17 +1,16 @@
 import type { useRouter } from "expo-router";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { shouldChangeMap } from "@/src/game/maze";
 
 import type { GameState } from "@/src/game/state";
 import { useHighScore } from "@/src/hooks/useHighScore";
 import { useResultState } from "@/src/hooks/useResultState";
 import { clearGame } from "@/src/game/saveGame";
-import { useStageEffects } from "@/src/hooks/useStageEffects";
-import { useLocale } from "@/src/locale/LocaleContext";
 import type { MazeData } from "@/src/types/maze";
-import type { InterstitialAd } from "react-native-google-mobile-ads";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
+import { useBannerControl } from "@/src/hooks/useBannerControl";
+import { useAdManager } from "@/src/hooks/useAdManager";
 import { devLog } from "@/src/utils/logger";
 
 interface Options {
@@ -42,9 +41,8 @@ export function useResultActions({
     state.levelId
   );
 
-  // 各ステージの記録を保持するコンテキスト
-  // records は記録の配列で、各ステージの歩数などを保持する
-  const { records, addRecord, reset } = useRunRecords();
+  // 各ステージの記録を扱う
+  const { addRecord, reset } = useRunRecords();
 
   const {
     showResult,
@@ -59,7 +57,6 @@ export function useResultActions({
     setShowMenu,
     debugAll,
     setDebugAll,
-    okLocked,
     setOkLocked,
     adShown,
     setAdShown,
@@ -67,74 +64,40 @@ export function useResultActions({
     setShowBanner,
     bannerStage,
     setBannerStage,
-    bannerShown,
     setBannerShown,
     revealUsed,
     setRevealUsed,
   } = useResultState();
 
-  const { t } = useLocale();
   const { markCleared } = useLevelUnlock();
 
-  // OK ボタンのラベルを動的に変えるための状態
-  const [okLabel, setOkLabel] = useState(t("ok"));
+  const banner = useBannerControl({
+    stage: state.stage,
+    steps: state.steps,
+    totalSteps: state.totalSteps,
+  });
 
-  // 読み込み済み広告を保持する参照
-  const loadedAdRef = useRef<InterstitialAd | null>(null);
-
-  const { loadAdIfNeeded, showAd } = useStageEffects({
+  const {
+    okLabel,
+    okLocked,
+    okLockedRef,
+    preloadAd,
+    showLoadedAd,
+    resetLabel,
+  } = useAdManager({
+    stage: state.stage,
+    finalStage: state.finalStage,
+    levelId: state.levelId,
     pauseBgm,
     resumeBgm,
-    levelId: state.levelId,
   });
-  const okLockedRef = useRef(false);
-  // バナー表示中かどうかを判定するフラグ。表示中はリザルト判定を行わない
-  const bannerActiveRef = useRef(false);
 
-  // showBanner が false になったら bannerActiveRef もリセットする
-  // これにより StageScreen 側でフラグを戻し忘れても
-  // 次の useEffect が正常に動作するようにする
-  useEffect(() => {
-    if (!showBanner) {
-      bannerActiveRef.current = false;
-    }
-  }, [showBanner]);
-
-  // ゲーム開始直後にステージ1バナーを表示する
-  // 条件: ステージ1かつ移動回数0であること
-  // ステージ開始時のバナー表示判定
-  useEffect(() => {
-    if (
-      state.stage === 1 &&
-      state.steps === 0 &&
-      !showBanner &&
-      bannerStage === 0 &&
-      !bannerShown
-    ) {
-      setBannerStage(1);
-      setShowBanner(true);
-      bannerActiveRef.current = true;
-      setBannerShown(true);
-    }
-  }, [state.stage, state.steps, showBanner, bannerStage, bannerShown, setBannerStage, setShowBanner, setBannerShown]);
-
-  // ステージ1開始時は前回の記録をリセットする
-  useEffect(() => {
-    if (
-      state.stage === 1 &&
-      state.steps === 0 &&
-      state.totalSteps === 0 &&
-      records.length === 0
-    ) {
-      reset();
-    }
-  }, [state.stage, state.steps, state.totalSteps, records.length, reset]);
 
   // ゴール到達や捕まったときの処理をまとめる
   useEffect(() => {
     // バナー表示中やリザルト表示中は判定をスキップする
     // showResult が true の間も処理が繰り返されないようにする
-    if (bannerActiveRef.current || showBanner || showResult) return;
+    if (banner.bannerActiveRef.current || showBanner || showResult) return;
     // 次のステージで迷路が切り替わるかを判定
     // tutorial は 5, それ以降は 3 ステージごとに切り替わる
     const willChangeMap = shouldChangeMap(state.stage, state.stagePerMap);
@@ -145,21 +108,8 @@ export function useResultActions({
       setShowResult(true);
       setAdShown(false);
       setDebugAll(willChangeMap);
-      // 広告を事前に読み込み、完了まで OK ボタンをロック
-      okLockedRef.current = true;
-      setOkLocked(true);
-      setOkLabel(t("loadingAd"));
-      loadAdIfNeeded(state.stage).then((ad) => {
-        loadedAdRef.current = ad;
-        // 広告が無ければ最初から「次のステージへ」と表示する
-        if (state.finalStage) {
-          setOkLabel(t("goGameResult"));
-        } else {
-          setOkLabel(ad ? t("showAd") : t("nextStage"));
-        }
-        okLockedRef.current = false;
-        setOkLocked(false);
-      });
+      // 広告読み込みと OK ラベル設定を委譲
+      preloadAd();
       if (state.levelId) {
         const current = {
           stage: state.stage,
@@ -179,8 +129,7 @@ export function useResultActions({
       setShowResult(true);
       setAdShown(false);
       setDebugAll(true);
-      loadedAdRef.current = null;
-      setOkLabel(t("ok"));
+      resetLabel();
       if (state.levelId) {
         const current = {
           stage: state.stage - 1,
@@ -213,11 +162,10 @@ export function useResultActions({
     setDebugAll,
     setGameClear,
     setAdShown,
-    loadAdIfNeeded,
-    t,
     markCleared,
-    setOkLocked,
-    setOkLabel,
+    preloadAd,
+    resetLabel,
+    banner.bannerActiveRef,
   ]);
 
   // OK ボタン押下時の処理
@@ -261,7 +209,7 @@ export function useResultActions({
       setOkLocked(false);
       // 5. 念のためバナー表示も強制終了
       setShowBanner(false);
-      bannerActiveRef.current = false;
+      banner.bannerActiveRef.current = false;
       // 6. ホーム画面へ戻る
       await router.replace("/");
       // ここで return して以降の処理を行わない
@@ -287,28 +235,24 @@ export function useResultActions({
     // ステージクリア直後で広告未表示なら広告を表示
     if (wasStageClear && !adShown) {
       setAdShown(true);
-      const shown = await showAd(loadedAdRef.current);
-      loadedAdRef.current = null;
+      const shown = await showLoadedAd();
       // 広告が表示されたときのみボタンラベルを変更して処理を終了
       if (shown) {
-        setOkLabel(t("nextStage"));
         okLockedRef.current = false;
         setOkLocked(false);
         return;
       }
     }
 
-    // 次ステージ番号を表示するため事前に値をセット
-    setBannerStage(state.stage + 1);
+    // 次ステージ番号を設定しバナーを表示
+    banner.startBanner(state.stage + 1);
     // ステージクリア時はここでステージを進める
     if (wasStageClear) {
       addRecord(state.stage, state.steps, state.bumps);
       nextStage();
     }
-    // バナー表示で演出を行う
-    setShowBanner(true);
     // バナー表示中は判定をスキップする
-    bannerActiveRef.current = true;
+    banner.bannerActiveRef.current = true;
 
 
     // リザルト関連のフラグをリセットする
@@ -322,7 +266,7 @@ export function useResultActions({
     setAdShown(false);
     // ステージクリアしていない場合は直ちにラベルを戻す
     if (!wasStageClear) {
-      setOkLabel(t("ok"));
+      resetLabel();
     }
 
     // ステート更新後の値を確認するための空 await
@@ -340,12 +284,12 @@ export function useResultActions({
    */
   const handleBannerFinish = useCallback(() => {
     setShowBanner(false);
-    bannerActiveRef.current = false;
+    banner.bannerActiveRef.current = false;
     // バナー表示後に OK ボタンのラベルを戻す
-    setOkLabel(t("ok"));
+    resetLabel();
     okLockedRef.current = false;
     setOkLocked(false);
-  }, [setShowBanner, setOkLabel, setOkLocked, t]);
+  }, [setShowBanner, resetLabel, setOkLocked, banner.bannerActiveRef, okLockedRef]);
 
   // モーダルのフェードアウトが終わった後に番号をリセットする
   const handleBannerDismiss = useCallback(() => {
