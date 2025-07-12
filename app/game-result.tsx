@@ -1,6 +1,8 @@
 import React from 'react';
 // ScrollView を使うために追加インポート
 import { StyleSheet, Platform, ScrollView } from 'react-native';
+// SafeArea の情報を取得するためのフックを追加
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -19,6 +21,8 @@ export default function GameResultScreen() {
   const router = useRouter();
   // BGM 制御フック。広告表示中は音を止めるために利用
   const { pause: pauseBgm, resume: resumeBgm } = useBgm();
+  // 端末のセーフエリア余白を取得する
+  const insets = useSafeAreaInsets();
   // 例外処理を共通化したフック。エラー通知とログ出力を行う
   const handleError = useHandleError();
 
@@ -50,7 +54,12 @@ export default function GameResultScreen() {
   );
 
   return (
-    <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
+    <ThemedView
+      lightColor="#000"
+      darkColor="#000"
+      // セーフエリアを考慮して上と下に余白を追加
+      style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
+    >
       {/* ScrollView で一覧を縦スクロール可能にする */}
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText type="title" lightColor="#fff" darkColor="#fff">
