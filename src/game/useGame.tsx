@@ -70,7 +70,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         wallLifetime,
         enemyCountsFn,
         wallLifetimeFn,
-        showAdjacentWalls,
+        // 新しいゲームを始めるときは前回の周囲表示設定を引き継がない
+        showAdjacentWalls = false,
         showAdjacentWallsFn,
         biasedSpawn,
         biasedGoal,
