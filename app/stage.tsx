@@ -7,6 +7,10 @@ import { useResultState } from '@/src/hooks/useResultState';
 export default function StageScreen() {
   const { stage } = useLocalSearchParams<{ stage?: string }>();
   const router = useRouter();
+  // router オブジェクトは毎回新しくなる可能性があるため
+  // useRef で保持しコールバックから参照する
+  const routerRef = useRef(router);
+  routerRef.current = router;
   const { setShowBanner, setBannerStage, setOkLocked } = useResultState();
   const stageNum = Number(stage) || 1;
 
@@ -28,9 +32,11 @@ export default function StageScreen() {
     // バナーが再表示されてしまうことがある
     // 少し余裕を持って待機してから Play 画面へ戻す
     setTimeout(() => {
+
       router.replace('/play');
     }, 100);
   }, [router, setShowBanner, setBannerStage, setOkLocked]);
+
 
   return (
     <StageBanner
