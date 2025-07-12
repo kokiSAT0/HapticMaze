@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useResultState } from '@/src/hooks/useResultState';
-import { useRunRecords } from '@/src/hooks/useRunRecords';
 
 interface Options {
   stage: number;
@@ -21,8 +20,6 @@ export function useBannerControl({ stage, steps, totalSteps }: Options) {
     bannerShown,
     setBannerShown,
   } = useResultState();
-  // 記録リセット用の関数だけ取得
-  const { reset } = useRunRecords();
 
   // バナー表示中かどうかのフラグ
   const bannerActiveRef = useRef(false);
@@ -48,12 +45,6 @@ export function useBannerControl({ stage, steps, totalSteps }: Options) {
     }
   }, [stage, steps, showBanner, bannerStage, bannerShown, setBannerStage, setShowBanner, setBannerShown]);
 
-  // ステージ1を読み込んだら記録を初期化する
-  useEffect(() => {
-    if (stage === 1 && steps === 0 && totalSteps === 0) {
-      reset();
-    }
-  }, [stage, steps, totalSteps, reset]);
 
   /** バナーの終了処理 */
   const handleBannerFinish = useCallback(() => {
