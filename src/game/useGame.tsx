@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useReducer, useRef, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useMemo,
+  type ReactNode,
+} from 'react';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
@@ -54,60 +63,71 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // 初回の useEffect 実行をスキップするためのフラグ
   const first = useRef(true);
 
-  const move = (dir: Dir): boolean => {
-    const success = canMove(state.pos, dir, state.maze);
-    dispatch({ type: 'move', dir });
-    return success;
-  };
+  // 移動処理。依存するステートが変わらない限り同じ関数を再利用する
+  const move = useCallback(
+    (dir: Dir): boolean => {
+      const success = canMove(state.pos, dir, state.maze);
+      dispatch({ type: 'move', dir });
+      return success;
+    },
+    [state.pos, state.maze],
+  );
 
-  const send = (action: Action) => dispatch(action);
+  const send = useCallback((action: Action) => dispatch(action), []);
 
-  const reset = () => send({ type: 'reset' });
-  const newGame = (
-    size: number = 10,
-    counts?: EnemyCounts,
-    enemyPathLength?: number,
-    playerPathLength?: number,
-    wallLifetime?: number,
-    enemyCountsFn?: (stage: number) => EnemyCounts,
-    wallLifetimeFn?: (stage: number) => number,
-    showAdjacentWalls?: boolean,
-    showAdjacentWallsFn?: (stage: number) => boolean,
-    biasedSpawn?: boolean,
-    biasedGoal?: boolean,
-    levelId?: string,
-    stagePerMap?: number,
-    respawnMax?: number,
-  ) => {
-    send({
-      type: 'newMaze',
-      maze: loadMaze(size),
-      counts,
-      enemyPathLength,
-      playerPathLength,
-      wallLifetime,
-      enemyCountsFn,
-      wallLifetimeFn,
-      showAdjacentWalls,
-      showAdjacentWallsFn,
-      biasedSpawn,
-      biasedGoal,
-      levelId,
-      stagePerMap,
-      respawnMax,
-    });
-    // フラグが有効なら最終ステージまで進める
-    if (START_FINAL) {
-      const total = size * size;
-      for (let i = 1; i < total; i++) {
-        send({ type: 'nextStage' });
+  const reset = useCallback(() => send({ type: 'reset' }), [send]);
+  // 新しい迷路を生成してステートを初期化する
+  const newGame = useCallback(
+    (
+      size: number = 10,
+      counts?: EnemyCounts,
+      enemyPathLength?: number,
+      playerPathLength?: number,
+      wallLifetime?: number,
+      enemyCountsFn?: (stage: number) => EnemyCounts,
+      wallLifetimeFn?: (stage: number) => number,
+      showAdjacentWalls?: boolean,
+      showAdjacentWallsFn?: (stage: number) => boolean,
+      biasedSpawn?: boolean,
+      biasedGoal?: boolean,
+      levelId?: string,
+      stagePerMap?: number,
+      respawnMax?: number,
+    ) => {
+      send({
+        type: 'newMaze',
+        maze: loadMaze(size),
+        counts,
+        enemyPathLength,
+        playerPathLength,
+        wallLifetime,
+        enemyCountsFn,
+        wallLifetimeFn,
+        showAdjacentWalls,
+        showAdjacentWallsFn,
+        biasedSpawn,
+        biasedGoal,
+        levelId,
+        stagePerMap,
+        respawnMax,
+      });
+      // フラグが有効なら最終ステージまで進める
+      if (START_FINAL) {
+        const total = size * size;
+        for (let i = 1; i < total; i++) {
+          send({ type: 'nextStage' });
+        }
       }
-    }
-  };
-  const nextStage = () => send({ type: 'nextStage' });
-  const resetRun = () => send({ type: 'resetRun' });
-  const respawnEnemies = () => send({ type: 'respawnEnemies', playerPos: state.pos });
-  const loadState = (s: State) => send({ type: 'load', state: s });
+    },
+    [send],
+  );
+  const nextStage = useCallback(() => send({ type: 'nextStage' }), [send]);
+  const resetRun = useCallback(() => send({ type: 'resetRun' }), [send]);
+  const respawnEnemies = useCallback(
+    () => send({ type: 'respawnEnemies', playerPos: state.pos }),
+    [send, state.pos],
+  );
+  const loadState = useCallback((s: State) => send({ type: 'load', state: s }), [send]);
 
   // 状態が変化するたび自動保存するが、初回だけはスキップする
   useEffect(() => {
@@ -126,10 +146,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
     saveGame(state, { showError: showSnackbar });
   }, [state, showSnackbar]);
 
+  // Context に渡す値もメモ化して不要な再レンダリングを防ぐ
+  const value = useMemo(
+    () => ({
+      state,
+      move,
+      reset,
+      newGame,
+      maze: state.mazeRaw,
+      nextStage,
+      resetRun,
+      respawnEnemies,
+      loadState,
+    }),
+    [state, move, reset, newGame, nextStage, resetRun, respawnEnemies, loadState],
+  );
+
   return (
-    <GameContext.Provider
-      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun, respawnEnemies, loadState }}
-    >
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );
