@@ -12,6 +12,7 @@ import type { MazeData } from "@/src/types/maze";
 import type { InterstitialAd } from "react-native-google-mobile-ads";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
+import { devLog } from "@/src/utils/logger";
 
 interface Options {
   state: GameState;
@@ -225,7 +226,7 @@ export function useResultActions({
     const wasStageClear = stageClear;
 
     // 現在の状態をログに出すことでデバッグしやすくする
-    console.log("handleOk start", {
+    devLog("handleOk start", {
       stage: state.stage,
       gameOver,
       gameClear,
@@ -321,7 +322,7 @@ export function useResultActions({
     // ステート更新後の値を確認するための空 await
     await Promise.resolve();
 
-    console.log("after reset", {
+    devLog("after reset", {
       stageClear,
       showResult,
     });

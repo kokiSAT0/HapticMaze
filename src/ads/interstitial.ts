@@ -1,5 +1,6 @@
 import { InterstitialAd, TestIds, AdEventType } from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
+import { devLog } from '@/src/utils/logger';
 
 // テスト用ID。__DEV__ でのみ使われます
 const TEST_ID = TestIds.INTERSTITIAL;
@@ -28,7 +29,7 @@ export async function showInterstitial() {
 
     // 広告イベントを監視し、読み込み完了で表示、閉じるかエラーで終了
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      console.log('Interstitial event', type);
+      devLog('Interstitial event', type);
       if (type === AdEventType.LOADED) {
         ad.show();
       }
@@ -62,7 +63,7 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
   return new Promise((resolve) => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      console.log('Interstitial load', type);
+      devLog('Interstitial load', type);
       if (type === AdEventType.LOADED) {
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
@@ -90,7 +91,7 @@ export async function showLoadedInterstitial(ad: InterstitialAd) {
   return new Promise<void>((resolve) => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      console.log('Interstitial show', type);
+      devLog('Interstitial show', type);
       if (type === AdEventType.OPENED) {
         if (timeoutId) clearTimeout(timeoutId);
       }

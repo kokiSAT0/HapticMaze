@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
+import { devLog } from "@/src/utils/logger";
 
 // 環境変数 EXPO_PUBLIC_DISABLE_STAGE_BANNER が 'true' のとき
 // ステージバナーを表示せず即座に onFinish を呼び出す
@@ -33,20 +34,20 @@ export function StageBanner({
 
   useEffect(() => {
     // 表示状態やステージ番号が変わるたびにログを出す
-    console.log(`[StageBanner] visible=${visible}, stage=${stage}`);
+    devLog(`[StageBanner] visible=${visible}, stage=${stage}`);
     if (!visible || DISABLE_STAGE_BANNER) return;
     // 新しい表示が始まったのでフラグをリセット
     calledRef.current = false;
     // 初期化処理がすぐ終わっても最低 2 秒は表示する
     const id = setTimeout(() => {
-      console.log(`[StageBanner] onFinish stage=${stage}`);
+      devLog(`[StageBanner] onFinish stage=${stage}`);
       if (!calledRef.current) {
         calledRef.current = true;
         onFinish();
       }
     }, 2000);
     return () => {
-      console.log(`[StageBanner] cleanup stage=${stage}`);
+      devLog(`[StageBanner] cleanup stage=${stage}`);
       clearTimeout(id);
     };
   }, [visible, stage, onFinish]);

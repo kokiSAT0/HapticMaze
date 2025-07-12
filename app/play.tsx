@@ -22,6 +22,7 @@ import { UI } from "@/constants/ui";
 import { LEVELS } from "@/constants/levels";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
 import { cmToDp } from "@/src/utils/layout";
+import { devLog } from "@/src/utils/logger";
 
 export default function PlayScreen() {
   const { t } = useLocale();
@@ -70,7 +71,7 @@ export default function PlayScreen() {
   // ここではプレイ画面の主な状態とバナー状態をログに出して
   // 今何が表示されているか確認しやすくします。
   useEffect(() => {
-    console.log('[PlayScreen]', {
+    devLog('[PlayScreen]', {
       stage: state.stage,
       showResult,
       gameOver,
@@ -134,7 +135,7 @@ export default function PlayScreen() {
     const gray = Math.round(baseGray + ratio * (255 - baseGray));
     if (__DEV__) {
       // DEBUG: 計算結果をコンソールに出力して確認する
-      console.log('respawn color', {
+      devLog('respawn color', {
         stock: state.respawnStock,
         max: state.respawnMax,
         ratio,

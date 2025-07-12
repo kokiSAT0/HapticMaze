@@ -6,6 +6,7 @@ import {
 } from "@/src/ads/interstitial";
 import { useCallback } from "react";
 import { useHandleError } from "@/src/utils/handleError";
+import { devLog } from "@/src/utils/logger";
 
 interface Options {
   pauseBgm: () => void;
@@ -29,7 +30,7 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
       // 余りが0のとき「10の倍数」と判定できます
       const shouldShow =
         levelId === 'tutorial' ? stage % 10 === 0 : stage % 6 === 0;
-      console.log("loadAdIfNeeded", { stage, shouldShow });
+      devLog("loadAdIfNeeded", { stage, shouldShow });
       if (!shouldShow || DISABLE_ADS) return null;
       return loadInterstitial();
     },
