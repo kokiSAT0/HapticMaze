@@ -61,6 +61,10 @@ const messages = {
     loadingAd: "広告を読み込んでいます",
     showAd: "広告を表示して次に進む",
     watchAdForReveal: "広告を見るともう一度全表示できます",
+    // BGM 再生に失敗したときのエラーメッセージ
+    playbackFailure: "BGM の再生に失敗しました",
+    // 広告表示に失敗したときのエラーメッセージ
+    adDisplayFailure: "広告を表示できませんでした",
     nextStage: "次のステージへ",
     goGameResult: "ゲームリザルトへ進む",
     gameResults: "ゲームリザルト",
@@ -137,6 +141,10 @@ const messages = {
     loadingAd: "Loading ad...",
     showAd: "Show ad and continue",
     watchAdForReveal: "Watch an ad to reveal again",
+    // Message shown when BGM playback fails
+    playbackFailure: "Failed to play BGM",
+    // Message shown when ad display fails
+    adDisplayFailure: "Failed to show ad",
     nextStage: "Next stage",
     goGameResult: "View Game Results",
     gameResults: "Game Results",

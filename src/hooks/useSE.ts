@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useSeVolume } from '@/src/audio/SeVolumeProvider';
 import { useHandleError } from '@/src/utils/handleError';
+import { useLocale } from '@/src/locale/LocaleContext';
 
 /**
  * 効果音(SE)を管理するためのフック。
@@ -14,6 +15,8 @@ export function useSE(soundFile: number) {
   const { volume, setVolume } = useSeVolume();
   // ユーザーへメッセージを表示するための関数
   const handleError = useHandleError();
+  // 多言語メッセージ取得用の関数
+  const { t } = useLocale();
 
   // 初期化時に効果音を読み込む
   useEffect(() => {
@@ -24,8 +27,9 @@ export function useSE(soundFile: number) {
       playerRef.current = p;
     } catch (e) {
       // プレイヤー生成に失敗したらユーザーへ通知
-      // エラーメッセージは効果音(SE)用に変更
-      handleError("効果音の再生に失敗しました", e);
+
+      handleError(t('playbackFailure'), e);
+
     }
     return () => {
       playerRef.current?.remove();
@@ -51,8 +55,9 @@ export function useSE(soundFile: number) {
       playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合のエラーハンドリング
-      // エラーメッセージを効果音用にする
-      handleError("効果音の再生に失敗しました", e);
+
+      handleError(t('playbackFailure'), e);
+
     }
   };
 

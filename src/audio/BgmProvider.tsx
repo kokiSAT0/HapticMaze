@@ -12,6 +12,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { useHandleError } from "@/src/utils/handleError";
+import { useLocale } from "@/src/locale/LocaleContext";
 
 interface BgmContextValue {
   volume: number;
@@ -32,6 +33,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const [volume, setVolume] = useState(1);
   const [ready, setReady] = useState(false);
   const handleError = useHandleError();
+  const { t } = useLocale();
 
   // 一定時間待つためのユーティリティ
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -88,8 +90,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       if (playerRef.current?.paused) playerRef.current.play();
     } catch (e) {
       // 再生に失敗した場合はユーザーへ知らせてログに残す
-      // メッセージは BGM 用とわかるように微修正
-      handleError("BGMの再生に失敗しました", e);
+
+      handleError(t('playbackFailure'), e);
+
     }
   };
 
@@ -131,8 +134,9 @@ export function BgmProvider({ children }: { children: ReactNode }) {
         currentFileRef.current = file;
       } catch (e) {
         // プレイヤー作成や再生でエラーが起きた場合の処理
-        // エラーメッセージを BGM 用に変更
-        handleError("BGMの再生に失敗しました", e);
+
+        handleError(t('playbackFailure'), e);
+
       }
     };
 
