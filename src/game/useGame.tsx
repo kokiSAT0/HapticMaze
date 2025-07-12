@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useReducer, useRef, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from 'react';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { canMove } from './maze';
 import { loadMaze } from './loadMaze';
@@ -39,61 +48,70 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // 初回の useEffect 実行をスキップするためのフラグ
   const first = useRef(true);
 
-  const move = (dir: Dir): boolean => {
-    const success = canMove(state.pos, dir, state.maze);
-    dispatch({ type: 'move', dir });
-    return success;
-  };
+  const move = useCallback(
+    (dir: Dir): boolean => {
+      const success = canMove(state.pos, dir, state.maze);
+      dispatch({ type: 'move', dir });
+      return success;
+    },
+    [state.pos, state.maze]
+  );
 
-  const send = (action: Action) => dispatch(action);
+  const send = useCallback((action: Action) => dispatch(action), [dispatch]);
 
-  const reset = () => send({ type: 'reset' });
-  const newGame = (options: NewGameOptions = {}) => {
-    const {
-      size = 10,
-      counts,
-      enemyPathLength,
-      playerPathLength,
-      wallLifetime,
-      enemyCountsFn,
-      wallLifetimeFn,
-      showAdjacentWalls,
-      showAdjacentWallsFn,
-      biasedSpawn,
-      biasedGoal,
-      levelId,
-      stagePerMap,
-      respawnMax,
-    } = options;
-    send({
-      type: 'newMaze',
-      maze: loadMaze(size),
-      counts,
-      enemyPathLength,
-      playerPathLength,
-      wallLifetime,
-      enemyCountsFn,
-      wallLifetimeFn,
-      showAdjacentWalls,
-      showAdjacentWallsFn,
-      biasedSpawn,
-      biasedGoal,
-      levelId,
-      stagePerMap,
-      respawnMax,
-    });
-    // フラグが有効なら最終ステージまで進める
-    if (START_FINAL) {
-      const total = size * size;
-      for (let i = 1; i < total; i++) {
-        send({ type: 'nextStage' });
+  const reset = useCallback(() => send({ type: 'reset' }), [send]);
+  const newGame = useCallback(
+    (options: NewGameOptions = {}) => {
+      const {
+        size = 10,
+        counts,
+        enemyPathLength,
+        playerPathLength,
+        wallLifetime,
+        enemyCountsFn,
+        wallLifetimeFn,
+        showAdjacentWalls,
+        showAdjacentWallsFn,
+        biasedSpawn,
+        biasedGoal,
+        levelId,
+        stagePerMap,
+        respawnMax,
+      } = options;
+      send({
+        type: 'newMaze',
+        maze: loadMaze(size),
+        counts,
+        enemyPathLength,
+        playerPathLength,
+        wallLifetime,
+        enemyCountsFn,
+        wallLifetimeFn,
+        showAdjacentWalls,
+        showAdjacentWallsFn,
+        biasedSpawn,
+        biasedGoal,
+        levelId,
+        stagePerMap,
+        respawnMax,
+      });
+      // フラグが有効なら最終ステージまで進める
+      if (START_FINAL) {
+        const total = size * size;
+        for (let i = 1; i < total; i++) {
+          send({ type: 'nextStage' });
+        }
       }
-    }
-  };
-  const nextStage = () => send({ type: 'nextStage' });
-  const resetRun = () => send({ type: 'resetRun' });
-  const respawnEnemies = () => send({ type: 'respawnEnemies', playerPos: state.pos });
-  const loadState = (s: State) => send({ type: 'load', state: s });
+    },
+    [send]
+  );
+  const nextStage = useCallback(() => send({ type: 'nextStage' }), [send]);
+  const resetRun = useCallback(() => send({ type: 'resetRun' }), [send]);
+  const respawnEnemies = useCallback(
+    () => send({ type: 'respawnEnemies', playerPos: state.pos }),
+    [send, state.pos]
+  );
+  const loadState = useCallback((s: State) => send({ type: 'load', state: s }), [send]);
 
   // 状態が変化するたび自動保存するが、初回だけはスキップする
   useEffect(() => {
@@ -112,10 +130,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
     saveGame(state, { showError: showSnackbar });
   }, [state, showSnackbar]);
 
+  const value = useMemo(
+    () => ({
+      state,
+      move,
+      reset,
+      newGame,
+      maze: state.mazeRaw,
+      nextStage,
+      resetRun,
+      respawnEnemies,
+      loadState,
+    }),
+    [state, move, reset, newGame, nextStage, resetRun, respawnEnemies, loadState]
+  );
+
   return (
-    <GameContext.Provider
-      value={{ state, move, reset, newGame, maze: state.mazeRaw, nextStage, resetRun, respawnEnemies, loadState }}
-    >
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );
