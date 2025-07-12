@@ -12,6 +12,7 @@ import { useGame } from '@/src/game/useGame';
 import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 import { useBgm } from '@/src/hooks/useBgm';
 import { UI } from '@/constants/ui';
+import { useResultState } from '@/src/hooks/useResultState';
 
 export default function ResetConfirmScreen() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function ResetConfirmScreen() {
   const { t } = useLocale();
   const { change, bgmReady } = useBgm();
   const { show: showSnackbar } = useSnackbar();
+  // 可視化フラグのリセット用フックを取得
+  const { setDebugAll } = useResultState();
   // 中断データの難易度とステージを保持する
   const [suspendInfo, setSuspendInfo] = React.useState<{
     levelId?: string;
@@ -70,6 +73,8 @@ export default function ResetConfirmScreen() {
     } else {
       setPendingBgm(bgmFile);
     }
+    // 前回の可視化状態を引き継がないよう初期化
+    setDebugAll(false);
     newGame({
       size: level.size,
       counts: level.enemies,

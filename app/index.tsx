@@ -18,6 +18,7 @@ import { useAudioControls } from "@/src/hooks/useAudioControls";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { UI } from "@/constants/ui";
 import { devLog } from "@/src/utils/logger";
+import { useResultState } from "@/src/hooks/useResultState";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -30,6 +31,8 @@ export default function TitleScreen() {
   const { t, firstLaunch, changeLang } = useLocale();
   const { show: showSnackbar } = useSnackbar();
   const { isCleared } = useLevelUnlock();
+  // 可視化フラグのリセット用フックを取得
+  const { setDebugAll } = useResultState();
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
@@ -79,6 +82,8 @@ export default function TitleScreen() {
     } else {
       audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));
     }
+    // 前回の可視化状態を引き継がないよう初期化する
+    setDebugAll(false);
     newGame({
       size: level.size,
       counts: level.enemies,
