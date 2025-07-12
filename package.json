@@ -3,14 +3,14 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "prestart": "node ./scripts/update-maze-import.ts",
+    "prestart": "npx tsx ./scripts/update-maze-import.ts",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "preandroid": "node ./scripts/update-maze-import.ts",
+    "preandroid": "npx tsx ./scripts/update-maze-import.ts",
     "android": "expo start --android",
-    "preios": "node ./scripts/update-maze-import.ts",
+    "preios": "npx tsx ./scripts/update-maze-import.ts",
     "ios": "expo start --ios",
-    "preweb": "node ./scripts/update-maze-import.ts",
+    "preweb": "npx tsx ./scripts/update-maze-import.ts",
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest"
@@ -55,7 +55,8 @@
     "@types/react": "~19.0.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "tsx": "^4.7.0"
   },
   "private": true
 }
