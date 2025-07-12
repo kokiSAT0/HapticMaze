@@ -19,6 +19,7 @@ import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
 import { UI } from "@/constants/ui";
 import { devLog } from "@/src/utils/logger";
 import { useResultState } from "@/src/hooks/useResultState";
+import { useRunRecords } from "@/src/hooks/useRunRecords";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -33,6 +34,8 @@ export default function TitleScreen() {
   const { isCleared } = useLevelUnlock();
   // 可視化フラグのリセット用フックを取得
   const { setDebugAll } = useResultState();
+  // ステージ記録を管理するフック
+  const { reset } = useRunRecords();
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
@@ -82,8 +85,9 @@ export default function TitleScreen() {
     } else {
       audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));
     }
-    // 前回の可視化状態を引き継がないよう初期化する
+    // 前回の可視化状態とステージ記録を初期化する
     setDebugAll(false);
+    reset();
     newGame({
       size: level.size,
       counts: level.enemies,
