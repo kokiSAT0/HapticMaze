@@ -1,5 +1,6 @@
 import React from 'react';
-import Svg, { Polyline } from 'react-native-svg';
+// 目盛りや軸を描くために Line と Text を追加
+import Svg, { Polyline, Line, Text } from 'react-native-svg';
 import { UI } from '@/constants/ui';
 
 /**
@@ -22,31 +23,116 @@ export function ScoreChart({
   height = UI.miniMapSize / 3,
   accessibilityLabel,
 }: ScoreChartProps) {
+  // グラフ領域以外に目盛り用の余白を確保
+  const marginLeft = 30;
+  const marginBottom = 20;
+  const chartWidth = width - marginLeft;
+  const chartHeight = height;
+  const svgWidth = width;
+  const svgHeight = chartHeight + marginBottom;
+
   // 最大値が 0 だと計算できないので 1 を下限とする
   const max = Math.max(...data, 1);
-  const stepX = data.length > 1 ? width / (data.length - 1) : 0;
 
-  // SVG Polyline 用の文字列 "x,y x,y ..." を作成
+  // 折れ線用の X 方向の間隔
+  const stepGraphX = data.length > 1 ? chartWidth / (data.length - 1) : 0;
+  // 目盛り表示用の X 方向の間隔
+  const stepAxisX = data.length > 0 ? chartWidth / data.length : 0;
+
+  // 折れ線グラフの座標を作成
   const points = data
     .map((v, i) => {
-      const x = i * stepX;
-      const y = height - (v / max) * height;
+      const x = marginLeft + i * stepGraphX;
+      const y = chartHeight - (v / max) * chartHeight;
       return `${x},${y}`;
     })
     .join(' ');
 
+  // 横軸目盛り値 (5 等分)
+  const xTicks = Array.from({ length: 5 }, (_, i) =>
+    Math.round(((i + 1) * data.length) / 5),
+  );
+  // 縦軸目盛り値 (2 等分)
+  const yTicks = [max / 2, max];
+
   return (
     <Svg
-      width={width}
-      height={height}
+      width={svgWidth}
+      height={svgHeight}
       accessibilityLabel={accessibilityLabel}
     >
-      <Polyline
-        points={points}
-        fill="none"
+      {/* 軸の描画 */}
+      <Line
+        x1={marginLeft}
+        y1={chartHeight}
+        x2={marginLeft + chartWidth}
+        y2={chartHeight}
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={1}
       />
+      <Line
+        x1={marginLeft}
+        y1={0}
+        x2={marginLeft}
+        y2={chartHeight}
+        stroke={color}
+        strokeWidth={1}
+      />
+
+      {/* X 軸目盛りとラベル */}
+      {xTicks.map((v) => {
+        const x = marginLeft + stepAxisX * v;
+        return (
+          <React.Fragment key={`x${v}`}>
+            <Line
+              x1={x}
+              y1={chartHeight}
+              x2={x}
+              y2={chartHeight + 4}
+              stroke={color}
+              strokeWidth={1}
+            />
+            <Text
+              x={x}
+              y={chartHeight + 15}
+              fill={color}
+              fontSize={10}
+              textAnchor="middle"
+            >
+              {v}
+            </Text>
+          </React.Fragment>
+        );
+      })}
+
+      {/* Y 軸目盛りとラベル */}
+      {yTicks.map((v) => {
+        const y = chartHeight - (v / max) * chartHeight;
+        return (
+          <React.Fragment key={`y${v}`}>
+            <Line
+              x1={marginLeft - 4}
+              y1={y}
+              x2={marginLeft}
+              y2={y}
+              stroke={color}
+              strokeWidth={1}
+            />
+            <Text
+              x={marginLeft - 6}
+              y={y + 4}
+              fill={color}
+              fontSize={10}
+              textAnchor="end"
+            >
+              {Math.round(v)}
+            </Text>
+          </React.Fragment>
+        );
+      })}
+
+      {/* 折れ線グラフ本体 */}
+      <Polyline points={points} fill="none" stroke={color} strokeWidth={2} />
     </Svg>
   );
 }
