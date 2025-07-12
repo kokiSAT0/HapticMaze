@@ -57,7 +57,9 @@ export function reducer(state: State, action: Action): State {
         stagePerMap: action.stagePerMap ?? state.stagePerMap,
         respawnMax: action.respawnMax ?? state.respawnMax,
         biasedGoal: action.biasedGoal ?? state.biasedGoal,
-        showAdjacentWalls: action.showAdjacentWalls ?? state.showAdjacentWalls,
+        // レベル設定に無い場合は周囲表示フラグをリセットする
+        // undefined だと前回の値を引き継いでしまうため false を入れて初期化
+        showAdjacentWalls: action.showAdjacentWalls ?? false,
         showAdjacentWallsFn: action.showAdjacentWallsFn,
       });
     case 'nextStage':
