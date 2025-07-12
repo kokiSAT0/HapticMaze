@@ -89,7 +89,8 @@ export default function PlayScreen() {
 
   // ステージバナー表示フラグが変化したときだけ遷移するようにする
   // これにより状態更新が遅れた場合でも無限ループを防げる
-  const prevBanner = React.useRef(false);
+  // React をインポートしていないので useRef を直接使う
+  const prevBanner = useRef(false);
   useEffect(() => {
     // bannerStage が 0 のときは表示データが無いので遷移しない
     if (showBanner && bannerStage > 0 && !prevBanner.current) {
