@@ -6,6 +6,7 @@ import {
 } from "@/src/ads/interstitial";
 import { useCallback } from "react";
 import { useHandleError } from "@/src/utils/handleError";
+import { useLocale } from "@/src/locale/LocaleContext";
 import { devLog } from "@/src/utils/logger";
 
 interface Options {
@@ -21,6 +22,8 @@ interface Options {
  */
 export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
   const handleError = useHandleError();
+  // 国際化されたメッセージを取得する関数
+  const { t } = useLocale();
   // 広告読み込み処理をメモ化
   const loadAdIfNeeded = useCallback(
     async (stage: number): Promise<InterstitialAd | null> => {
@@ -45,13 +48,13 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
         pauseBgm();
         await showLoadedInterstitial(ad);
       } catch (e) {
-        handleError("広告を表示できませんでした", e);
+        handleError(t('adDisplayFailure'), e);
       } finally {
         resumeBgm();
       }
       return true;
     },
-    [pauseBgm, resumeBgm, handleError],
+    [pauseBgm, resumeBgm, handleError, t],
   );
 
   // 読み込みと表示をまとめた処理もメモ化
