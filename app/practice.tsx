@@ -8,11 +8,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { EnemyCounter } from '@/components/EnemyCounter';
 import { UI } from '@/constants/ui';
+import { useRunRecords } from '@/src/hooks/useRunRecords';
 
 export default function PracticeScreen() {
   const router = useRouter();
   const { newGame } = useGame();
   const { t } = useLocale();
+  const { reset } = useRunRecords();
   // 各敵タイプの数を状態として管理
   const [random, setRandom] = React.useState(0);
   const [slow, setSlow] = React.useState(0);
@@ -25,6 +27,8 @@ export default function PracticeScreen() {
   const [wallLife, setWallLife] = React.useState<number>(Infinity);
 
   const start = (size: number) => {
+    // 前回ゲームの記録をリセット
+    reset();
     newGame({
       size,
       counts: { random, slow, sight, fast: 0 },
