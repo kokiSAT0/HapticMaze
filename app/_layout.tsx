@@ -17,6 +17,7 @@ import { BgmProvider } from '@/src/audio/BgmProvider';
 import { SeVolumeProvider } from '@/src/audio/SeVolumeProvider';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { initGlobalErrorHandler } from '@/src/utils/initGlobalErrorHandler';
+import { initUnhandledRejectionHandler } from '@/src/utils/initUnhandledRejectionHandler';
 
 import { ErrorBoundary } from '@/src/components/ErrorBoundary';
 
@@ -32,6 +33,7 @@ export default function RootLayout() {
   // アプリ全体のエラーハンドラを設定
   useEffect(() => {
     initGlobalErrorHandler(showSnackbar);
+    initUnhandledRejectionHandler(showSnackbar);
   }, [showSnackbar]);
 
   // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
