@@ -25,7 +25,11 @@ describe('applyDistanceFeedback', () => {
     const fakeId = {} as NodeJS.Timeout;
     intervalSpy.mockReturnValue(fakeId);
 
-    const result = applyDistanceFeedback({ x: 0, y: 0 }, { x: 0, y: 1 });
+    const result = applyDistanceFeedback(
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+      { showError: jest.fn() },
+    );
 
     expect(result.wait).toBe(400);
     expect(result.id).toBe(fakeId);
@@ -47,7 +51,7 @@ describe('applyDistanceFeedback', () => {
     const result = applyDistanceFeedback(
       { x: 0, y: 0 },
       { x: 0, y: 8 },
-      { maxDist: 8 }
+      { maxDist: 8, showError: jest.fn() }
     );
 
     expect(result.wait).toBe(100);
@@ -66,7 +70,7 @@ describe('applyDistanceFeedback', () => {
     const result = applyDistanceFeedback(
       { x: 0, y: 0 },
       { x: 0, y: 9 },
-      { maxDist: 8 }
+      { maxDist: 8, showError: jest.fn() }
     );
 
     expect(result.wait).toBe(100);
@@ -96,7 +100,7 @@ describe('applyBumpFeedback', () => {
     const fakeId = {} as NodeJS.Timeout;
     intervalSpy.mockReturnValue(fakeId);
 
-    const wait = applyBumpFeedback(border, setColor);
+    const wait = applyBumpFeedback(border, setColor, { showError: jest.fn() });
 
     expect(wait).toBe(300);
     expect(setColor).toHaveBeenCalledWith('red');

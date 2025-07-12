@@ -7,18 +7,25 @@ import type { Vec2 } from '@/src/types/maze';
 import { distance } from './math';
 
 // Expo Haptics の呼び出しが失敗してもアプリが止まらないようにする
-async function safeImpact(style: Haptics.ImpactFeedbackStyle) {
+// 第二引数にメッセージ表示用の関数を渡すと、失敗時にユーザーへ通知できる
+async function safeImpact(
+  style: Haptics.ImpactFeedbackStyle,
+  showError?: (msg: string) => void,
+) {
   try {
     await Haptics.impactAsync(style);
   } catch (e) {
     // 初心者向け: エラー内容を表示しておくと原因調査に役立つ
     console.error('Haptics.impactAsync failed:', e);
+    showError?.('振動エラーが発生しました');
   }
 }
 
 export interface FeedbackOptions {
   /** 最大距離。未指定ならゴール座標から算出した値を使う */
   maxDist?: number;
+  /** エラー表示用の関数 */
+  showError?: (msg: string) => void;
 }
 
 export interface DistanceFeedbackResult {
@@ -62,7 +69,7 @@ export function applyDistanceFeedback(
   const { style, duration } = impact;
 
   // 振動処理は失敗することがあるので try/catch 付きの関数を使う
-  void safeImpact(style);
+  void safeImpact(style, opts.showError);
   const id = setInterval(() => {
     // setInterval でも同様に安全なラッパーを使用
     void safeImpact(style);
@@ -92,7 +99,7 @@ export function applyBumpFeedback(
 
   setColor(UI.colors.bump);
   // 壁にぶつかったときも安全に振動させる
-  void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
+  void safeImpact(Haptics.ImpactFeedbackStyle.Heavy, opts.showError);
   const id = setInterval(() => {
     void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
   }, 50);

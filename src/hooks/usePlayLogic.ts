@@ -45,6 +45,7 @@ export function usePlayLogic() {
     playMoveSe: audio.playMoveSe,
     playBumpSe: audio.playBumpSe,
     width,
+    showError: showSnackbar,
   });
 
   // ステージ総数。迷路は正方形なので size×size となる
