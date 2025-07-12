@@ -72,6 +72,10 @@ const messages = {
       "ステージ{{stage}}: {{steps}}ターン {{bumps}}衝突 リスポーン{{respawns}}回 可視化{{reveals}}回",
     totalStats:
       "合計 {{steps}}ターン {{bumps}}衝突 リスポーン{{respawns}}回 可視化{{reveals}}回",
+    stepsGraph: "ステージごとのターン数",
+    bumpsGraph: "ステージごとの壁衝突数",
+    respawnsGraph: "ステージごとのリスポーン回数",
+    revealsGraph: "ステージごとの可視化回数",
     changeLang: "Language",
     selectLang: "言語を選択してください",
     japanese: "日本語",
@@ -152,6 +156,10 @@ const messages = {
       "Stage {{stage}}: {{steps}} steps {{bumps}} bumps respawns {{respawns}} reveals {{reveals}}",
     totalStats:
       "Total {{steps}} steps {{bumps}} bumps respawns {{respawns}} reveals {{reveals}}",
+    stepsGraph: "Steps per stage",
+    bumpsGraph: "Bumps per stage",
+    respawnsGraph: "Respawns per stage",
+    revealsGraph: "Reveals per stage",
     changeLang: "Language",
     selectLang: "Select language",
     japanese: "Japanese",
