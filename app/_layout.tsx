@@ -58,9 +58,9 @@ export default function RootLayout() {
   return (
     <ErrorBoundary onError={showSnackbar}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <BgmProvider>
-          <SeVolumeProvider>
-            <LocaleProvider>
+        <LocaleProvider>
+          <BgmProvider>
+            <SeVolumeProvider>
               <ResultStateProvider>
                 <RunRecordProvider>
                 <GameProvider>
@@ -79,10 +79,10 @@ export default function RootLayout() {
               </GameProvider>
               </RunRecordProvider>
               </ResultStateProvider>
-            </LocaleProvider>
-            <StatusBar style="auto" />
-          </SeVolumeProvider>
-        </BgmProvider>
+              <StatusBar style="auto" />
+            </SeVolumeProvider>
+          </BgmProvider>
+        </LocaleProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
