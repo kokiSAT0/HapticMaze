@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
+// ScrollView を使うために追加インポート
+import { StyleSheet, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -50,32 +51,44 @@ export default function GameResultScreen() {
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-        {t('gameResults')}
-      </ThemedText>
-      {records.map((r) => (
-        <ThemedText key={r.stage} lightColor="#fff" darkColor="#fff">
-          {t('stageRecord', {
-            stage: r.stage,
-            steps: r.steps,
-            bumps: r.bumps,
-            respawns: r.respawns,
-            reveals: r.reveals,
-          })}
+      {/* ScrollView で一覧を縦スクロール可能にする */}
+      <ScrollView contentContainerStyle={styles.content}>
+        <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+          {t('gameResults')}
         </ThemedText>
-      ))}
-      <ThemedText lightColor="#fff" darkColor="#fff">
-        {t('totalStats', totals)}
-      </ThemedText>
-      <PlainButton
-        title={t('backToTitle')}
-        onPress={handleBack}
-        accessibilityLabel={t('backToTitle')}
-      />
+        {records.map((r) => (
+          <ThemedText key={r.stage} lightColor="#fff" darkColor="#fff">
+            {t('stageRecord', {
+              stage: r.stage,
+              steps: r.steps,
+              bumps: r.bumps,
+              respawns: r.respawns,
+              reveals: r.reveals,
+            })}
+          </ThemedText>
+        ))}
+        <ThemedText lightColor="#fff" darkColor="#fff">
+          {t('totalStats', totals)}
+        </ThemedText>
+        <PlainButton
+          title={t('backToTitle')}
+          onPress={handleBack}
+          accessibilityLabel={t('backToTitle')}
+        />
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: UI.screenGap },
+  // 外側の View は背景色をつけるだけ
+  container: { flex: 1 },
+  // ScrollView 内の要素を中央寄せにする
+  content: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: UI.screenGap,
+    paddingVertical: UI.screenGap,
+  },
 });
