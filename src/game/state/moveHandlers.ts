@@ -4,32 +4,9 @@ import { canMove, getHitWall, nextPosition } from '../maze';
 import { updateEnemyPaths, decayHitMap, updatePlayerPath, inSight } from '../enemyAI';
 import { getEnemyMover } from '../enemy';
 import type { Dir } from '@/src/types/maze';
-import type { State, MazeSets } from './core';
+import type { State } from './core';
+import { addAdjacentWalls } from './utils';
 import type { Enemy } from '@/src/types/enemy';
-
-/**
- * プレイヤー周囲の壁を記録するヘルパー
- * 迷路境界に対応するため MazeSets を受け取り
- * 取得した壁を Infinity 寿命で hitV/hitH へ登録する
- */
-function addAdjacentWalls(
-  pos: { x: number; y: number },
-  maze: MazeSets,
-  hitV: Map<string, number>,
-  hitH: Map<string, number>,
-): { hitV: Map<string, number>; hitH: Map<string, number> } {
-  const { x, y } = pos;
-  const last = maze.size - 1;
-  const v = maze.v_walls;
-  const h = maze.h_walls;
-  const nextV = new Map(hitV);
-  const nextH = new Map(hitH);
-  if (x <= 0 || v.has(`${x - 1},${y}`)) nextV.set(`${x - 1},${y}`, Infinity);
-  if (x >= last || v.has(`${x},${y}`)) nextV.set(`${x},${y}`, Infinity);
-  if (y <= 0 || h.has(`${x},${y - 1}`)) nextH.set(`${x},${y - 1}`, Infinity);
-  if (y >= last || h.has(`${x},${y}`)) nextH.set(`${x},${y}`, Infinity);
-  return { hitV: nextV, hitH: nextH };
-}
 
 /**
  * プレイヤーの移動処理を行う関数。

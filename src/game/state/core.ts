@@ -3,26 +3,7 @@ import { selectEnemyBehavior } from '../enemy';
 import type { MazeData, Vec2 } from '@/src/types/maze';
 import type { Enemy, EnemyCounts } from '@/src/types/enemy';
 import { createEnemies } from './enemy';
-
-/**
- * 初期配置時に周囲の壁を記録するための関数
- */
-function addAdjacentWalls(
-  pos: { x: number; y: number },
-  maze: MazeSets,
-  hitV: Map<string, number>,
-  hitH: Map<string, number>,
-): { hitV: Map<string, number>; hitH: Map<string, number> } {
-  const { x, y } = pos;
-  const last = maze.size - 1;
-  const nextV = new Map(hitV);
-  const nextH = new Map(hitH);
-  if (x <= 0 || maze.v_walls.has(`${x - 1},${y}`)) nextV.set(`${x - 1},${y}`, Infinity);
-  if (x >= last || maze.v_walls.has(`${x},${y}`)) nextV.set(`${x},${y}`, Infinity);
-  if (y <= 0 || maze.h_walls.has(`${x},${y - 1}`)) nextH.set(`${x},${y - 1}`, Infinity);
-  if (y >= last || maze.h_walls.has(`${x},${y}`)) nextH.set(`${x},${y}`, Infinity);
-  return { hitV: nextV, hitH: nextH };
-}
+import { addAdjacentWalls } from './utils';
 
 // MazeData から壁情報を Set 化して検索を高速にするヘルパー
 export interface MazeSets extends MazeData {
