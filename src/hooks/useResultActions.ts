@@ -218,6 +218,9 @@ export function useResultActions({
       // ゲームクリア時はリザルト一覧へ遷移
       addRecord(state.stage, state.steps, state.bumps);
       resetRun();
+      // ゲームクリア後はステージ1バナーを再度出さないように
+      // bannerShown フラグを true に更新する
+      setBannerShown(true);
       // ゲームオーバーと同じく中断データを削除する
       await clearGame(showSnackbar ? { showError: showSnackbar } : undefined);
       setShowResult(false);
