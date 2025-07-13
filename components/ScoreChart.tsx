@@ -25,11 +25,17 @@ export function ScoreChart({
 }: ScoreChartProps) {
   // グラフ領域以外に目盛り用の余白を確保
   const marginLeft = 30;
-  const marginBottom = 20;
-  const chartWidth = width - marginLeft;
+  // 右端のラベルが切れないように余白を追加
+  const marginRight = 10;
+  // 縦軸のラベルが上で見切れないように上側にも余白を追加
+  const marginTop = 10;
+  // 縦軸の目盛りと数字を置くための下側余白
+  // 値を大きくするとグラフ下部の文字が見切れにくくなる
+  const marginBottom = 30;
+  const chartWidth = width - marginLeft - marginRight;
   const chartHeight = height;
   const svgWidth = width;
-  const svgHeight = chartHeight + marginBottom;
+  const svgHeight = chartHeight + marginBottom + marginTop;
 
   // 最大値が 0 だと計算できないので 1 を下限とする
   const max = Math.max(...data, 1);
@@ -43,7 +49,7 @@ export function ScoreChart({
   const points = data
     .map((v, i) => {
       const x = marginLeft + i * stepGraphX;
-      const y = chartHeight - (v / max) * chartHeight;
+      const y = marginTop + chartHeight - (v / max) * chartHeight;
       return `${x},${y}`;
     })
     .join(' ');
@@ -64,17 +70,17 @@ export function ScoreChart({
       {/* 軸の描画 */}
       <Line
         x1={marginLeft}
-        y1={chartHeight}
+        y1={marginTop + chartHeight}
         x2={marginLeft + chartWidth}
-        y2={chartHeight}
+        y2={marginTop + chartHeight}
         stroke={color}
         strokeWidth={1}
       />
       <Line
         x1={marginLeft}
-        y1={0}
+        y1={marginTop}
         x2={marginLeft}
-        y2={chartHeight}
+        y2={marginTop + chartHeight}
         stroke={color}
         strokeWidth={1}
       />
@@ -86,15 +92,16 @@ export function ScoreChart({
           <React.Fragment key={`x${v}`}>
             <Line
               x1={x}
-              y1={chartHeight}
+              y1={marginTop + chartHeight}
               x2={x}
-              y2={chartHeight + 4}
+              y2={marginTop + chartHeight + 4}
               stroke={color}
               strokeWidth={1}
             />
             <Text
               x={x}
-              y={chartHeight + 15}
+              // X軸のラベルが下部に貼り付かないよう余白分だけ下げる
+              y={marginTop + chartHeight + 25}
               fill={color}
               fontSize={10}
               textAnchor="middle"
@@ -107,7 +114,7 @@ export function ScoreChart({
 
       {/* Y 軸目盛りとラベル */}
       {yTicks.map((v) => {
-        const y = chartHeight - (v / max) * chartHeight;
+        const y = marginTop + chartHeight - (v / max) * chartHeight;
         return (
           <React.Fragment key={`y${v}`}>
             <Line
