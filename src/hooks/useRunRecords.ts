@@ -2,9 +2,12 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useHandleError } from '@/src/utils/handleError';
 
 /**
  * 1 ステージ分の記録を表すインターフェース
@@ -33,12 +36,53 @@ interface RunRecordContextValue {
   reset: () => void;
 }
 
+// AsyncStorage に保存する際のキー名
+const STORAGE_KEY = 'runRecords';
+
+// 保存されるデータの形を定義
+interface StoredData {
+  records: RunRecord[];
+  respawns: number;
+  reveals: number;
+}
+
 const RunRecordContext = createContext<RunRecordContextValue | undefined>(undefined);
 
 export function RunRecordProvider({ children }: { children: ReactNode }) {
   const [records, setRecords] = useState<RunRecord[]>([]);
   const [respawns, setRespawns] = useState(0);
   const [reveals, setReveals] = useState(0);
+  // 例外表示用の共通ハンドラ
+  const handleError = useHandleError();
+
+  // 初回マウント時に保存済みのデータを読み込む
+  useEffect(() => {
+    (async () => {
+      try {
+        const json = await AsyncStorage.getItem(STORAGE_KEY);
+        if (json) {
+          const data = JSON.parse(json) as StoredData;
+          setRecords(data.records ?? []);
+          setRespawns(data.respawns ?? 0);
+          setReveals(data.reveals ?? 0);
+        }
+      } catch (e) {
+        handleError('スコアデータを読み込めませんでした', e);
+      }
+    })();
+  }, [handleError]);
+
+  // データが変化するたびに保存する
+  useEffect(() => {
+    (async () => {
+      try {
+        const data: StoredData = { records, respawns, reveals };
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        handleError('スコアデータを保存できませんでした', e);
+      }
+    })();
+  }, [records, respawns, reveals, handleError]);
 
   /**
    * ステージクリア時に記録を追加する処理
