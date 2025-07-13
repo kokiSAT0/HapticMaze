@@ -183,15 +183,15 @@ const messages = {
     howToPlay: "How to Play",
     openHowToPlay: "Open How to Play",
     ruleIntro:
-      "Move through a 10×10 maze using the D-Pad and aim for the goal. Use vibrations and the mini map to orient yourself.",
+      "The icons below have the following meanings.",
     respawnUsage:
-      "resets enemy positions",
+      "Respawns enemy positions\nUse when you're in a pinch",
     revealUsage:
-      "shows the entire maze",
-    enermys: "These are all enemies. They will turn red when viewed from a distance.",
-    player: "Player",
-    Goal: "Goal position",
-    visitedGoals: "Visited goal locations",
+      "Reveals the entire maze\nBe careful, this makes the stage much easier",
+    enermys: "Enemies. Their color changes while chasing the player",
+    player: "Your current position",
+    Goal: "Goal position for the current stage",
+    visitedGoals: "Previously reached goal positions",
   },
 } as const;
 
