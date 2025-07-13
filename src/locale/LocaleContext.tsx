@@ -95,11 +95,15 @@ const messages = {
     howToPlay: "ルール説明",
     openHowToPlay: "ルール説明を開く",
     ruleIntro:
-      "このゲームでは10×10の迷路を上下左右に移動し、振動とミニマップを頼りにゴールを目指します。",
+      "\n各アイコンの意味は以下の通りです",
     respawnUsage:
-      "敵の位置をリセット",
+      "リセットボタン : 敵の位置をリセット",
     revealUsage:
-      "迷路全体を表示",
+      "可視化ボタン : 迷路全体を表示",
+    enermys: "敵 : プレイヤーを視認すると赤くなる",
+    player: "player : プレイヤーの現在位置",
+    Goal: "ゴール位置 : 可視化ボタンを押すと見える",
+    visitedGoals: "過去のゴール地点 : 過去にゴールしたマス",
   },
   en: {
     practiceMode: "Practice Mode",
@@ -184,6 +188,10 @@ const messages = {
       "resets enemy positions",
     revealUsage:
       "shows the entire maze",
+    enermys: "These are all enemies. They will turn red when viewed from a distance.",
+    player: "Player",
+    Goal: "Goal position",
+    visitedGoals: "Visited goal locations",
   },
 } as const;
 
