@@ -104,19 +104,19 @@ export default function RulesScreen() {
         {t('ruleIntro')}
       </ThemedText>
       {/* 現在地・ゴールのサンプル */}
-      <View style={styles.enemyRow}>
+      <View style={styles.iconBlock}>
         <PlayerIcon />
       </View>
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('player')}
       </ThemedText>
-      <View style={styles.enemyRow}>
+      <View style={styles.iconBlock}>
         <GoalIcon />
       </View>
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('Goal')}
       </ThemedText>
-      <View style={styles.enemyRow}>
+      <View style={styles.iconBlock}>
         <VisitedGoalIcon />
       </View>
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
@@ -162,6 +162,12 @@ const styles = StyleSheet.create({
   // 説明文の幅が広くなりすぎないよう中央揃えに
   text: {
     textAlign: 'center',
+    marginBottom: 12,
+  },
+  iconBlock: {
+    paddingTop: 2,
+    marginBottom: -8,
+    gap: 0,
   },
   enemyRow: {
     flexDirection: 'row',
