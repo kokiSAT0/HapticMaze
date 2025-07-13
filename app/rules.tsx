@@ -136,7 +136,7 @@ export default function RulesScreen() {
       <View style={styles.enemyRow}>
         <EnemyIcon spokes={4}  />
         <EnemyIcon spokes={6}  />
-        <EnemyIcon spokes={12} />
+        {/*<EnemyIcon spokes={12} />*/}
         <EnemyIcon spokes={24} />
       </View>
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
