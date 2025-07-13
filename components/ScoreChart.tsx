@@ -12,6 +12,8 @@ export interface ScoreChartProps {
   color: string;
   width?: number;
   height?: number;
+  /** ステップ数グラフなど中間値の目盛りを表示するか */
+  showMidTick?: boolean;
   /** 画面読み上げ用のラベル */
   accessibilityLabel?: string;
 }
@@ -21,6 +23,7 @@ export function ScoreChart({
   color,
   width = UI.resultModalWidth,
   height = UI.miniMapSize / 3,
+  showMidTick = false,
   accessibilityLabel,
 }: ScoreChartProps) {
   // グラフ領域以外に目盛り用の余白を確保
@@ -49,7 +52,9 @@ export function ScoreChart({
   const points = data
     .map((v, i) => {
       const x = marginLeft + i * stepGraphX;
-      const y = marginTop + chartHeight - (v / max) * chartHeight;
+      // 実際の値を最大値で割って 0〜1 に正規化し、1 を超えたら 1 に丸める
+      const rate = Math.min(v / max, 1);
+      const y = marginTop + chartHeight - rate * chartHeight;
       return `${x},${y}`;
     })
     .join(' ');
@@ -59,7 +64,8 @@ export function ScoreChart({
     Math.round(((i + 1) * data.length) / 5),
   );
   // 縦軸目盛り値 (2 等分)
-  const yTicks = [max / 2, max];
+  // showMidTick が true のときだけ中間値の目盛りを入れる
+  const yTicks = showMidTick ? [Math.round(max / 2), max] : [max];
 
   return (
     <Svg
