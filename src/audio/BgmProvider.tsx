@@ -11,6 +11,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHandleError } from "@/src/utils/handleError";
 import { useLocale } from "@/src/locale/LocaleContext";
 
@@ -25,6 +26,8 @@ interface BgmContextValue {
 }
 
 const BgmContext = createContext<BgmContextValue | undefined>(undefined);
+// BGM 音量を保存するキー
+const STORAGE_KEY = 'bgmVolume';
 
 export function BgmProvider({ children }: { children: ReactNode }) {
   const playerRef = useRef<AudioPlayer | null>(null);
@@ -34,6 +37,29 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const handleError = useHandleError();
   const { t } = useLocale();
+
+  // 初回表示時に保存済みの音量を読み込む
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored !== null) setVolume(Number(stored));
+      } catch (e) {
+        handleError('BGM 音量を読み込めませんでした', e);
+      }
+    })();
+  }, [handleError]);
+
+  // 音量が変わったら保存する
+  useEffect(() => {
+    (async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, String(volume));
+      } catch (e) {
+        handleError('BGM 音量を保存できませんでした', e);
+      }
+    })();
+  }, [volume, handleError]);
 
   // 一定時間待つためのユーティリティ
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
