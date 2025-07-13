@@ -97,13 +97,13 @@ const messages = {
     ruleIntro:
       "\n各アイコンの意味は以下の通りです",
     respawnUsage:
-      "リスポーンボタン : 敵の位置をリセット",
+      "敵の位置をリスポーン\nピンチの時に使用",
     revealUsage:
-      "可視化ボタン : 迷路全体を表示",
-    enermys: "敵 : プレイヤーを追跡中は色が変化する",
-    player: "プレイヤー : プレイヤーの現在位置",
-    Goal: "ゴール位置 : 可視化ボタンを押すと見える",
-    visitedGoals: "過去のゴール地点 : 過去にゴールしたマス",
+      "迷路全体を表示\n簡単になりすぎるので注意",
+    enermys: "敵\nプレイヤーを追跡中は色が変化する",
+    player: "プレイヤーの現在位置",
+    Goal: "挑戦中ステージのゴール地点",
+    visitedGoals: "過去に到達したゴール地点",
   },
   en: {
     practiceMode: "Practice Mode",
