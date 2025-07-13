@@ -78,6 +78,7 @@ export default function GameResultScreen() {
         <ScoreChart
           data={stepData}
           color="#fff"
+          showMidTick
           accessibilityLabel={t('stepsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
