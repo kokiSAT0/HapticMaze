@@ -16,13 +16,16 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kokisato.mazesense",
+      "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
+      "buildNumber": "1",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true

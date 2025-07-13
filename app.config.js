@@ -2,8 +2,8 @@ import "dotenv/config";
 import appJson from "./app.json";
 
 export default ({ config }) => ({
-  ...appJson.expo,
   ...config,
+  ...appJson.expo,
 
   ios: {
     ...(appJson.expo.ios ?? {}),
