@@ -141,7 +141,8 @@ export default function RulesScreen() {
         <EnemyIcon spokes={24} />
       </View>
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
-        {t('enermys')}
+        {/* 敵の説明を表示 */}
+        {t('enemies')}
       </ThemedText>
         <PlainButton
           title={t('backToTitle')}
