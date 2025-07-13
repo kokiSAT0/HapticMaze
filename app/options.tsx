@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { PlainButton } from '@/components/PlainButton';
@@ -28,10 +28,12 @@ export default function OptionsScreen() {
   };
 
   return (
-    <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-        {t('options')}
-      </ThemedText>
+    <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
+      {/* 中央揃えを保ったままスクロールできるようにする */}
+      <ScrollView contentContainerStyle={styles.container}>
+        <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+          {t('options')}
+        </ThemedText>
 
       <PlainButton
         title={t('volumeSettings')}
@@ -48,6 +50,7 @@ export default function OptionsScreen() {
         onPress={() => router.replace('/')}
         accessibilityLabel={t('backToTitle')}
       />
+      </ScrollView>
 
       {/* 言語選択モーダル */}
       <Modal transparent visible={showLang} animationType="fade">
@@ -123,10 +126,11 @@ export default function OptionsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: UI.screenGap,
+    paddingVertical: UI.screenGap,
   },
   modalWrapper: {
     flex: 1,

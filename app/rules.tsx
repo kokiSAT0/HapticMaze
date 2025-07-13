@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { PlainButton } from '@/components/PlainButton';
@@ -12,7 +12,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import Svg, { Circle, Line, Rect , Polygon } from 'react-native-svg';
-import { View } from 'react-native';
 
 /* ─────────  EnemyIcon  ───────── */
 interface EnemyIconProps {
@@ -94,11 +93,13 @@ export default function RulesScreen() {
   const router = useRouter();
   const { t } = useLocale();
   return (
-    <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
-      {/* 画面タイトル */}
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-        {t('howToPlay')}
-      </ThemedText>
+    <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
+      {/* 小さな画面でもスクロールできるようにする */}
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* 画面タイトル */}
+        <ThemedText type="title" lightColor="#fff" darkColor="#fff">
+          {t('howToPlay')}
+        </ThemedText>
       {/* ゲームの概要説明 */}
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('ruleIntro')}
@@ -142,22 +143,24 @@ export default function RulesScreen() {
       <ThemedText lightColor="#fff" darkColor="#fff" style={styles.text}>
         {t('enermys')}
       </ThemedText>
-      <PlainButton
-        title={t('backToTitle')}
-        onPress={() => router.replace('/')}
-        accessibilityLabel={t('backToTitle')}
-      />
+        <PlainButton
+          title={t('backToTitle')}
+          onPress={() => router.replace('/')}
+          accessibilityLabel={t('backToTitle')}
+        />
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: UI.screenGap /2,
     paddingHorizontal: 10,
+    paddingVertical: UI.screenGap,
   },
   // 説明文の幅が広くなりすぎないよう中央揃えに
   text: {

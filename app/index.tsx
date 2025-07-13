@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { Modal, StyleSheet, View, ScrollView } from "react-native";
 import { PlainButton } from "@/components/PlainButton";
 import { useRouter } from "expo-router";
 import { useGame } from "@/src/game/useGame";
@@ -158,7 +158,9 @@ export default function TitleScreen() {
   };
 
   return (
-    <ThemedView lightColor="#000" darkColor="#000" style={styles.container}>
+    <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
+      {/* 小さい画面でも内容をスクロールして閲覧できるように */}
+      <ScrollView contentContainerStyle={styles.container}>
       {/* タイトルの文字サイズを定数から調整できるように */}
       <ThemedText
         type="title"
@@ -221,6 +223,8 @@ export default function TitleScreen() {
         accessibilityLabel={t("openHowToPlay")}
       />
 
+      </ScrollView>
+
       {/* ───── 言語選択モーダル ───── */}
       <Modal transparent visible={showLang} animationType="fade">
         <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
@@ -234,17 +238,18 @@ export default function TitleScreen() {
         </View>
       </Modal>
 
-      </ThemedView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     // 選択肢間の余白をホーム画面用定数から参照
     gap: UI.titleScreen.optionGap,
+    paddingVertical: UI.screenGap,
   },
   // タイトル文字のサイズを変更しやすくするためのスタイル
   title: {
