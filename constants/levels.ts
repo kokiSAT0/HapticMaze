@@ -81,7 +81,9 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
     biasedGoal: false,
-    showAdjacentWallsFn: (stage) => stage <= 30,
+    // イージーは常に周囲の壁を表示する。true は「はい/いいえ」を表す
+    // ブール値 (boolean) と呼ばれる型で、true のとき機能が有効になる
+    showAdjacentWalls: true,
     // チュートリアル以外は3ステージごとに迷路更新
     stagePerMap: 3,
     respawnMax: 3,
