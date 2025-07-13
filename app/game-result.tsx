@@ -95,6 +95,10 @@ export default function GameResultScreen() {
         <ScoreChart
           data={respawnData}
           color="#fff"
+          // height プロパティでグラフの縦サイズを指定できます。
+          // ここではデフォルト値(ミニマップサイズの1/3)の半分に設定しています。
+          // "height" は縦方向の長さを表すプログラミング用語です。
+          height={UI.miniMapSize / 6}
           accessibilityLabel={t('respawnsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
@@ -103,6 +107,9 @@ export default function GameResultScreen() {
         <ScoreChart
           data={revealData}
           color="#fff"
+          // 可視化回数グラフも縦の長さを半分にする
+          // 数字を小さくするとグラフの高さが低くなります
+          height={UI.miniMapSize / 6}
           accessibilityLabel={t('revealsGraph')}
         />
         <ThemedText lightColor="#fff" darkColor="#fff">
