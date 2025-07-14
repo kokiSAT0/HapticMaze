@@ -332,7 +332,7 @@ export function useResultActions({
     setRevealUsed(0);
     // 次回開始時にステージバナーを表示するためフラグを戻す
     setBannerShown(false);
-    reset();
+    // 記録は残したままにするのでここでは reset() しない
     router.replace("/");
   };
 
