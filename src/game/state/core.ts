@@ -64,6 +64,10 @@ export interface GameState {
   showAdjacentWalls: boolean;
   /** ステージ番号から周囲表示を決める関数 */
   showAdjacentWallsFn?: (stage: number) => boolean;
+  /** プレイヤー周囲壁の寿命 */
+  playerAdjacentLife: number;
+  /** 敵周囲壁の寿命 */
+  enemyAdjacentLife: number;
   /** スポーン位置をスタートから遠い場所に偏らせるか */
   biasedSpawn: boolean;
   /** ゴールをスタートから遠ざけるかどうか */
@@ -106,6 +110,8 @@ export function initState(
     wallLifetimeFn,
     showAdjacentWalls = false,
     showAdjacentWallsFn,
+    playerAdjacentLife,
+    enemyAdjacentLife,
     biasedSpawn = true,
     biasedGoal = true,
     levelId,
@@ -116,15 +122,27 @@ export function initState(
   const enemies = createEnemies(counts, maze, biasedSpawn);
   const enemyBehavior = selectEnemyBehavior(m.size, finalStage);
   const life = wallLifetimeFn ? wallLifetimeFn(stage) : wallLifetime;
+  // 周囲壁の寿命が未指定なら衝突壁と同じ値を採用
+  const pAdjLife = playerAdjacentLife ?? life;
+  const eAdjLife = enemyAdjacentLife ?? life;
   // 周囲表示が有効なら開始時点で周囲の壁を記録する
-  const initHits = showAdjacentWalls
+  let initHits = showAdjacentWalls
     ? addAdjacentWalls(
         { x: m.start[0], y: m.start[1] },
         maze,
         hitV,
         hitH,
+        pAdjLife,
       )
     : { hitV, hitH };
+
+  if (showAdjacentWalls) {
+    initHits = enemies.reduce(
+      (acc, e) =>
+        addAdjacentWalls(e.pos, maze, acc.hitV, acc.hitH, eAdjLife),
+      initHits,
+    );
+  }
   return {
     mazeRaw: m,
     maze,
@@ -152,6 +170,8 @@ export function initState(
     wallLifetimeFn,
     showAdjacentWalls,
     showAdjacentWallsFn,
+    playerAdjacentLife: pAdjLife,
+    enemyAdjacentLife: eAdjLife,
     biasedSpawn,
     biasedGoal,
     levelId,

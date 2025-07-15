@@ -73,6 +73,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         // 新しいゲームを始めるときは前回の周囲表示設定を引き継がない
         showAdjacentWalls = false,
         showAdjacentWallsFn,
+        playerAdjacentLife,
+        enemyAdjacentLife,
         biasedSpawn,
         biasedGoal,
         levelId,
@@ -95,6 +97,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         levelId,
         stagePerMap,
         respawnMax,
+        playerAdjacentLife,
+        enemyAdjacentLife,
       });
       // フラグが有効なら最終ステージまで進める
       if (START_FINAL) {

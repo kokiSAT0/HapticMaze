@@ -34,10 +34,12 @@ export function reducer(state: State, action: Action): State {
           showAdjacentWallsFn: state.showAdjacentWallsFn,
           biasedSpawn: state.biasedSpawn,
           biasedGoal: state.biasedGoal,
-          levelId: state.levelId,
-          stagePerMap: state.stagePerMap,
-          respawnMax: state.respawnMax,
-        },
+        levelId: state.levelId,
+        stagePerMap: state.stagePerMap,
+        respawnMax: state.respawnMax,
+        playerAdjacentLife: state.playerAdjacentLife,
+        enemyAdjacentLife: state.enemyAdjacentLife,
+      },
         undefined,
         undefined,
         state.respawnStock,
@@ -61,6 +63,8 @@ export function reducer(state: State, action: Action): State {
         // undefined だと前回の値を引き継いでしまうため false を入れて初期化
         showAdjacentWalls: action.showAdjacentWalls ?? false,
         showAdjacentWallsFn: action.showAdjacentWallsFn,
+        playerAdjacentLife: action.playerAdjacentLife,
+        enemyAdjacentLife: action.enemyAdjacentLife,
       });
     case 'nextStage':
       return nextStageState(state);
