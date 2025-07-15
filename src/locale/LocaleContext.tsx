@@ -100,7 +100,8 @@ const messages = {
       "敵の位置をリスポーン\nピンチの時に使用",
     revealUsage:
       "迷路全体を表示\n簡単になりすぎるので注意",
-    enermys: "敵\nプレイヤーを追跡中は色が変化する",
+    // 敵の説明
+    enemies: "敵\nプレイヤーを追跡中は色が変化する",
     player: "プレイヤーの現在位置",
     Goal: "挑戦中ステージのゴール地点",
     visitedGoals: "過去に到達したゴール地点",
@@ -188,7 +189,8 @@ const messages = {
       "Respawns enemy positions\nUse when you're in a pinch",
     revealUsage:
       "Reveals the entire maze\nBe careful, this makes the stage much easier",
-    enermys: "Enemies. Their color changes while chasing the player",
+    // Enemies の説明
+    enemies: "Enemies. Their color changes while chasing the player",
     player: "Your current position",
     Goal: "Goal position for the current stage",
     visitedGoals: "Previously reached goal positions",
