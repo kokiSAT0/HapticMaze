@@ -28,6 +28,8 @@ export function createFirstStage(
     biasedGoal = true,
     showAdjacentWalls = false,
     showAdjacentWallsFn,
+    playerAdjacentLife,
+    enemyAdjacentLife,
   } = options;
   const visited = new Set<string>();
   const start = randomCell(base.size);
@@ -64,6 +66,8 @@ export function createFirstStage(
       levelId,
       stagePerMap,
       respawnMax,
+      playerAdjacentLife,
+      enemyAdjacentLife,
     },
     undefined,
     undefined,
@@ -123,6 +127,8 @@ export function nextStageState(state: State): State {
       levelId: state.levelId,
       stagePerMap: state.stagePerMap,
       respawnMax: state.respawnMax,
+      playerAdjacentLife: state.playerAdjacentLife,
+      enemyAdjacentLife: state.enemyAdjacentLife,
     },
     hitV,
     hitH,
@@ -148,5 +154,7 @@ export function restartRun(state: State): State {
     biasedGoal: state.biasedGoal,
     showAdjacentWalls: state.showAdjacentWalls,
     showAdjacentWallsFn: state.showAdjacentWallsFn,
+    playerAdjacentLife: state.playerAdjacentLife,
+    enemyAdjacentLife: state.enemyAdjacentLife,
   });
 }

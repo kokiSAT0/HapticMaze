@@ -34,6 +34,10 @@ export interface LevelConfig {
   showAdjacentWalls?: boolean;
   /** ステージごとに周囲表示の有無を決める関数 */
   showAdjacentWallsFn?: (stage: number) => boolean;
+  /** プレイヤー周囲壁の寿命。未指定なら衝突壁と同じ */
+  playerAdjacentLife?: number;
+  /** 敵周囲壁の寿命。未指定なら衝突壁と同じ */
+  enemyAdjacentLife?: number;
   /** 何ステージごとに迷路を更新するか */
   stagePerMap?: number;
   /** 敵をリスポーンできる最大回数 */
@@ -63,6 +67,9 @@ export const LEVELS: LevelConfig[] = [
     // チュートリアルでは常に周囲の壁を表示する
     // showAdjacentWalls を true にすることで全ステージに適用される
     showAdjacentWalls: true,
+    // 周囲壁寿命は衝突壁と同じ
+    playerAdjacentLife: undefined,
+    enemyAdjacentLife: undefined,
     stagePerMap: 5,
     respawnMax: 3,
   },
@@ -84,6 +91,8 @@ export const LEVELS: LevelConfig[] = [
     // イージーは常に周囲の壁を表示する。true は「はい/いいえ」を表す
     // ブール値 (boolean) と呼ばれる型で、true のとき機能が有効になる
     showAdjacentWalls: true,
+    playerAdjacentLife: undefined,
+    enemyAdjacentLife: undefined,
     // チュートリアル以外は3ステージごとに迷路更新
     stagePerMap: 3,
     respawnMax: 3,
@@ -104,6 +113,9 @@ export const LEVELS: LevelConfig[] = [
     // こちらも3ステージで切り替える
     stagePerMap: 3,
     respawnMax: 2,
+    // プレイヤーのみ2ターン固定
+    playerAdjacentLife: 2,
+    enemyAdjacentLife: undefined,
   },
   {
     id: 'hard',
@@ -121,5 +133,8 @@ export const LEVELS: LevelConfig[] = [
     // ハードも同様に3ステージごと
     stagePerMap: 3,
     respawnMax: 1,
+    // プレイヤー・敵とも2ターン固定
+    playerAdjacentLife: 2,
+    enemyAdjacentLife: 2,
   },
 ];

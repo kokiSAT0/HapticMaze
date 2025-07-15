@@ -123,8 +123,29 @@ export function handleMoveAction(state: State, dir: Dir): State {
   const bumpDiff = player.bumps - state.bumps;
   // 周囲表示が有効なら現在位置の壁を記録する
   const adj = state.showAdjacentWalls
-    ? addAdjacentWalls(player.pos, state.maze, player.hitV, player.hitH)
+    ? addAdjacentWalls(
+        player.pos,
+        state.maze,
+        player.hitV,
+        player.hitH,
+        state.playerAdjacentLife,
+      )
     : { hitV: player.hitV, hitH: player.hitH };
+
+  // 敵周囲の壁も同様に記録する
+  const enemyAdj = state.showAdjacentWalls
+    ? enemyResult.enemies.reduce(
+        (acc, e) =>
+          addAdjacentWalls(
+            e.pos,
+            state.maze,
+            acc.hitV,
+            acc.hitH,
+            state.enemyAdjacentLife,
+          ),
+        { hitV: adj.hitV, hitH: adj.hitH },
+      )
+    : adj;
 
   return {
     ...state,
@@ -134,8 +155,8 @@ export function handleMoveAction(state: State, dir: Dir): State {
     totalSteps: state.totalSteps + stepDiff,
     totalBumps: state.totalBumps + bumpDiff,
     path: updatePlayerPathIfMoved(state, player.pos, player.steps),
-    hitV: adj.hitV,
-    hitH: adj.hitH,
+    hitV: enemyAdj.hitV,
+    hitH: enemyAdj.hitH,
     enemies: enemyResult.enemies,
     enemyVisited: enemyResult.enemyVisited,
     enemyPaths: enemyResult.enemyPaths,

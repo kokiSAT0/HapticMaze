@@ -17,6 +17,10 @@ export interface NewGameOptions {
   showAdjacentWalls?: boolean;
   /** ステージ番号から周囲表示の有無を決める関数 */
   showAdjacentWallsFn?: (stage: number) => boolean;
+  /** プレイヤー周囲壁の寿命。未指定なら衝突壁と同じ */
+  playerAdjacentLife?: number;
+  /** 敵周囲壁の寿命。未指定なら衝突壁と同じ */
+  enemyAdjacentLife?: number;
   /** 敵のスポーン位置をスタートから遠くするか */
   biasedSpawn?: boolean;
   /** ゴールをスタートから遠ざけるかどうか */

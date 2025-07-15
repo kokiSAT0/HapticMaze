@@ -36,6 +36,8 @@ export interface StoredState {
   respawnStock: number;
   respawnMax: number;
   stagePerMap: number;
+  playerAdjacentLife: number;
+  enemyAdjacentLife: number;
 }
 
 // State から保存用データへ変換
@@ -69,6 +71,8 @@ export function encodeState(state: State): StoredState {
     respawnStock: state.respawnStock,
     respawnMax: state.respawnMax,
     stagePerMap: state.stagePerMap,
+    playerAdjacentLife: state.playerAdjacentLife,
+    enemyAdjacentLife: state.enemyAdjacentLife,
   };
 }
 
@@ -114,6 +118,8 @@ export function decodeState(data: StoredState): State {
     respawnStock: data.respawnStock,
     respawnMax: level?.respawnMax ?? data.respawnMax,
     stagePerMap: level?.stagePerMap ?? 3,
+    playerAdjacentLife: data.playerAdjacentLife,
+    enemyAdjacentLife: data.enemyAdjacentLife,
   };
 }
 
