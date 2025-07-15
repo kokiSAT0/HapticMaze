@@ -19,9 +19,8 @@ import {
 import { renderEnemies } from "./mini-map/Enemies";
 import { prepMaze, type MazeSets } from "@/src/game/state";
 
-// AnimatedRect はコンポーネント外で一度だけ作成しておく
-// これにより再レンダー時に新しい Animated コンポーネントが生成されるのを防ぐ
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
+// プレイヤー用の円もアニメーションさせるためコンポーネント化
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 
 // MiniMapProps インターフェース
@@ -85,9 +84,9 @@ export function MiniMap({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
 
-  // ゴールまでのマンハッタン距離から外周線の色を算出する
-  // useDerivedValue を使うことで常に最新の座標に応じた色を計算する
-  const borderColor = useDerivedValue(() => {
+  // ゴールまでのマンハッタン距離に応じてプレイヤー円の色を決める
+  // useDerivedValue により再描画時も常に最新の色を計算する
+  const playerColor = useDerivedValue(() => {
     // 迷路サイズから取り得る最大距離を求める
     const maxDist = (maze.size - 1) * 2;
     // distance は 2 点間のマンハッタン距離を返す
@@ -97,24 +96,25 @@ export function MiniMap({
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
 
-  const borderProps = useAnimatedProps(() => ({ stroke: borderColor.value }));
+  // アニメーション用に fill 属性を更新する
+  const playerProps = useAnimatedProps(() => ({ fill: playerColor.value }));
 
 
   return (
-    // デバッグ表示の有無にかかわらず外枠は描画しない
-    // borderColor を常に transparent にして非表示にする
+    // View の borderColor は常に透明にしておき、
+    // 白枠は SVG で描画する
     <Animated.View
       style={[{ width: size, height: size, borderColor: "transparent" }, style]}
     >
       <Svg width={size} height={size}>
-        {/* マンハッタン距離に応じて濃さを変える外周線 */}
-        <AnimatedRect
-          animatedProps={borderProps}
+        {/* 外周は常に白色で細線表示 */}
+        <Rect
           x={0}
           y={0}
           width={size}
           height={size}
-          strokeWidth={10} // 外周の太さ
+          strokeWidth={1}
+          stroke="white"
           fill="none"
         />
         {renderWalls({ maze, cell, size, showAll })}
@@ -133,12 +133,14 @@ export function MiniMap({
             fill="white" // 塗りつぶし
           />
         )}
-        {/* 現在位置を円で表示 */}
-        <Circle
+        {/* プレイヤー位置を白枠円で表示し、塗りつぶし色で距離を表現 */}
+        <AnimatedCircle
+          animatedProps={playerProps}
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
           r={cell * 0.3}
-          fill="white"
+          stroke="white"
+          strokeWidth={1}
         />
         {renderEnemies({ enemies, cell, showAll, playerPos: pos, maze: mazeSets })}
       </Svg>
