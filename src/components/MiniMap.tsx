@@ -84,15 +84,26 @@ export function MiniMap({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
 
-  // ゴールまでのマンハッタン距離に応じてプレイヤー円の色を決める
-  // useDerivedValue により再描画時も常に最新の色を計算する
+  // ゴールまでの距離に応じてプレイヤー円の色を変える
+  // 距離 0 と 1 のときは真っ白にし、それ以降は徐々に暗くしていく
   const playerColor = useDerivedValue(() => {
-    // 迷路サイズから取り得る最大距離を求める
+    // 迷路サイズから算出できる最大のマンハッタン距離
     const maxDist = (maze.size - 1) * 2;
-    // distance は 2 点間のマンハッタン距離を返す
+    // プレイヤーとゴールの距離を取得
     const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
-    const r = Math.min(d / maxDist, 1);
-    const g = Math.round(255 * (1 - r));
+
+    if (d <= 1) {
+      // 距離が 0 または 1 のときは完全な白色を返す
+      return 'rgb(255,255,255)';
+    }
+
+    // 2 以上の距離では段階的に暗くしていく
+    // ratio は 0 〜 1 の範囲で増加する値
+    const ratio = Math.min((d - 1) / (maxDist - 1), 1);
+
+    // 最大距離でも見失わないよう下限を薄いグレー(ここでは rgb(80,80,80))に設定
+    const minGray = 80;
+    const g = Math.round(minGray + (255 - minGray) * (1 - ratio));
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
 
@@ -133,14 +144,12 @@ export function MiniMap({
             fill="white" // 塗りつぶし
           />
         )}
-        {/* プレイヤー位置を白枠円で表示し、塗りつぶし色で距離を表現 */}
+        {/* プレイヤー位置を塗りつぶしのみで表示 */}
         <AnimatedCircle
           animatedProps={playerProps}
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
           r={cell * 0.3}
-          stroke="white"
-          strokeWidth={1}
         />
         {renderEnemies({ enemies, cell, showAll, playerPos: pos, maze: mazeSets })}
       </Svg>
