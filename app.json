@@ -22,10 +22,8 @@
       }
     },
     "android": {
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "buildNumber": "1",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
