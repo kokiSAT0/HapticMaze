@@ -110,7 +110,7 @@ const messages = {
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
     tutorial: "Tutorial",
-    easy: "Easy ★☆☆updatetest",
+    easy: "Easy ★☆☆",
     normal: "Normal ★★☆",
     hard: "Hard ★★★",
     startLevel: "Start {{name}}",
