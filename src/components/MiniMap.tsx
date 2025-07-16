@@ -102,7 +102,7 @@ export function MiniMap({
     const ratio = Math.min((d - 1) / (maxDist - 1), 1);
 
     // 最大距離でも見失わないよう下限を薄いグレー(ここでは rgb(80,80,80))に設定
-    const minGray = 80;
+    const minGray = 20;
     const g = Math.round(minGray + (255 - minGray) * (1 - ratio));
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
