@@ -39,13 +39,5 @@
       },
       "channel": "preview"
     }
-  },
-    "update": {
-      "testflight": {
-        "env": {
-          "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
-          "IOS_ADMOB_APP_ID":     "ca-app-pub-4177731053735768~5812637792"
-        }
-      }
-    }
+  }
 }
