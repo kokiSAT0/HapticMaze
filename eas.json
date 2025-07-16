@@ -5,6 +5,7 @@
   },
   "build": {
     "testflight": {
+      "channel": "production",
       "distribution": "store",
       "autoIncrement": true,
       "ios": {
