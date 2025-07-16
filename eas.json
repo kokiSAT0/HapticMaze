@@ -5,7 +5,7 @@
   },
   "build": {
     "testflight": {
-      "channel": "production",
+      "channel": "testflight",
       "distribution": "store",
       "autoIncrement": true,
       "ios": {
@@ -22,7 +22,8 @@
       "env": {
         "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
         "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
-      }
+      },
+      "channel": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -35,7 +36,8 @@
       "env": {
         "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
         "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
-      }
+      },
+      "channel": "preview"
     }
   }
 }
