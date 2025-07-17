@@ -1,5 +1,6 @@
 // 距離計算は math モジュールへ移動
-import { distance } from "@/src/game/math";
+// 距離計算や補間用ユーティリティ
+import { clamp, distance } from "@/src/game/math";
 import React from "react";
 import Animated, {
   useAnimatedProps,
@@ -84,6 +85,9 @@ export function MiniMap({
     borderWidth: typeof flash === "number" ? flash : flash.value,
   }));
 
+  // プレイヤーの外周半径。描画時は一定値とする
+  const radius = cell * 0.3;
+
   // ゴールまでの距離に応じてプレイヤー円の色を変える
   // 距離 0 と 1 のときは真っ白にし、それ以降は徐々に暗くしていく
   const playerColor = useDerivedValue(() => {
@@ -107,8 +111,34 @@ export function MiniMap({
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
 
-  // アニメーション用に fill 属性を更新する
-  const playerProps = useAnimatedProps(() => ({ fill: playerColor.value }));
+  // 距離に応じてドーナツの太さを決定する
+  const playerWidth = useDerivedValue(() => {
+    const maxDist = (maze.size - 1) * 2;
+    const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
+    // ratio は 0 (最も遠い) 〜 1 (距離1) の範囲
+    const ratio = clamp((maxDist - d) / (maxDist - 1), 0, 1);
+    // 最小幅 2px、最大幅は外周全てを埋める値とする
+    const maxWidth = radius * 2;
+    return 2 + (maxWidth - 2) * ratio;
+  }, [pos, maze.goal, maze.size]);
+
+  // アニメーション用に塗りつぶし・線幅などを更新
+  const playerProps = useAnimatedProps(() => {
+    const color = playerColor.value;
+    const width = playerWidth.value;
+    // 幅が円直径以上なら塗りつぶし円として描画
+    if (width >= radius * 2) {
+      return { fill: color, strokeWidth: 0, r: radius };
+    }
+    // ドーナツ形状: stroke で描き、中心は透過
+    const r = Math.max(radius - width / 2, 0);
+    return {
+      fill: "none",
+      stroke: color,
+      strokeWidth: width,
+      r,
+    };
+  });
 
 
   return (
@@ -144,12 +174,11 @@ export function MiniMap({
             fill="white" // 塗りつぶし
           />
         )}
-        {/* プレイヤー位置を塗りつぶしのみで表示 */}
+        {/* プレイヤー位置は距離に応じたドーナツ形状で表示 */}
         <AnimatedCircle
           animatedProps={playerProps}
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
-          r={cell * 0.3}
         />
         {renderEnemies({ enemies, cell, showAll, playerPos: pos, maze: mazeSets })}
       </Svg>
