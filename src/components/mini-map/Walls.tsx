@@ -92,7 +92,9 @@ export function renderHitWalls({ cell, hitV, hitH, wallLifetime }: HitWallProps)
         y1={y * cell}
         x2={(x + 1) * cell}
         y2={y * cell + cell}
-        stroke={`rgba(128,128,128,${op})`}
+        // 衝突壁も白で表示する
+        // op は透明度(0〜1)。255 を使い純白を維持
+        stroke={`rgba(255,255,255,${op})`}
         strokeWidth={1}
       />
     );
@@ -107,7 +109,8 @@ export function renderHitWalls({ cell, hitV, hitH, wallLifetime }: HitWallProps)
         y1={(y + 1) * cell}
         x2={x * cell + cell}
         y2={(y + 1) * cell}
-        stroke={`rgba(128,128,128,${op})`}
+        // こちらも白色で描画し枠線と一体化させる
+        stroke={`rgba(255,255,255,${op})`}
         strokeWidth={1}
       />
     );
