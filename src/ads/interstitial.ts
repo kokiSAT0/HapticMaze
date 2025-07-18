@@ -1,6 +1,7 @@
 import { InterstitialAd, TestIds, AdEventType } from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
-import { devLog } from '@/src/utils/logger';
+// 広告の詳細なログ出力用関数を読み込む
+import { adLog } from '@/src/utils/logger';
 
 // テスト用ID。__DEV__ でのみ使われます
 const TEST_ID = TestIds.INTERSTITIAL;
@@ -25,6 +26,8 @@ export async function showInterstitial() {
   }
 
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+  // どの ID を使っているか確認できるように出力しておく
+  adLog('showInterstitial start', { unitId: AD_UNIT_ID });
 
   return new Promise<void>((resolve, reject) => {
     // Promise を reject できるように第二引数を追加
@@ -32,8 +35,9 @@ export async function showInterstitial() {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     // 広告イベントを監視し、読み込み完了で表示、閉じるかエラーで終了
-    const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      devLog('Interstitial event', type);
+    const unsubscribe = ad.addAdEventsListener(({ type, payload }) => {
+      // すべてのイベントとペイロードを出力しておく
+      adLog('Interstitial event', { type, payload });
       if (type === AdEventType.LOADED) {
         ad.show();
       }
@@ -47,6 +51,8 @@ export async function showInterstitial() {
         resolve(); // 正常終了
       }
       if (type === AdEventType.ERROR) {
+        // エラーオブジェクトの内容もログに含める
+        adLog('Interstitial error detail', payload);
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
         // エラー内容は詳細不明なので固定メッセージを返す
@@ -71,10 +77,13 @@ export async function showInterstitial() {
 export async function loadInterstitial(): Promise<InterstitialAd | null> {
   if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve(null);
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+  // 現在の広告ユニットを確認するためログ出力
+  adLog('loadInterstitial start', { unitId: AD_UNIT_ID });
   return new Promise((resolve) => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      devLog('Interstitial load', type);
+    const unsubscribe = ad.addAdEventsListener(({ type, payload }) => {
+      // 読み込み時のイベントも詳細に出力する
+      adLog('Interstitial load', { type, payload });
       if (type === AdEventType.LOADED) {
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
@@ -82,6 +91,8 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
       }
       if (type === AdEventType.ERROR) {
         if (timeoutId) clearTimeout(timeoutId);
+        // 発生したエラー詳細をログしておく
+        adLog('loadInterstitial error', payload);
         unsubscribe();
         resolve(null);
       }
@@ -100,11 +111,14 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
  */
 export async function showLoadedInterstitial(ad: InterstitialAd) {
   if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve();
+  // 呼び出しタイミングを把握するため出力しておく
+  adLog('showLoadedInterstitial start');
   return new Promise<void>((resolve, reject) => {
     // エラー時に catch へ渡すため reject 可能にしておく
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    const unsubscribe = ad.addAdEventsListener(({ type }) => {
-      devLog('Interstitial show', type);
+    const unsubscribe = ad.addAdEventsListener(({ type, payload }) => {
+      // 表示時のイベントを全て記録する
+      adLog('Interstitial show', { type, payload });
       if (type === AdEventType.OPENED) {
         if (timeoutId) clearTimeout(timeoutId);
       }
@@ -114,6 +128,8 @@ export async function showLoadedInterstitial(ad: InterstitialAd) {
         resolve(); // 表示後正常に閉じられた
       }
       if (type === AdEventType.ERROR) {
+        // エラー詳細を記録
+        adLog('showLoadedInterstitial error', payload);
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
         // 表示中にエラーが発生した場合は失敗として返す
