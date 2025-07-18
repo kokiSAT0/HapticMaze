@@ -162,4 +162,11 @@ BGM の再生や広告表示に失敗したときも、設定中の言語に応�
 現在のバージョンはテスト目的の β 版です。TestFlight もしくは Google Play の内部
 テストトラックを通じて限定配布します。個人情報の収集は行っていません。
 
+## クレジット
+
+- フォント: Space Mono (SIL Open Font License 1.1)
+- 効果音・BGM: DOVA-SYNDROME より提供
+- 詳細は [LICENSES.md](./LICENSES.md) を参照してください。
+
 詳細な利用規約とプライバシーポリシーについては、リポジトリ直下の [`TERMS_OF_SERVICE.md`](TERMS_OF_SERVICE.md) と [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md) を参照してください。
+
