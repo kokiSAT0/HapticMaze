@@ -5,8 +5,10 @@ import type { MazeData } from '@/src/types/maze';
 // 壁描画処理をまとめたファイル
 // MiniMap 以外でも使えるように関数として定義
 
-// グレーの壁色を定数化
-const WALL_COLOR = 'gray';
+// 壁描画に使う色を定義
+// 以前は薄いグレーだったが視認性向上のため純白に変更
+// '#ffffff' は完全な白を示す
+const WALL_COLOR = '#ffffff';
 
 export interface WallsProps {
   maze: MazeData;
