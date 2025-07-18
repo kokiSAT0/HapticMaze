@@ -49,7 +49,7 @@ export default ({ config }) => ({
   extra: {
     ...(appJson.expo.extra ?? {}),
     eas: {
-      projectId: "d3cd7e59-b872-4f9c-8a23-5df8c4ae4583",  // ← eas init が出力した ID
+      projectId: "d3cd7e59-b872-4f9c-8a23-5df8c4ae4583", // ← eas init が出力した ID
     },
   },
 });

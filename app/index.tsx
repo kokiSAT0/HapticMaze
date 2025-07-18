@@ -13,6 +13,7 @@ import {
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { AdInfo } from "@/components/AdInfo";
 import { LEVELS } from "@/constants/levels";
 import { useAudioControls } from "@/src/hooks/useAudioControls";
 import { useLevelUnlock } from "@/src/hooks/useLevelUnlock";
@@ -224,6 +225,9 @@ export default function TitleScreen() {
         onPress={() => router.push("/rules")}
         accessibilityLabel={t("openHowToPlay")}
       />
+
+      {/* AdMob 設定値を確認するための表示 */}
+      <AdInfo />
 
       </ScrollView>
 
