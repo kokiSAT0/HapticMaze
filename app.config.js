@@ -48,6 +48,10 @@ export default ({ config }) => ({
   ],
   extra: {
     ...(appJson.expo.extra ?? {}),
+    // AdMob の各種 ID を extra に露出して画面上で確認できるようにする
+    admobAndroidAppId: process.env.ANDROID_ADMOB_APP_ID,
+    admobIosAppId: process.env.IOS_ADMOB_APP_ID,
+    admobInterstitialId: process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID,
     eas: {
       projectId: "d3cd7e59-b872-4f9c-8a23-5df8c4ae4583",  // ← eas init が出力した ID
     },
