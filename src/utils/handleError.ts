@@ -3,6 +3,9 @@ import { useCallback } from 'react';
 import { logError } from './errorLogger';
 import { IS_TESTFLIGHT } from './appEnv';
 
+// 環境変数 EXPO_PUBLIC_DEBUG_ERROR が 'true' のとき詳細を表示
+const DEBUG_ERROR = process.env.EXPO_PUBLIC_DEBUG_ERROR === 'true';
+
 /**
  * 例外発生時の共通処理を提供するカスタムフック。
  * メッセージを画面に表示し、詳細をコンソールへ出力します。
@@ -17,8 +20,8 @@ export function useHandleError() {
       console.error(message, error);
       // エラーログを保存して後から調査できるようにする
       void logError(message, error);
-      // TestFlight では詳細なエラー内容も表示してデバッグしやすくする
-      const msg = IS_TESTFLIGHT ? `${message}: ${String(error)}` : message;
+      // TestFlight もしくは DEBUG_ERROR のときは詳細エラーを含める
+      const msg = IS_TESTFLIGHT || DEBUG_ERROR ? `${message}: ${String(error)}` : message;
       show(msg);
     },
     [show],
