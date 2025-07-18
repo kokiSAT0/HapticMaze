@@ -1,7 +1,7 @@
-# Maze Sense — α 版 技術仕様書 (v0.2.0 / 2025‑06‑23)
+# Maze Sense — 完成版 技術仕様書 (v1.0.0 / 2025‑07‑04)
 
 > **このドキュメントの目的**
-> このドキュメントをもとにテスターがプレイできる α 版を完成させる。
+> このドキュメントは Maze Sense の完成版リリース内容をまとめたものです。
 
 ---
 
@@ -203,7 +203,7 @@ expo start --android
 
 ---
 
-## 10. TODO チェックリスト
+## 10. 実装済みチェックリスト
 
 - [x] Maze JSON パーサ実装
 - [x] GameContext / useGameReducer
@@ -213,7 +213,7 @@ expo start --android
 - [x] 振動 / 枠フィードバック関数
 - [x] ゴール判定 & ResultModal
 - [x] ヘッダーボタン（リスポーン / 全表示トグル）
-- [ ] EAS build (iOS TestFlight / Android APK)
+- [x] EAS build (iOS App Store / Google Play)
 
 ---
 
@@ -228,7 +228,7 @@ expo start --android
 
 ---
 
-## 12. 今後拡張 (β 以降)
+## 12. 将来のアップデート案
 
 - 迷路自動生成 & 複数サイズ
 - タイム/スコア・リーダーボード
