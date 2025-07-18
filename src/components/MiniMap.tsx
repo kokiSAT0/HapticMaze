@@ -88,7 +88,7 @@ export function MiniMap({
   // プレイヤーの外周半径。描画時は一定値とする
   const radius = cell * 0.3;
 
-  // ゴールまでの距離に応じてプレイヤー円の色を変える
+  // ゴールまでの距離に応じてプレイヤー外周の色を変える
   // 距離 0 と 1 のときは真っ白にし、それ以降は徐々に暗くしていく
   const playerColor = useDerivedValue(() => {
     // 迷路サイズから算出できる最大のマンハッタン距離
@@ -111,34 +111,27 @@ export function MiniMap({
     return `rgb(${g},${g},${g})`;
   }, [pos, maze.goal, maze.size]);
 
-  // 距離に応じてドーナツの太さを決定する
-  const playerWidth = useDerivedValue(() => {
+  // ドーナツの内側を黒で塗りつぶすための半径を求める
+  // 距離 0 ～ 1 マスでは r = 0、最遠では r = radius - 2 とする
+  const innerRadius = useDerivedValue(() => {
     const maxDist = (maze.size - 1) * 2;
     const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
-    // ratio は 0 (最も遠い) 〜 1 (距離1) の範囲
-    const ratio = clamp((maxDist - d) / (maxDist - 1), 0, 1);
-    // 最小幅 2px、最大幅は外周全てを埋める値とする
-    const maxWidth = radius * 2;
-    return 2 + (maxWidth - 2) * ratio;
+    const ratio = clamp((d - 1) / (maxDist - 1), 0, 1);
+    const limit = Math.max(radius - 2, 0);
+    return limit * ratio;
   }, [pos, maze.goal, maze.size]);
 
-  // アニメーション用に塗りつぶし・線幅などを更新
-  const playerProps = useAnimatedProps(() => {
-    const color = playerColor.value;
-    const width = playerWidth.value;
-    // 幅が円直径以上なら塗りつぶし円として描画
-    if (width >= radius * 2) {
-      return { fill: color, strokeWidth: 0, r: radius };
-    }
-    // ドーナツ形状: stroke で描き、中心は透過
-    const r = Math.max(radius - width / 2, 0);
-    return {
-      fill: "none",
-      stroke: color,
-      strokeWidth: width,
-      r,
-    };
-  });
+  // 外周円の色だけアニメーションさせる
+  const outerProps = useAnimatedProps(() => ({
+    fill: playerColor.value,
+    r: radius,
+  }));
+
+  // 内側の黒円は半径のみ変化させる
+  const innerProps = useAnimatedProps(() => ({
+    r: innerRadius.value,
+    fill: "black",
+  }));
 
 
   return (
@@ -174,9 +167,18 @@ export function MiniMap({
             fill="white" // 塗りつぶし
           />
         )}
-        {/* プレイヤー位置は距離に応じたドーナツ形状で表示 */}
+        {/*
+          プレイヤー表示は以下の二重円で実現する
+          1. 外側: ゴールまでの距離で色だけ変わる円
+          2. 内側: 黒い円。半径を変えてドーナツの太さを表現
+        */}
         <AnimatedCircle
-          animatedProps={playerProps}
+          animatedProps={outerProps}
+          cx={(pos.x + 0.5) * cell}
+          cy={(pos.y + 0.5) * cell}
+        />
+        <AnimatedCircle
+          animatedProps={innerProps}
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
         />
