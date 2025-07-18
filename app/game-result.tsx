@@ -35,7 +35,8 @@ export default function GameResultScreen() {
       if (needMute) pauseBgm();
       await showInterstitial();
     } catch (e) {
-      // 広告が表示できなかった場合はユーザーへ知らせる
+      // showInterstitial から reject された場合はここへ
+      // 例外処理でエラーメッセージが表示されることを確認する
       handleError('広告を表示できませんでした', e);
     } finally {
       if (needMute) resumeBgm();

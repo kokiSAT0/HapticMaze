@@ -16,7 +16,7 @@ const INTERSTITIAL_TIMEOUT_MS = 10000;
 
 /**
  * インタースティシャル広告を読み込みつつ表示する関数
- * 広告が閉じられると解決します
+ * 広告が閉じられると解決、エラーやタイムアウトでは reject します
  */
 export async function showInterstitial() {
   // Web 環境や広告無効化フラグが立っている場合はすぐ解決します
@@ -26,7 +26,8 @@ export async function showInterstitial() {
 
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
+    // Promise を reject できるように第二引数を追加
     // React Native 環境の setTimeout は number を返すため ReturnType で受け取る
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -40,17 +41,24 @@ export async function showInterstitial() {
         // 表示されたらフェイルセーフ用タイマーを解除
         if (timeoutId) clearTimeout(timeoutId);
       }
-      if (type === AdEventType.CLOSED || type === AdEventType.ERROR) {
+      if (type === AdEventType.CLOSED) {
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
-        resolve();
+        resolve(); // 正常終了
+      }
+      if (type === AdEventType.ERROR) {
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        // エラー内容は詳細不明なので固定メッセージを返す
+        reject(new Error('failed'));
       }
     });
 
     // 読み込みに 10 秒以上かかった場合はあきらめて終了
     timeoutId = setTimeout(() => {
+      // 読み込みが終わらなければ諦めてエラー扱い
       unsubscribe();
-      resolve();
+      reject(new Error('failed'));
     }, INTERSTITIAL_TIMEOUT_MS);
 
     ad.load();
@@ -88,25 +96,34 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
 
 /**
  * 読み込み済み広告を表示する関数
+ * 閉じられれば resolve、失敗時やタイムアウトでは reject します
  */
 export async function showLoadedInterstitial(ad: InterstitialAd) {
   if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve();
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
+    // エラー時に catch へ渡すため reject 可能にしておく
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const unsubscribe = ad.addAdEventsListener(({ type }) => {
       devLog('Interstitial show', type);
       if (type === AdEventType.OPENED) {
         if (timeoutId) clearTimeout(timeoutId);
       }
-      if (type === AdEventType.CLOSED || type === AdEventType.ERROR) {
+      if (type === AdEventType.CLOSED) {
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
-        resolve();
+        resolve(); // 表示後正常に閉じられた
+      }
+      if (type === AdEventType.ERROR) {
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        // 表示中にエラーが発生した場合は失敗として返す
+        reject(new Error('failed'));
       }
     });
     timeoutId = setTimeout(() => {
+      // 表示処理が長引いたときはエラーとして終了させる
       unsubscribe();
-      resolve();
+      reject(new Error('failed'));
     }, INTERSTITIAL_TIMEOUT_MS);
     ad.show();
   });

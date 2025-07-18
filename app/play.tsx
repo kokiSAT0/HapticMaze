@@ -178,7 +178,8 @@ export default function PlayScreen() {
       setDebugAll(true);
       incReveal();
     } catch (e) {
-      // 広告表示に失敗したらメッセージを出しておく
+      // showInterstitial が reject を返した場合にここへ到達
+      // try/catch によりエラーメッセージが表示されることを確認する
       handleError("広告を表示できませんでした", e);
     } finally {
       if (needMute) resumeBgm();
