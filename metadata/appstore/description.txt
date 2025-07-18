@@ -1,0 +1,4 @@
+Maze Sense is a haptic maze game.
+詳細なプライバシーポリシーと利用規約は下記URLをご確認ください。
+https://github.com/kurohyou3/MazeSense/blob/main/PRIVACY_POLICY.md
+https://github.com/kurohyou3/MazeSense/blob/main/TERMS_OF_SERVICE.md
