@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
 import { DISABLE_ADS } from '@/src/ads/interstitial';
+import { useHandleError } from '@/src/utils/handleError';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
@@ -26,6 +27,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   // スナックバー表示用フック。エラー通知に利用する
   const { show: showSnackbar } = useSnackbar();
+  const handleError = useHandleError();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -43,12 +45,11 @@ export default function RootLayout() {
       try {
         mobileAds().initialize();
       } catch (e) {
-        // エラー内容をログに出し、ユーザーにも通知する
-        console.error(e);
-        showSnackbar('広告初期化に失敗しました');
+        // 共通エラーハンドラで詳細を通知
+        handleError('広告初期化に失敗しました', e);
       }
     }
-  }, [showSnackbar]);
+  }, [handleError]);
 
   if (!loaded) {
     // Async font loading only occurs in development.
