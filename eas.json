@@ -12,7 +12,7 @@
         "simulator": false
       },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
         "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
       }
     },
@@ -20,7 +20,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
         "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
       },
       "channel": "development"
@@ -34,7 +34,7 @@
         "simulator": false
       },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
         "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792"
       },
       "channel": "preview"
