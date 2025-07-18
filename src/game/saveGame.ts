@@ -36,10 +36,16 @@ export interface StoredState {
   respawnStock: number;
   respawnMax: number;
   stagePerMap: number;
-  /** プレイヤー周囲壁の寿命。Infinity は null として保存 */
-  playerAdjacentLife: number | null;
-  /** 敵周囲壁の寿命。Infinity は null として保存 */
-  enemyAdjacentLife: number | null;
+  /**
+   * プレイヤー周囲壁の寿命。Infinity は null として保存
+   * v1.2 以前のセーブデータでは存在しないことがある
+   */
+  playerAdjacentLife?: number | null;
+  /**
+   * 敵周囲壁の寿命。Infinity は null として保存
+   * v1.2 以前のセーブデータでは存在しないことがある
+   */
+  enemyAdjacentLife?: number | null;
 }
 
 // State から保存用データへ変換
@@ -121,11 +127,15 @@ export function decodeState(data: StoredState): State {
     respawnStock: data.respawnStock,
     respawnMax: level?.respawnMax ?? data.respawnMax,
     stagePerMap: level?.stagePerMap ?? 3,
-    // null は Infinity を意味する
+    // 値が null または undefined の場合は Infinity と解釈する
     playerAdjacentLife:
-      data.playerAdjacentLife === null ? Infinity : data.playerAdjacentLife,
+      data.playerAdjacentLife === null || data.playerAdjacentLife === undefined
+        ? Infinity
+        : data.playerAdjacentLife,
     enemyAdjacentLife:
-      data.enemyAdjacentLife === null ? Infinity : data.enemyAdjacentLife,
+      data.enemyAdjacentLife === null || data.enemyAdjacentLife === undefined
+        ? Infinity
+        : data.enemyAdjacentLife,
   };
 }
 
