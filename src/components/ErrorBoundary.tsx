@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { IS_TESTFLIGHT } from '@/src/utils/appEnv';
 
 interface ErrorBoundaryProps {
   /** エラー発生時に呼び出されるコールバック */
@@ -25,8 +26,11 @@ export class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // 詳細をコンソールに出力しデバッグしやすくする
     console.error(error, info);
-    // 呼び出し元にエラーを通知する
-    this.props.onError('予期せぬエラーが発生しました');
+    // TestFlight ではエラー詳細を通知
+    const msg = IS_TESTFLIGHT
+      ? String(error)
+      : '予期せぬエラーが発生しました';
+    this.props.onError(msg);
     // フォールバック UI を表示するためフラグを立てる
     this.setState({ hasError: true });
   }

@@ -1,5 +1,6 @@
 import type { ErrorUtils as ErrorUtilsType } from 'react-native/Libraries/vendor/core/ErrorUtils';
 import { logError } from './errorLogger';
+import { IS_TESTFLIGHT } from './appEnv';
 
 /**
  * グローバルエラーハンドラを登録する関数。
@@ -16,7 +17,9 @@ export function initGlobalErrorHandler(showSnackbar: (msg: string) => void) {
     // 予期しないエラーをログに残す
     console.error('Unhandled Error', error);
     void logError('Unhandled Error', error);
-    showSnackbar('予期せぬエラーが発生しました');
+    // テストフライトでは詳細を表示してデバッグを容易にする
+    const msg = IS_TESTFLIGHT ? String(error) : '予期せぬエラーが発生しました';
+    showSnackbar(msg);
     defaultHandler(error, isFatal);
   });
 }
