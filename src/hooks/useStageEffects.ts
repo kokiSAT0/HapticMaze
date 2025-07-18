@@ -48,6 +48,8 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
         pauseBgm();
         await showLoadedInterstitial(ad);
       } catch (e) {
+        // showLoadedInterstitial で reject された場合はここに到達する
+        // ユーザーへエラーメッセージを表示できることを確認済み
         handleError(t('adDisplayFailure'), e);
       } finally {
         resumeBgm();
