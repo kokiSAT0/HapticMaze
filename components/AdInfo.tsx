@@ -1,8 +1,8 @@
-import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
+import React from "react";
+import { Platform, StyleSheet } from "react-native";
 
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 
 /**
  * AdMob に渡されている各種 ID を画面に表示するためのデバッグ用コンポーネント
@@ -10,9 +10,9 @@ import { ThemedText } from '@/components/ThemedText';
 export function AdInfo() {
   // 環境変数はビルド時に置き換わるため、eas update でも値を確認可能
   const appId =
-    Platform.OS === 'ios'
-      ? process.env.IOS_ADMOB_APP_ID
-      : process.env.ANDROID_ADMOB_APP_ID;
+    Platform.OS === "ios"
+      ? process.env.EXPO_PUBLIC_IOS_ADMOB_APP_ID
+      : process.env.EXPO_PUBLIC_ANDROID_ADMOB_APP_ID;
   const interstitialId = process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID;
 
   return (
@@ -23,10 +23,10 @@ export function AdInfo() {
     >
       {/* 実際にビルド時の値をそのまま表示する */}
       <ThemedText lightColor="#fff" darkColor="#fff">
-        App ID: {appId ?? 'undefined'}
+        App ID: {appId ?? "undefined"}
       </ThemedText>
       <ThemedText lightColor="#fff" darkColor="#fff">
-        Interstitial ID: {interstitialId ?? 'undefined'}
+        Interstitial ID: {interstitialId ?? "undefined"}
       </ThemedText>
     </ThemedView>
   );
@@ -35,6 +35,6 @@ export function AdInfo() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 16, // 上部との余白
-    alignItems: 'center', // 中央揃え
+    alignItems: "center", // 中央揃え
   },
 });

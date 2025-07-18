@@ -10,8 +10,8 @@
       "autoIncrement": true,
       "ios": { "simulator": false },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
-        "IOS_ADMOB_APP_ID":     "ca-app-pub-4177731053735768~5812637792",
+        "EXPO_PUBLIC_ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
+        "EXPO_PUBLIC_IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
         "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID": "ca-app-pub-4177731053735768/4814981391"
       }
     },
@@ -23,18 +23,18 @@
         "simulator": false
       },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
-        "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
-        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID" : "ca-app-pub-3940256099942344/4411468910"
+        "EXPO_PUBLIC_ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
+        "EXPO_PUBLIC_IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID": "ca-app-pub-3940256099942344/4411468910"
       }
     },
     "development": {
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
-        "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
-        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID" : "ca-app-pub-3940256099942344/4411468910"
+        "EXPO_PUBLIC_ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
+        "EXPO_PUBLIC_IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID": "ca-app-pub-3940256099942344/4411468910"
       },
       "channel": "development"
     },
@@ -47,9 +47,9 @@
         "simulator": false
       },
       "env": {
-        "ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
-        "IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
-        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID" : "ca-app-pub-3940256099942344/4411468910"
+        "EXPO_PUBLIC_ANDROID_ADMOB_APP_ID": "ca-app-pub-4177731053735768~2085542552",
+        "EXPO_PUBLIC_IOS_ADMOB_APP_ID": "ca-app-pub-4177731053735768~5812637792",
+        "EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID": "ca-app-pub-3940256099942344/4411468910"
       },
       "channel": "preview"
     }
