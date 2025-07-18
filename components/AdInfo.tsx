@@ -22,10 +22,10 @@ export function AdInfo() {
       accessibilityLabel="広告設定情報"
     >
       {/* 実際にビルド時の値をそのまま表示する */}
-      <ThemedText lightColor="#fff" darkColor="#fff">
+      <ThemedText lightColor="#000" darkColor="#000">
         App ID: {appId ?? 'undefined'}
       </ThemedText>
-      <ThemedText lightColor="#fff" darkColor="#fff">
+      <ThemedText lightColor="#000" darkColor="#000">
         Interstitial ID: {interstitialId ?? 'undefined'}
       </ThemedText>
     </ThemedView>
