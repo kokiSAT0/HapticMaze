@@ -1,7 +1,8 @@
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 import { useCallback } from 'react';
 import { logError } from './errorLogger';
-import { IS_TESTFLIGHT } from './appEnv';
+
+// 常に詳細なエラーメッセージを表示したいので環境変数による分岐は撤廃
 
 /**
  * 例外発生時の共通処理を提供するカスタムフック。
@@ -17,8 +18,8 @@ export function useHandleError() {
       console.error(message, error);
       // エラーログを保存して後から調査できるようにする
       void logError(message, error);
-      // TestFlight では詳細なエラー内容も表示してデバッグしやすくする
-      const msg = IS_TESTFLIGHT ? `${message}: ${String(error)}` : message;
+      // どの環境でもエラー内容を合わせて表示する
+      const msg = `${message}: ${String(error)}`;
       show(msg);
     },
     [show],

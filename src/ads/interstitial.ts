@@ -55,16 +55,16 @@ export async function showInterstitial() {
         adLog('Interstitial error detail', payload);
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
-        // エラー内容は詳細不明なので固定メッセージを返す
-        reject(new Error('failed'));
+        // 受け取ったエラーオブジェクトをそのまま返す
+        reject(payload instanceof Error ? payload : new Error(String(payload)));
       }
     });
 
     // 読み込みに 10 秒以上かかった場合はあきらめて終了
     timeoutId = setTimeout(() => {
-      // 読み込みが終わらなければ諦めてエラー扱い
+      // 読み込みが終わらなければタイムアウトエラーを返す
       unsubscribe();
-      reject(new Error('failed'));
+      reject(new Error('timeout'));
     }, INTERSTITIAL_TIMEOUT_MS);
 
     ad.load();
@@ -132,14 +132,14 @@ export async function showLoadedInterstitial(ad: InterstitialAd) {
         adLog('showLoadedInterstitial error', payload);
         if (timeoutId) clearTimeout(timeoutId);
         unsubscribe();
-        // 表示中にエラーが発生した場合は失敗として返す
-        reject(new Error('failed'));
+        // エラーオブジェクトがあればそのまま返す
+        reject(payload instanceof Error ? payload : new Error(String(payload)));
       }
     });
     timeoutId = setTimeout(() => {
-      // 表示処理が長引いたときはエラーとして終了させる
+      // 表示処理が長引いたときはタイムアウトエラーを返す
       unsubscribe();
-      reject(new Error('failed'));
+      reject(new Error('timeout'));
     }, INTERSTITIAL_TIMEOUT_MS);
     ad.show();
   });
