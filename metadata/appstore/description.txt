@@ -1,4 +1,10 @@
 Maze Sense is a haptic maze game.
+Navigate a fixed 10x10 labyrinth using the D-Pad, guided by vibration cues.
+Feel the intensity rise as you get closer to the goal, and track your steps and bumps.
+
+Maze Senseは触覚フィードバックを頼りに10×10の迷路を探索するゲームです。
+振動の強さと画面のフラッシュがゴールまでの距離を知らせ、手数と壁衝突数を競えます。
+
 詳細なプライバシーポリシーと利用規約は下記URLをご確認ください。
 https://github.com/kurohyou3/MazeSense/blob/main/PRIVACY_POLICY.md
 https://github.com/kurohyou3/MazeSense/blob/main/TERMS_OF_SERVICE.md
