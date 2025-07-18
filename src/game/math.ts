@@ -21,7 +21,9 @@ export function lerp(start: number, end: number, t: number): number {
 
 /**
  * 値を最小値と最大値の範囲に収める clamp 関数
+ * Reanimated から呼び出すことを想定し `worklet` を付与
  */
 export function clamp(v: number, min: number, max: number): number {
+  'worklet';
   return Math.min(max, Math.max(min, v));
 }
