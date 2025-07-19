@@ -1,7 +1,7 @@
 import { View, Pressable, useWindowDimensions, Platform } from "react-native";
 
 // React から必要なフックを個別にインポート
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -55,8 +55,12 @@ export default function PlayScreen() {
     handleMove,
     handleOk,
     handleRespawn,
+    respawnLocked,
     handleExit,
   } = usePlayLogic();
+
+  // 広告読み込み中かどうかのフラグ
+  const [revealLocked, setRevealLocked] = useState(false);
 
   // BGM 制御用フックを取得し広告表示の際に一時停止できるようにする
   const { pause: pauseBgm, resume: resumeBgm } = useBgm();
@@ -160,29 +164,36 @@ export default function PlayScreen() {
   // debugAll が true なら広告なしで OFF にする
   // OFF → ON は初回のみ無償、それ以降は広告視聴が必要
   const handleRevealAll = async () => {
-    if (debugAll) {
-      setDebugAll(false);
-      return;
-    }
-    if (revealUsed === 0) {
-      setDebugAll(true);
-      setRevealUsed(1);
-      incReveal();
-      return;
-    }
-    // 広告が出る可能性があるときだけ BGM を止める
-    const needMute = !DISABLE_ADS && Platform.OS !== "web";
+    // 連打防止。ロック中は処理しない
+    if (revealLocked) return;
+    setRevealLocked(true);
     try {
-      if (needMute) pauseBgm();
-      await showInterstitial();
-      setDebugAll(true);
-      incReveal();
-    } catch (e) {
-      // showInterstitial が reject を返した場合にここへ到達
-      // try/catch によりエラーメッセージが表示されることを確認する
-      handleError("広告を表示できませんでした", e);
+      if (debugAll) {
+        setDebugAll(false);
+        return;
+      }
+      if (revealUsed === 0) {
+        setDebugAll(true);
+        setRevealUsed(1);
+        incReveal();
+        return;
+      }
+      // 広告が出る可能性があるときだけ BGM を止める
+      const needMute = !DISABLE_ADS && Platform.OS !== "web";
+      try {
+        if (needMute) pauseBgm();
+        await showInterstitial();
+        setDebugAll(true);
+        incReveal();
+      } catch (e) {
+        // showInterstitial が reject を返した場合にここへ到達
+        // try/catch によりエラーメッセージが表示されることを確認する
+        handleError("広告を表示できませんでした", e);
+      } finally {
+        if (needMute) resumeBgm();
+      }
     } finally {
-      if (needMute) resumeBgm();
+      setRevealLocked(false);
     }
   };
 
@@ -209,6 +220,7 @@ export default function PlayScreen() {
           incRespawn();
           handleRespawn();
         }}
+        disabled={respawnLocked}
         accessibilityLabel="敵をリスポーン"
       >
         {/* リスポーン回数が 0 回ならアウトライン表示に切り替える */}
@@ -218,12 +230,13 @@ export default function PlayScreen() {
       <Pressable
         style={[playStyles.menuBtn, { top: insets.top + 10 }]}
         onPress={handleRevealAll}
+        disabled={revealLocked}
         accessibilityLabel={
           debugAll
             ? t("hideMazeAll")
             : revealUsed === 0
-            ? t("showMazeAll")
-            : t("watchAdForReveal")
+              ? t("showMazeAll")
+              : t("watchAdForReveal")
         }
       >
         {/* debugAll の状態に応じてアイコンを変更 */}

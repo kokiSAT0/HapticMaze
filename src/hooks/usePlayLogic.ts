@@ -1,5 +1,7 @@
 import { useWindowDimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+// React の useState フックを追加
+import { useState } from 'react';
 // 広告関連の関数とフラグをまとめて読み込む
 import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 import { useHandleError } from '@/src/utils/handleError';
@@ -53,22 +55,31 @@ export function usePlayLogic() {
   const totalStages = maze.size * maze.size;
 
   const handleError = useHandleError();
+  // 広告表示中はボタンをロックするためのフラグ
+  const [respawnLocked, setRespawnLocked] = useState(false);
 
   // 敵のみをリスポーンする処理
   const handleRespawn = async () => {
-    if (state.respawnStock <= 0) {
-      // 広告表示がある場合のみ BGM を止める
-      const needMute = !DISABLE_ADS && Platform.OS !== 'web';
-      try {
-        if (needMute) audio.pauseBgm();
-        await showInterstitial();
-      } catch (e) {
-        handleError('広告を表示できませんでした', e);
-      } finally {
-        if (needMute) audio.resumeBgm();
+    // ロック中は処理しない
+    if (respawnLocked) return;
+    setRespawnLocked(true);
+    try {
+      if (state.respawnStock <= 0) {
+        // 広告表示がある場合のみ BGM を止める
+        const needMute = !DISABLE_ADS && Platform.OS !== 'web';
+        try {
+          if (needMute) audio.pauseBgm();
+          await showInterstitial();
+        } catch (e) {
+          handleError('広告を表示できませんでした', e);
+        } finally {
+          if (needMute) audio.resumeBgm();
+        }
       }
+      respawnEnemies();
+    } finally {
+      setRespawnLocked(false);
     }
-    respawnEnemies();
   };
 
   return {
@@ -85,5 +96,6 @@ export function usePlayLogic() {
     audioReady: audio.audioReady,
     ...moveCtrl,
     handleRespawn,
+    respawnLocked,
   } as const;
 }
