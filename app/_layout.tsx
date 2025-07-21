@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
 import { DISABLE_ADS } from '@/src/ads/interstitial';
+// 課金情報の初期化を行うモジュール
+import * as removeAds from '@/src/iap/removeAds';
 import { useHandleError } from '@/src/utils/handleError';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -37,6 +39,13 @@ export default function RootLayout() {
     initGlobalErrorHandler(showSnackbar);
     initUnhandledRejectionHandler(showSnackbar);
   }, [showSnackbar]);
+
+  // 課金情報を初期化し、購入済みかを確認する
+  useEffect(() => {
+    removeAds
+      .init()
+      .catch((e) => handleError('購入情報を取得できませんでした', e));
+  }, [handleError]);
 
   // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
   useEffect(() => {

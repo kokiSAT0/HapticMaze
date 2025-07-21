@@ -1,5 +1,7 @@
 import { InterstitialAd, TestIds, AdEventType } from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
+// 広告削除課金の状態を参照する
+import { isAdsRemoved } from '@/src/iap/removeAds';
 // 広告の詳細なログ出力用関数を読み込む
 import { adLog } from '@/src/utils/logger';
 
@@ -21,7 +23,7 @@ const INTERSTITIAL_TIMEOUT_MS = 10000;
  */
 export async function showInterstitial() {
   // Web 環境や広告無効化フラグが立っている場合はすぐ解決します
-  if (Platform.OS === 'web' || DISABLE_ADS) {
+  if (Platform.OS === 'web' || DISABLE_ADS || isAdsRemoved()) {
     return Promise.resolve();
   }
 
@@ -75,7 +77,7 @@ export async function showInterstitial() {
  * 広告だけを事前に読み込む関数。成功時は InterstitialAd を返す
  */
 export async function loadInterstitial(): Promise<InterstitialAd | null> {
-  if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve(null);
+  if (Platform.OS === 'web' || DISABLE_ADS || isAdsRemoved()) return Promise.resolve(null);
   const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
   // 現在の広告ユニットを確認するためログ出力
   adLog('loadInterstitial start', { unitId: AD_UNIT_ID });
@@ -110,7 +112,7 @@ export async function loadInterstitial(): Promise<InterstitialAd | null> {
  * 閉じられれば resolve、失敗時やタイムアウトでは reject します
  */
 export async function showLoadedInterstitial(ad: InterstitialAd) {
-  if (Platform.OS === 'web' || DISABLE_ADS) return Promise.resolve();
+  if (Platform.OS === 'web' || DISABLE_ADS || isAdsRemoved()) return Promise.resolve();
   // 呼び出しタイミングを把握するため出力しておく
   adLog('showLoadedInterstitial start');
   return new Promise<void>((resolve, reject) => {
