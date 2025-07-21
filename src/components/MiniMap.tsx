@@ -1,6 +1,6 @@
 // 距離計算は math モジュールへ移動
 // 距離計算や補間用ユーティリティ
-import { clamp, distance } from "@/src/game/math";
+import { clamp, distance, lerp } from "@/src/game/math";
 import React from "react";
 import Animated, {
   useAnimatedProps,
@@ -88,37 +88,19 @@ export function MiniMap({
   // プレイヤーの外周半径。描画時は一定値とする
   const radius = cell * 0.3;
 
-  // ゴールまでの距離に応じてプレイヤー外周の色を変える
-  // 距離 0 と 1 のときは真っ白にし、それ以降は徐々に暗くしていく
-  const playerColor = useDerivedValue(() => {
-    // 迷路サイズから算出できる最大のマンハッタン距離
-    const maxDist = (maze.size - 1) * 2;
-    // プレイヤーとゴールの距離を取得
-    const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
+  // プレイヤーの外周色
+  // 仕様変更により常に薄いグレーで固定する
+  const playerColor = useDerivedValue(() => 'rgb(200,200,200)');
 
-    if (d <= 1) {
-      // 距離が 0 または 1 のときは完全な白色を返す
-      return 'rgb(255,255,255)';
-    }
-
-    // 2 以上の距離では段階的に暗くしていく
-    // ratio は 0 〜 1 の範囲で増加する値
-    const ratio = Math.min((d - 1) / (maxDist - 1), 1);
-
-    // 最大距離でも見失わないよう下限を薄いグレー(ここでは rgb(80,80,80))に設定
-    const minGray = 20;
-    const g = Math.round(minGray + (255 - minGray) * (1 - ratio));
-    return `rgb(${g},${g},${g})`;
-  }, [pos, maze.goal, maze.size]);
-
-  // ドーナツの内側を黒で塗りつぶすための半径を求める
-  // 距離 0 ～ 1 マスでは r = 0、最遠では r = radius - 2 とする
+  // 上に重ねる白円の半径を計算する
+  // ゴールに近づくほど大きく、最遠で直径 2px (半径1px) にする
   const innerRadius = useDerivedValue(() => {
     const maxDist = (maze.size - 1) * 2;
     const d = distance(pos, { x: maze.goal[0], y: maze.goal[1] });
-    const ratio = clamp((d - 1) / (maxDist - 1), 0, 1);
-    const limit = Math.max(radius - 2, 0);
-    return limit * ratio;
+    // ゴールから遠いほど ratio が 0 に近づく
+    const ratio = clamp(1 - d / maxDist, 0, 1);
+    // 1px を最小半径とし、ratio に応じて線形補間
+    return lerp(1, radius, ratio);
   }, [pos, maze.goal, maze.size]);
 
   // 外周円の色だけアニメーションさせる
@@ -127,10 +109,10 @@ export function MiniMap({
     r: radius,
   }));
 
-  // 内側の黒円は半径のみ変化させる
+  // 内側の白円は半径のみ変化させる
   const innerProps = useAnimatedProps(() => ({
     r: innerRadius.value,
-    fill: "black",
+    fill: "white",
   }));
 
 
@@ -169,8 +151,8 @@ export function MiniMap({
         )}
         {/*
           プレイヤー表示は以下の二重円で実現する
-          1. 外側: ゴールまでの距離で色だけ変わる円
-          2. 内側: 黒い円。半径を変えてドーナツの太さを表現
+          1. 外側: 常に薄いグレーの円
+          2. 内側: 白い円。距離で半径が変わる
         */}
         <AnimatedCircle
           animatedProps={outerProps}
