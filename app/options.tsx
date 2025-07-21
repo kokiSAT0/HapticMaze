@@ -8,6 +8,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { useLocale, type Lang } from '@/src/locale/LocaleContext';
 import { useAudioControls } from '@/src/hooks/useAudioControls';
 import { UI } from '@/constants/ui';
+import { useHandleError } from '@/src/utils/handleError';
+import { useSnackbar } from '@/src/hooks/useSnackbar';
+// 広告削除機能
+import * as removeAds from '@/src/iap/removeAds';
 
 export default function OptionsScreen() {
   const router = useRouter();
@@ -15,6 +19,8 @@ export default function OptionsScreen() {
 
   const [showLang, setShowLang] = React.useState(false);
   const [showVolume, setShowVolume] = React.useState(false);
+  const handleError = useHandleError();
+  const { show: showSnackbar } = useSnackbar();
 
   // BGM や効果音の音量調整に利用する
   const audio = useAudioControls(
@@ -25,6 +31,26 @@ export default function OptionsScreen() {
   const select = (lang: Lang) => {
     changeLang(lang);
     setShowLang(false);
+  };
+
+  // 広告削除を購入する処理
+  const handlePurchase = async () => {
+    try {
+      await removeAds.purchase();
+      showSnackbar(t('removeAds'));
+    } catch (e) {
+      handleError('購入に失敗しました', e);
+    }
+  };
+
+  // 購入情報を復元する処理
+  const handleRestore = async () => {
+    try {
+      await removeAds.restore();
+      showSnackbar(t('restorePurchase'));
+    } catch (e) {
+      handleError('復元に失敗しました', e);
+    }
   };
 
   return (
@@ -44,6 +70,16 @@ export default function OptionsScreen() {
         title={t('changeLang')}
         onPress={() => setShowLang(true)}
         accessibilityLabel={t('changeLang')}
+      />
+      <PlainButton
+        title={t('removeAds')}
+        onPress={handlePurchase}
+        accessibilityLabel={t('removeAds')}
+      />
+      <PlainButton
+        title={t('restorePurchase')}
+        onPress={handleRestore}
+        accessibilityLabel={t('restorePurchase')}
       />
       <PlainButton
         title={t('backToTitle')}

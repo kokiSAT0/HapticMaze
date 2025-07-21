@@ -61,6 +61,8 @@ const messages = {
     loadingAd: "広告を読み込んでいます",
     showAd: "広告を表示して次に進む",
     watchAdForReveal: "広告を見るともう一度全表示できます",
+    removeAds: "広告を削除する",
+    restorePurchase: "購入を復元する",
     // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
@@ -150,6 +152,8 @@ const messages = {
     loadingAd: "Loading ad...",
     showAd: "Show ad and continue",
     watchAdForReveal: "Watch an ad to reveal again",
+    removeAds: "Remove Ads",
+    restorePurchase: "Restore Purchase",
     // Message shown when BGM playback fails
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails

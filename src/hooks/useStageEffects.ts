@@ -4,6 +4,8 @@ import {
   type InterstitialAd,
   DISABLE_ADS,
 } from "@/src/ads/interstitial";
+// 広告削除課金済みかどうかを参照
+import { isAdsRemoved } from "@/src/iap/removeAds";
 import { useCallback } from "react";
 import { useHandleError } from "@/src/utils/handleError";
 import { useLocale } from "@/src/locale/LocaleContext";
@@ -34,7 +36,7 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
       const shouldShow =
         levelId === 'tutorial' ? stage % 10 === 0 : stage % 6 === 0;
       devLog("loadAdIfNeeded", { stage, shouldShow });
-      if (!shouldShow || DISABLE_ADS) return null;
+      if (!shouldShow || DISABLE_ADS || isAdsRemoved()) return null;
       return loadInterstitial();
     },
     [levelId],
@@ -43,7 +45,7 @@ export function useStageEffects({ pauseBgm, resumeBgm, levelId }: Options) {
   // 広告表示処理をメモ化。BGM 制御や通知を依存として指定
   const showAd = useCallback(
     async (ad: InterstitialAd | null): Promise<boolean> => {
-      if (!ad || DISABLE_ADS) return false;
+      if (!ad || DISABLE_ADS || isAdsRemoved()) return false;
       try {
         pauseBgm();
         await showLoadedInterstitial(ad);
