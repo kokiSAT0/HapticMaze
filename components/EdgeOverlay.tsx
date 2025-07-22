@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import Animated, {
+  runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
@@ -9,6 +10,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { playStyles } from '@/src/styles/playStyles';
+import { logError } from '@/src/utils/errorLogger';
 
 // LinearGradient を Reanimated 用にラップする
 const AnimatedLG =
@@ -36,19 +38,31 @@ export function EdgeOverlay({ borderColor, borderW, maxBorder }: EdgeOverlayProp
   // 枠線の色配列。中央に向かうほど透明に近づける
   const gradColors: [string, string, string] = [borderColor, borderColor, 'transparent'];
   const gradStops = useDerivedValue<[number, number, number]>(() => {
-    // ratio が NaN や Infinity になる可能性を考慮
-    const rawRatio = borderW.value / maxBorder;
-    let ratio = Number.isFinite(rawRatio) ? rawRatio : 0;
-    // 0〜1 の範囲に収める
-    ratio = Math.min(Math.max(ratio, 0), 1);
+    try {
+      // ratio が NaN や Infinity になる可能性を考慮
+      const rawRatio = borderW.value / maxBorder;
+      let ratio = Number.isFinite(rawRatio) ? rawRatio : 0;
+      // 0〜1 の範囲に収める
+      ratio = Math.min(Math.max(ratio, 0), 1);
 
-    let loc = 0.2 + ratio * 0.5;
-    // 非数の場合は中央寄りで固定
-    if (!Number.isFinite(loc)) loc = 0.5;
+      let loc = 0.2 + ratio * 0.5;
+      // 非数の場合は中央寄りで固定
+      if (!Number.isFinite(loc)) loc = 0.5;
 
-    return [0, loc, 1];
+      return [0, loc, 1];
+    } catch (e) {
+      runOnJS(logError)('Worklet error', e);
+      return [0, 0.5, 1];
+    }
   });
-  const gradProps = useAnimatedProps(() => ({ locations: gradStops.value }));
+  const gradProps = useAnimatedProps(() => {
+    try {
+      return { locations: gradStops.value };
+    } catch (e) {
+      runOnJS(logError)('Worklet error', e);
+      return { locations: [0, 0.5, 1] };
+    }
+  });
   const gradLocs = Platform.OS === 'web' ? [0, 0.2, 1] : undefined;
 
   return (

@@ -1,10 +1,16 @@
 // 振動フィードバックに関する処理をまとめたモジュール
 
 import * as Haptics from 'expo-haptics';
-import { withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
+import {
+  runOnJS,
+  withSequence,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { UI } from '@/constants/ui';
 import type { Vec2 } from '@/src/types/maze';
 import { distance } from './math';
+import { logError } from '@/src/utils/errorLogger';
 
 // Expo Haptics の呼び出しが失敗してもアプリが止まらないようにする
 // 第二引数にメッセージ表示用の関数を渡すと、失敗時にユーザーへ通知できる
@@ -94,21 +100,26 @@ export function applyBumpFeedback(
   setColor: (color: string) => void,
   opts: BumpFeedbackOptions = {},
 ): number {
-  const width = opts.width ?? UI.feedback.bumpWidth;
-  const showTime = opts.showTime ?? UI.feedback.bumpShowTime;
+  try {
+    const width = opts.width ?? UI.feedback.bumpWidth;
+    const showTime = opts.showTime ?? UI.feedback.bumpShowTime;
 
-  setColor(UI.colors.bump);
-  // 壁にぶつかったときも安全に振動させる
-  void safeImpact(Haptics.ImpactFeedbackStyle.Heavy, opts.showError);
-  const id = setInterval(() => {
-    void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
-  }, 50);
-  setTimeout(() => clearInterval(id), showTime);
+    setColor(UI.colors.bump);
+    // 壁にぶつかったときも安全に振動させる
+    void safeImpact(Haptics.ImpactFeedbackStyle.Heavy, opts.showError);
+    const id = setInterval(() => {
+      void safeImpact(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 50);
+    setTimeout(() => clearInterval(id), showTime);
 
-  borderW.value = withSequence(
-    withTiming(width, { duration: showTime / 2 }),
-    withTiming(0, { duration: showTime / 2 }),
-  );
+    borderW.value = withSequence(
+      withTiming(width, { duration: showTime / 2 }),
+      withTiming(0, { duration: showTime / 2 }),
+    );
 
-  return showTime;
+    return showTime;
+  } catch (e) {
+    runOnJS(logError)('Worklet error', e);
+    return 0;
+  }
 }
