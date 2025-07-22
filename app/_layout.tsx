@@ -42,9 +42,12 @@ export default function RootLayout() {
 
   // 課金情報を初期化し、購入済みかを確認する
   useEffect(() => {
-    removeAds
-      .init()
-      .catch((e) => handleError('購入情報を取得できませんでした', e));
+    // Web 環境では IAP モジュールが存在しないためスキップする
+    if (Platform.OS !== 'web') {
+      removeAds
+        .init()
+        .catch((e) => handleError('購入情報を取得できませんでした', e));
+    }
   }, [handleError]);
 
   // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
