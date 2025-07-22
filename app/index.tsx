@@ -218,6 +218,13 @@ export default function TitleScreen() {
         accessibilityLabel={t("openOptions")}
       />
 
+      {/* エラーログ一覧へ遷移するボタン */}
+      <PlainButton
+        title="エラーログ"
+        onPress={() => router.push('/error-logs')}
+        accessibilityLabel="エラーログ"
+      />
+
       {/* 一番下にルール説明ページへのリンクを追加 */}
       <PlainButton
         title={t("howToPlay")}
