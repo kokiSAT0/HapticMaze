@@ -4,8 +4,10 @@ import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
+  runOnJS,
   type SharedValue,
 } from 'react-native-reanimated';
+import { logError } from '@/src/utils/errorLogger';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { playStyles } from '@/src/styles/playStyles';
@@ -36,11 +38,26 @@ export function EdgeOverlay({ borderColor, borderW, maxBorder }: EdgeOverlayProp
   // 枠線の色配列。中央に向かうほど透明に近づける
   const gradColors: [string, string, string] = [borderColor, borderColor, 'transparent'];
   const gradStops = useDerivedValue<[number, number, number]>(() => {
-    const ratio = Math.min(borderW.value / maxBorder, 1);
-    const loc = 0.2 + ratio * 0.5;
-    return [0, loc, 1];
+    try {
+      const ratio = Math.min(borderW.value / maxBorder, 1);
+      const loc = 0.2 + ratio * 0.5;
+      return [0, loc, 1];
+    } catch (e) {
+      // Worklet 内での例外をログに残す
+      runOnJS(logError)('Worklet error', e);
+      // エラー時はデフォルト値を返して表示崩れを防ぐ
+      return [0, 0.2, 1];
+    }
   });
-  const gradProps = useAnimatedProps(() => ({ locations: gradStops.value }));
+  const gradProps = useAnimatedProps(() => {
+    try {
+      return { locations: gradStops.value };
+    } catch (e) {
+      // こちらも念のためエラーを捕捉する
+      runOnJS(logError)('Worklet error', e);
+      return { locations: gradStops.value };
+    }
+  });
   const gradLocs = Platform.OS === 'web' ? [0, 0.2, 1] : undefined;
 
   return (

@@ -18,7 +18,8 @@ const MAX_LOGS = 50;
 /**
  * エラーログを追記する関数
  */
-export async function logError(message: string, error: unknown) {
+// runOnJS から呼び出せるよう関数式で定義
+export const logError = async (message: string, error: unknown) => {
   try {
     const json = await AsyncStorage.getItem(LOG_KEY);
     const logs: ErrorLog[] = json ? JSON.parse(json) : [];
@@ -28,7 +29,7 @@ export async function logError(message: string, error: unknown) {
   } catch (e) {
     console.error('logError error', e);
   }
-}
+};
 
 /**
  * 全エラーログを取得する

@@ -1,7 +1,13 @@
 // 振動フィードバックに関する処理をまとめたモジュール
 
 import * as Haptics from 'expo-haptics';
-import { withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
+import {
+  withSequence,
+  withTiming,
+  runOnJS,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { logError } from '@/src/utils/errorLogger';
 import { UI } from '@/constants/ui';
 import type { Vec2 } from '@/src/types/maze';
 import { distance } from './math';
@@ -105,10 +111,15 @@ export function applyBumpFeedback(
   }, 50);
   setTimeout(() => clearInterval(id), showTime);
 
-  borderW.value = withSequence(
-    withTiming(width, { duration: showTime / 2 }),
-    withTiming(0, { duration: showTime / 2 }),
-  );
+  try {
+    borderW.value = withSequence(
+      withTiming(width, { duration: showTime / 2 }),
+      withTiming(0, { duration: showTime / 2 }),
+    );
+  } catch (e) {
+    // UI スレッドで発生したエラーをログへ送る
+    runOnJS(logError)('Worklet error', e);
+  }
 
   return showTime;
 }
