@@ -87,6 +87,8 @@ export default function RootLayout() {
                   <Stack.Screen name="stage" options={{ headerShown: false }} />
                   <Stack.Screen name="reset" options={{ headerShown: false }} />
                   <Stack.Screen name="game-result" options={{ headerShown: false }} />
+                  {/* デバッグ用のエラーログ一覧画面 */}
+                  <Stack.Screen name="error-logs" options={{ headerShown: false }} />
                   <Stack.Screen name="+not-found" />
                 </Stack>
               </GameProvider>
