@@ -70,10 +70,16 @@ export async function restore() {
   const mod = ensureModule();
   if (!mod) return; // 非対応環境では処理なし
   await ensureConnection();
-  const { results } = await mod.getPurchaseHistoryAsync();
-  const bought = results?.some((r) => r.productId === PRODUCT_ID);
-  if (bought) {
-    adsRemoved = true;
-    await AsyncStorage.setItem(STORAGE_KEY, 'true');
+  try {
+    // 購入履歴取得が失敗することがあるため例外を捕捉する
+    const { results } = await mod.getPurchaseHistoryAsync();
+    const bought = results?.some((r) => r.productId === PRODUCT_ID);
+    if (bought) {
+      adsRemoved = true;
+      await AsyncStorage.setItem(STORAGE_KEY, 'true');
+    }
+  } catch (e) {
+    // ログインしていない場合など、取得失敗時は無視して続行する
+    console.error('getPurchaseHistoryAsync failed:', e);
   }
 }
