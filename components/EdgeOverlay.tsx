@@ -36,8 +36,16 @@ export function EdgeOverlay({ borderColor, borderW, maxBorder }: EdgeOverlayProp
   // 枠線の色配列。中央に向かうほど透明に近づける
   const gradColors: [string, string, string] = [borderColor, borderColor, 'transparent'];
   const gradStops = useDerivedValue<[number, number, number]>(() => {
-    const ratio = Math.min(borderW.value / maxBorder, 1);
-    const loc = 0.2 + ratio * 0.5;
+    // ratio が NaN や Infinity になる可能性を考慮
+    const rawRatio = borderW.value / maxBorder;
+    let ratio = Number.isFinite(rawRatio) ? rawRatio : 0;
+    // 0〜1 の範囲に収める
+    ratio = Math.min(Math.max(ratio, 0), 1);
+
+    let loc = 0.2 + ratio * 0.5;
+    // 非数の場合は中央寄りで固定
+    if (!Number.isFinite(loc)) loc = 0.5;
+
     return [0, loc, 1];
   });
   const gradProps = useAnimatedProps(() => ({ locations: gradStops.value }));
