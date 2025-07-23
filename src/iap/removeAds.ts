@@ -1,10 +1,8 @@
 // expo-in-app-purchases から expo-iap へ変更
-import type * as IAPType from 'expo-iap';
+import * as IAP from 'expo-iap';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// Expo の IAP モジュールを動的に読み込むための変数
-let IAP: IAPType | null = null;
 // iOS/Android 以外では IAP を利用しない
 const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
 
@@ -18,16 +16,6 @@ let adsRemoved = false;
 // IAP 接続状態を示すフラグ
 let connected = false;
 
-// 必要なときにだけ IAP モジュールを読み込む
-function ensureModule(): IAPType | null {
-  if (!IAP && isNative) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    // expo-iap は必要なときのみ読み込む
-    IAP = require('expo-iap');
-  }
-  return IAP;
-}
-
 /** 現在の購入状態を返す */
 export function isAdsRemoved() {
   return adsRemoved;
@@ -35,10 +23,12 @@ export function isAdsRemoved() {
 
 // ストアへ接続する共通処理
 async function ensureConnection() {
-  const mod = ensureModule();
-  if (!mod) return; // Web 環境などでは何もしない
+  // Web 環境では IAP を利用しない
+  if (!isNative) return;
   if (!connected) {
-    await mod.connectAsync();
+    // IAP モジュールへ接続
+    // eslint-disable-next-line import/namespace
+    await IAP.connectAsync();
     connected = true;
   }
 }
@@ -46,7 +36,7 @@ async function ensureConnection() {
 /** 購入情報の初期化と履歴確認 */
 export async function init() {
   // Web など非対応環境では処理をスキップ
-  if (!ensureModule()) return;
+  if (!isNative) return;
   await ensureConnection();
   const stored = await AsyncStorage.getItem(STORAGE_KEY);
   if (stored === 'true') {
@@ -58,23 +48,27 @@ export async function init() {
 
 /** 広告削除を購入する */
 export async function purchase() {
-  const mod = ensureModule();
-  if (!mod) return; // 非対応環境では何もしない
+  // Web など非対応環境では何もしない
+  if (!isNative) return;
   await ensureConnection();
-  await mod.getProductsAsync([PRODUCT_ID]);
-  await mod.purchaseItemAsync(PRODUCT_ID);
+  // 商品情報を取得して購入を開始
+  // eslint-disable-next-line import/namespace
+  await IAP.getProductsAsync([PRODUCT_ID]);
+  // eslint-disable-next-line import/namespace
+  await IAP.purchaseItemAsync(PRODUCT_ID);
   adsRemoved = true;
   await AsyncStorage.setItem(STORAGE_KEY, 'true');
 }
 
 /** 購入済みか履歴を確認し、フラグを復元する */
 export async function restore() {
-  const mod = ensureModule();
-  if (!mod) return; // 非対応環境では処理なし
+  // Web など非対応環境では処理なし
+  if (!isNative) return;
   await ensureConnection();
   try {
     // 購入履歴取得が失敗することがあるため例外を捕捉する
-    const { results } = await mod.getPurchaseHistoryAsync();
+    // eslint-disable-next-line import/namespace
+    const { results } = await IAP.getPurchaseHistoryAsync();
     const bought = results?.some((r) => r.productId === PRODUCT_ID);
     if (bought) {
       adsRemoved = true;
