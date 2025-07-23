@@ -20,6 +20,9 @@ import { UI } from "@/constants/ui";
 import { devLog } from "@/src/utils/logger";
 import { useResultState } from "@/src/hooks/useResultState";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
+import { useHandleError } from "@/src/utils/handleError";
+// 広告削除課金機能
+import * as removeAds from "@/src/iap/removeAds";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -36,9 +39,22 @@ export default function TitleScreen() {
   const { setDebugAll } = useResultState();
   // ステージ記録を管理するフック
   const { reset } = useRunRecords();
+  // エラー処理共通化のためのハンドラ
+  const handleError = useHandleError();
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
+
+  // 広告削除を購入する処理
+  const handlePurchase = async () => {
+    try {
+      await removeAds.purchase();
+      showSnackbar(t('removeAds'));
+    } catch (e) {
+      handleError('購入に失敗しました', e);
+    }
+  };
+
 
   // BGM/SE を制御
   const audio = useAudioControls(
@@ -210,6 +226,13 @@ export default function TitleScreen() {
         title={t("highScores")}
         onPress={() => router.push("/scores")}
         accessibilityLabel={t("openHighScores")}
+      />
+
+      {/* ホーム画面にも広告削除オプションを表示 */}
+      <PlainButton
+        title={t('removeAds')}
+        onPress={handlePurchase}
+        accessibilityLabel={t('removeAds')}
       />
 
       <PlainButton
