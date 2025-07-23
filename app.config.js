@@ -29,6 +29,7 @@ export default ({ config }) => ({
 
   plugins: [
     ...(appJson.expo.plugins || []),
+    "expo-iap",
     [
       "expo-build-properties",
       {
@@ -49,7 +50,7 @@ export default ({ config }) => ({
   extra: {
     ...(appJson.expo.extra ?? {}),
     eas: {
-      projectId: "d3cd7e59-b872-4f9c-8a23-5df8c4ae4583", // ← eas init が出力した ID
+      projectId: "9b5bf180-0e1d-48e8-b2d5-a17224c8cfd2", // ← eas init が出力した ID
     },
   },
 });

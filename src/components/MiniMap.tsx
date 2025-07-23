@@ -9,20 +9,23 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Circle, Rect } from "react-native-svg";
 
+import { prepMaze, type MazeSets } from "@/src/game/state";
 import type { Enemy } from "@/src/types/enemy";
 import type { MazeData, Vec2 } from "@/src/types/maze";
-import { renderWalls, renderHitWalls, renderAdjacentWalls } from "./mini-map/Walls";
+import { renderEnemies } from "./mini-map/Enemies";
 import {
-  renderPath,
   renderEnemyPaths,
+  renderPath,
   renderVisitedGoals,
 } from "./mini-map/Paths";
-import { renderEnemies } from "./mini-map/Enemies";
-import { prepMaze, type MazeSets } from "@/src/game/state";
+import {
+  renderAdjacentWalls,
+  renderHitWalls,
+  renderWalls,
+} from "./mini-map/Walls";
 
 // プレイヤー用の円もアニメーションさせるためコンポーネント化
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
 
 // MiniMapProps インターフェース
 // ミニマップに必要な情報をまとめて渡す
@@ -90,7 +93,7 @@ export function MiniMap({
 
   // プレイヤーの外周色
   // 仕様変更により常に薄いグレーで固定する
-  const playerColor = useDerivedValue(() => 'rgb(200,200,200)');
+  const playerColor = useDerivedValue(() => "rgba(60, 60, 60, 1)");
 
   // 上に重ねる白円の半径を計算する
   // ゴールに近づくほど大きく、最遠で直径 2px (半径1px) にする
@@ -114,7 +117,6 @@ export function MiniMap({
     r: innerRadius.value,
     fill: "white",
   }));
-
 
   return (
     // View の borderColor は常に透明にしておき、
@@ -164,7 +166,13 @@ export function MiniMap({
           cx={(pos.x + 0.5) * cell}
           cy={(pos.y + 0.5) * cell}
         />
-        {renderEnemies({ enemies, cell, showAll, playerPos: pos, maze: mazeSets })}
+        {renderEnemies({
+          enemies,
+          cell,
+          showAll,
+          playerPos: pos,
+          maze: mazeSets,
+        })}
       </Svg>
     </Animated.View>
   );
