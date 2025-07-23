@@ -19,6 +19,7 @@ export default function OptionsScreen() {
 
   const [showLang, setShowLang] = React.useState(false);
   const [showVolume, setShowVolume] = React.useState(false);
+  // 共通エラー処理とスナックバー表示を利用
   const handleError = useHandleError();
   const { show: showSnackbar } = useSnackbar();
 
@@ -33,17 +34,7 @@ export default function OptionsScreen() {
     setShowLang(false);
   };
 
-  // 広告削除を購入する処理
-  const handlePurchase = async () => {
-    try {
-      await removeAds.purchase();
-      showSnackbar(t('removeAds'));
-    } catch (e) {
-      handleError('購入に失敗しました', e);
-    }
-  };
-
-  // 購入情報を復元する処理
+  // 購入済み情報を復元する処理
   const handleRestore = async () => {
     try {
       await removeAds.restore();
@@ -52,6 +43,7 @@ export default function OptionsScreen() {
       handleError('復元に失敗しました', e);
     }
   };
+
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
@@ -71,11 +63,7 @@ export default function OptionsScreen() {
         onPress={() => setShowLang(true)}
         accessibilityLabel={t('changeLang')}
       />
-      <PlainButton
-        title={t('removeAds')}
-        onPress={handlePurchase}
-        accessibilityLabel={t('removeAds')}
-      />
+      {/* 購入済みの復元ボタン */}
       <PlainButton
         title={t('restorePurchase')}
         onPress={handleRestore}
