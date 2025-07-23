@@ -61,9 +61,9 @@ Expo のビルドサービスを利用する場合は `eas.json` の `env` セ�
 
 ## 課金機能の追加
 
-広告削除アイテムは `expo-in-app-purchases` を用いて実装しています。以下の手順で設定してください。
+広告削除アイテムは `expo-iap` を用いて実装しています。以下の手順で設定してください。
 
-1. 依存パッケージをインストール後、`pnpm add expo-in-app-purchases` を実行します。
+1. 依存パッケージをインストール後、`pnpm add expo-iap` を実行します。
 2. App Store Connect または Google Play Console で **non-consumable** アイテム `remove_ads` を登録します。
 3. ビルド後にストア審査を通過させると、アプリ内から購入や復元が行えます。
 

@@ -1,4 +1,5 @@
-import type * as IAPType from 'expo-in-app-purchases';
+// expo-in-app-purchases から expo-iap へ変更
+import type * as IAPType from 'expo-iap';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
@@ -21,7 +22,8 @@ let connected = false;
 function ensureModule(): IAPType | null {
   if (!IAP && isNative) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    IAP = require('expo-in-app-purchases');
+    // expo-iap は必要なときのみ読み込む
+    IAP = require('expo-iap');
   }
   return IAP;
 }
