@@ -108,7 +108,11 @@ export function MiniMap({
 
   // 外周円の色だけアニメーションさせる
   const outerProps = useAnimatedProps(() => ({
+    // 常に薄いグレーの塗りつぶしを維持
     fill: playerColor.value,
+    // 白色の細い枠線を追加
+    stroke: "white",
+    strokeWidth: 1,
     r: radius,
   }));
 
