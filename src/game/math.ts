@@ -16,6 +16,7 @@ export function distance(a: Vec2, b: Vec2): number {
  * 値を線形補間します。t が 0 なら start、1 なら end を返します
  */
 export function lerp(start: number, end: number, t: number): number {
+  'worklet'; // Reanimated から呼び出すため worklet 化
   return start + (end - start) * t;
 }
 
