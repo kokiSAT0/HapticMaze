@@ -58,7 +58,7 @@ EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID="ca-app-pub-xxxxxxxxxxxxxxxx/nnnnnnnnnn" \
 ```
 
 Expo のビルドサービスを利用する場合は `eas.json` の `env` セクションに同名の変数を追加してください。
-TestFlight へ向けて更新を配信する際は `eas update --profile testflight` を実行することを推奨します。
+TestFlight へ向けて更新を配信する際は `eas update --branch testflight --env-file update.testflight.env` を実行してください。環境ファイルには広告用の AdMob ID を記載しておきます。
 
 ## 課金機能の追加
 
