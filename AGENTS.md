@@ -136,10 +136,10 @@ maze-sense/
 
 ## 9. リリース & 配布
 
-- 内部配布のみ (TestFlight / Google Play Internal Testing)。
+- 一般公開を前提とした完成版。App Store と Google Play で配布する。
 - 個人情報収集なし。将来的にはランキング機能を追加。
-- 無料広告はAdmobを使用。
+- 無料広告は Admob を使用。
 
 ---
 
-_Last updated: 2025‑07‑04_
+_Last updated: 2025‑07‑24_
