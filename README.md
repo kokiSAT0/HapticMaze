@@ -170,6 +170,21 @@ BGM の再生や広告表示に失敗したときも、設定中の言語に応�
 現在のバージョンは一般公開用の完成版です。App Store と Google Play を通じて配布
 されます。個人情報の収集は行っていません。
 
+### EAS Update で .env ファイルを切り替える
+
+`eas update` には `--env-file` オプションが存在しません。そのため、環境ごとに別
+の `.env` ファイルを読み込みたい場合は `DOTENV_CONFIG_PATH` を事前に設定します。
+`app.config.js` が `dotenv/config` を利用していれば、以下のように実行するだけで
+各環境に応じた値を反映できます。
+
+```powershell
+# 例: .env.testflight を使って TestFlight 用ブランチへ公開
+$env:DOTENV_CONFIG_PATH = ".env.testflight"
+
+# 環境変数を反映したままアップデートを配信
+eas update --branch testflight --message "TestFlight 向け更新"
+```
+
 ## クレジット
 
 - フォント: Space Mono (SIL Open Font License 1.1)
