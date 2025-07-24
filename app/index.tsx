@@ -26,8 +26,7 @@ import * as removeAds from "@/src/iap/removeAds";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
-const UNLOCK_ALL_LEVELS =
-  process.env.EXPO_PUBLIC_UNLOCK_ALL_LEVELS === "true";
+const UNLOCK_ALL_LEVELS = process.env.EXPO_PUBLIC_UNLOCK_ALL_LEVELS === "true";
 
 export default function TitleScreen() {
   const router = useRouter();
@@ -49,12 +48,11 @@ export default function TitleScreen() {
   const handlePurchase = async () => {
     try {
       await removeAds.purchase();
-      showSnackbar(t('removeAds'));
+      showSnackbar(t("removeAds"));
     } catch (e) {
-      handleError('購入に失敗しました', e);
+      handleError("購入に失敗しました", e);
     }
   };
-
 
   // BGM/SE を制御
   const audio = useAudioControls(
@@ -84,7 +82,6 @@ export default function TitleScreen() {
     })();
   }, [showSnackbar]);
 
-
   const select = (lang: Lang) => {
     changeLang(lang);
     setShowLang(false);
@@ -95,11 +92,11 @@ export default function TitleScreen() {
     const level = LEVELS.find((l) => l.id === id);
     if (!level) return;
     // ゲーム開始直前にログを出してどのレベルを選んだか記録する
-    devLog('[TitleScreen] startLevel', id);
-    if (id === 'hard') {
-      audio.changeBgm(require('../assets/sounds/日没廃校_調整.mp3'));
+    devLog("[TitleScreen] startLevel", id);
+    if (id === "hard") {
+      audio.changeBgm(require("../assets/sounds/日没廃校_調整.mp3"));
     } else {
-      audio.changeBgm(require('../assets/sounds/降りしきる、白_調整.mp3'));
+      audio.changeBgm(require("../assets/sounds/降りしきる、白_調整.mp3"));
     }
     // 前回の可視化状態とステージ記録を初期化する
     setDebugAll(false);
@@ -123,15 +120,15 @@ export default function TitleScreen() {
       respawnMax: level.respawnMax,
     });
     // 画面遷移開始をログ
-    devLog('[TitleScreen] navigate begin');
+    devLog("[TitleScreen] navigate begin");
     await router.replace("/play");
     // 遷移完了も記録する
-    devLog('[TitleScreen] navigate end', id);
+    devLog("[TitleScreen] navigate end", id);
   };
 
   const startLevelFromStart = (id: string) => {
     // 開始をログ出力
-    devLog('[TitleScreen] startLevelFromStart begin', id);
+    devLog("[TitleScreen] startLevelFromStart begin", id);
     if (hasSave) {
       // 進行中データがある場合は確認ページへ遷移
       router.push(`/reset?level=${id}`);
@@ -139,139 +136,151 @@ export default function TitleScreen() {
       confirmStart(id);
     }
     // 処理完了をログ出力
-    devLog('[TitleScreen] startLevelFromStart end', id);
+    devLog("[TitleScreen] startLevelFromStart end", id);
   };
 
   const confirmStart = async (id: string) => {
     // 開始をログ出力
-    devLog('[TitleScreen] confirmStart begin', id);
+    devLog("[TitleScreen] confirmStart begin", id);
     await clearGame({ showError: showSnackbar });
     setHasSave(false);
     await startLevel(id);
     // 処理完了をログ出力
-    devLog('[TitleScreen] confirmStart end', id);
+    devLog("[TitleScreen] confirmStart end", id);
   };
 
   // 各レベルが選択可能かを判定する関数
   const getLockReason = (id: string): string | null => {
     // フラグが有効なら常に null を返して全レベル解放
     if (UNLOCK_ALL_LEVELS) return null;
-    if (id === 'normal' && !isCleared('easy')) return t('needClearEasy');
-    if (id === 'hard' && !isCleared('normal')) return t('needClearNormal');
+    if (id === "normal" && !isCleared("easy")) return t("needClearEasy");
+    if (id === "hard" && !isCleared("normal")) return t("needClearNormal");
     return null;
   };
 
   const resumeGame = async () => {
     // 開始をログ出力
-    devLog('[TitleScreen] resumeGame begin');
+    devLog("[TitleScreen] resumeGame begin");
     const data = await loadGame({ showError: showSnackbar });
     if (!data) {
-      devLog('[TitleScreen] resumeGame no data');
+      devLog("[TitleScreen] resumeGame no data");
       return;
     }
     loadState(data);
     router.replace("/play");
     // 処理完了をログ出力
-    devLog('[TitleScreen] resumeGame end');
+    devLog("[TitleScreen] resumeGame end");
   };
 
   return (
     <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
       {/* 小さい画面でも内容をスクロールして閲覧できるように */}
       <ScrollView contentContainerStyle={styles.container}>
-      {/* タイトルの文字サイズを定数から調整できるように */}
-      <ThemedText
-        type="title"
-        lightColor="#fff"
-        darkColor="#fff"
-        style={styles.title}
-      >
-        Maze Sense
-      </ThemedText>
+        {/* タイトルの文字サイズを定数から調整できるように */}
+        <ThemedText
+          type="title"
+          lightColor="#fff"
+          darkColor="#fff"
+          style={styles.title}
+        >
+          Maze Sense
+        </ThemedText>
 
-      {/* <PlainButton
+        {/* <PlainButton
         title={t("practiceMode")}
         onPress={() => router.push("/practice")}
         accessibilityLabel={t("openPractice")}
       /> */}
 
-      {hasSave && (
-        <PlainButton
-          title={t("continue")}
-          onPress={resumeGame}
-          accessibilityLabel={t("continue")}
-        />
-      )}
-
-      {LEVELS.map((lv) => {
-        const reason = getLockReason(lv.id);
-        return (
+        {hasSave && (
           <PlainButton
-            key={lv.id}
-            title={t("startFromBegin", { name: t(lv.id as MessageKey) })}
-            onPress={() => {
-              if (reason) {
-                showSnackbar(reason);
-              } else {
-                startLevelFromStart(lv.id);
-              }
-            }}
-            disabled={!!reason}
-            accessibilityLabel={t("startFromBegin", { name: t(lv.id as MessageKey) })}
+            title={t("continue")}
+            onPress={resumeGame}
+            accessibilityLabel={t("continue")}
           />
-        );
-      })}
+        )}
 
-      <PlainButton
-        title={t("highScores")}
-        onPress={() => router.push("/scores")}
-        accessibilityLabel={t("openHighScores")}
-      />
+        {LEVELS.map((lv) => {
+          const reason = getLockReason(lv.id);
+          return (
+            <PlainButton
+              key={lv.id}
+              title={t("startFromBegin", { name: t(lv.id as MessageKey) })}
+              onPress={() => {
+                if (reason) {
+                  showSnackbar(reason);
+                } else {
+                  startLevelFromStart(lv.id);
+                }
+              }}
+              disabled={!!reason}
+              accessibilityLabel={t("startFromBegin", {
+                name: t(lv.id as MessageKey),
+              })}
+            />
+          );
+        })}
 
-      {/* ホーム画面にも広告削除オプションを表示 */}
-      <PlainButton
-        title={t('removeAds')}
-        onPress={handlePurchase}
-        accessibilityLabel={t('removeAds')}
-      />
+        <PlainButton
+          title={t("highScores")}
+          onPress={() => router.push("/scores")}
+          accessibilityLabel={t("openHighScores")}
+        />
 
-      <PlainButton
-        title={t("options")}
-        onPress={() => router.push("/options")}
-        accessibilityLabel={t("openOptions")}
-      />
+        <PlainButton
+          title={t("options")}
+          onPress={() => router.push("/options")}
+          accessibilityLabel={t("openOptions")}
+        />
 
-      {/* エラーログ一覧へ遷移するボタン */}
-      <PlainButton
+        {/* エラーログ一覧へ遷移するボタン */}
+        {/* <PlainButton
         title="エラーログ"
         onPress={() => router.push('/error-logs')}
         accessibilityLabel="エラーログ"
-      />
+      /> */}
 
-      {/* 一番下にルール説明ページへのリンクを追加 */}
-      <PlainButton
-        title={t("howToPlay")}
-        onPress={() => router.push("/rules")}
-        accessibilityLabel={t("openHowToPlay")}
-      />
+        {/* 一番下にルール説明ページへのリンクを追加 */}
+        <PlainButton
+          title={t("howToPlay")}
+          onPress={() => router.push("/rules")}
+          accessibilityLabel={t("openHowToPlay")}
+        />
 
-      {/* デバッグ用に表示していた広告IDは本番では不要なため削除 */}
+        {/* ホーム画面にも広告削除オプションを表示 */}
+        <PlainButton
+          title={t("removeAds")}
+          onPress={handlePurchase}
+          accessibilityLabel={t("removeAds")}
+        />
 
+        {/* デバッグ用に表示していた広告IDは本番では不要なため削除 */}
       </ScrollView>
 
       {/* ───── 言語選択モーダル ───── */}
       <Modal transparent visible={showLang} animationType="fade">
-        <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
+        <View
+          style={styles.modalWrapper}
+          accessible
+          accessibilityLabel="言語選択オーバーレイ"
+        >
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
               {t("selectLang")}
             </ThemedText>
-            <PlainButton title={t("japanese")} onPress={() => select("ja")} accessibilityLabel={t("japanese")} />
-            <PlainButton title={t("english")} onPress={() => select("en")} accessibilityLabel={t("english")} />
+            <PlainButton
+              title={t("japanese")}
+              onPress={() => select("ja")}
+              accessibilityLabel={t("japanese")}
+            />
+            <PlainButton
+              title={t("english")}
+              onPress={() => select("en")}
+              accessibilityLabel={t("english")}
+            />
           </ThemedView>
         </View>
       </Modal>
-
     </ThemedView>
   );
 }
@@ -325,4 +334,3 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
-
