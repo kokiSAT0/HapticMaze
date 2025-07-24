@@ -53,5 +53,10 @@
       },
       "channel": "preview"
     }
+  },
+  "update": {
+    "testflight": {
+      "channel": "testflight"
+    }
   }
 }
