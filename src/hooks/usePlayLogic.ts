@@ -5,7 +5,7 @@ import { useState } from 'react';
 // 広告関連の関数とフラグをまとめて読み込む
 import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 // 広告削除購入済みか判定するユーティリティ
-import { isAdsRemoved } from '@/src/iap/removeAds';
+import { useRemoveAds } from '@/src/iap/removeAds';
 import { useHandleError } from '@/src/utils/handleError';
 
 import { useGame } from '@/src/game/useGame';
@@ -23,6 +23,8 @@ export function usePlayLogic() {
   const { state, move, maze, nextStage, resetRun, respawnEnemies } = useGame();
   const { width } = useWindowDimensions();
   const { show: showSnackbar } = useSnackbar();
+  // 広告削除状態を取得
+  const { adsRemoved } = useRemoveAds();
 
   // BGM・SE 操作は専用フックに委譲
   const audio = useAudioControls(
@@ -68,7 +70,7 @@ export function usePlayLogic() {
     try {
       if (state.respawnStock <= 0) {
         // 広告表示がある場合のみ BGM を止める
-        const needMute = !DISABLE_ADS && !isAdsRemoved() && Platform.OS !== 'web';
+        const needMute = !DISABLE_ADS && !adsRemoved && Platform.OS !== 'web';
         try {
           if (needMute) audio.pauseBgm();
           await showInterstitial();

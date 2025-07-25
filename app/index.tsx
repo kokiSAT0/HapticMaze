@@ -22,7 +22,7 @@ import { useResultState } from "@/src/hooks/useResultState";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
 import { useHandleError } from "@/src/utils/handleError";
 // 広告削除課金機能
-import * as removeAds from "@/src/iap/removeAds";
+import { useRemoveAds } from "@/src/iap/removeAds";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -44,10 +44,13 @@ export default function TitleScreen() {
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
 
+  // 広告削除購入処理を提供するフック
+  const { purchase } = useRemoveAds();
+
   // 広告削除を購入する処理
   const handlePurchase = async () => {
     try {
-      await removeAds.purchase();
+      await purchase();
       showSnackbar(t("removeAds"));
     } catch (e) {
       handleError("購入に失敗しました", e);

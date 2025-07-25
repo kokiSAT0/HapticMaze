@@ -11,7 +11,7 @@ import { UI } from '@/constants/ui';
 import { useHandleError } from '@/src/utils/handleError';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 // 広告削除機能
-import * as removeAds from '@/src/iap/removeAds';
+import { useRemoveAds } from '@/src/iap/removeAds';
 
 export default function OptionsScreen() {
   const router = useRouter();
@@ -34,10 +34,13 @@ export default function OptionsScreen() {
     setShowLang(false);
   };
 
+  // 広告削除復元処理を提供するフック
+  const { restore } = useRemoveAds();
+
   // 購入済み情報を復元する処理
   const handleRestore = async () => {
     try {
-      await removeAds.restore();
+      await restore();
       showSnackbar(t('restorePurchase'));
     } catch (e) {
       handleError('復元に失敗しました', e);
