@@ -38,11 +38,24 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     currentPurchase,
     availablePurchases,
     getAvailablePurchases,
+    getProducts,
     requestPurchase,
     finishTransaction,
   } = useIAP();
 
   const [adsRemoved, setAdsRemoved] = useState(false);
+
+  // 接続されたら商品情報を取得
+  useEffect(() => {
+    if (!isNative || !connected) return;
+    (async () => {
+      try {
+        await getProducts({ skus: [PRODUCT_ID] });
+      } catch {
+        // エラーは無視して UI を維持する
+      }
+    })();
+  }, [connected, getProducts]);
 
   // 初回接続後に保存済みフラグを確認し、未保存なら購入履歴を取得
   useEffect(() => {
