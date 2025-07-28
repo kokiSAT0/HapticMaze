@@ -30,6 +30,7 @@ export default ({ config }) => ({
   plugins: [
     ...(appJson.expo.plugins || []),
     "expo-iap",
+    "expo-tracking-transparency",
     [
       "expo-build-properties",
       {
@@ -44,6 +45,9 @@ export default ({ config }) => ({
       {
         androidAppId: process.env.EXPO_PUBLIC_ANDROID_ADMOB_APP_ID,
         iosAppId: process.env.EXPO_PUBLIC_IOS_ADMOB_APP_ID,
+        delayAppMeasurementInit: true,
+        userTrackingUsageDescription:
+          "広告の最適化のためにデバイスIDを使用します",
       },
     ],
   ],
