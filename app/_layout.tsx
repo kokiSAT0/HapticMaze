@@ -6,7 +6,14 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
-import { DISABLE_ADS } from '@/src/ads/interstitial';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// expo-tracking-transparency は Expo SDK に同梱されている
+import {
+  getTrackingPermissionsAsync,
+  requestTrackingPermissionsAsync,
+  type TrackingStatus,
+} from 'expo-tracking-transparency'; // eslint-disable-line import/no-unresolved
+import { DISABLE_ADS, setNonPersonalized } from '@/src/ads/interstitial';
 // 課金情報の初期化を行うモジュール
 import { RemoveAdsProvider } from '@/src/iap/removeAds';
 import { useHandleError } from '@/src/utils/handleError';
@@ -41,17 +48,30 @@ export default function RootLayout() {
   }, [showSnackbar]);
 
 
-  // Google Mobile Ads SDK を初期化する。web 環境や広告無効化時はスキップ
+  // ATT 許可を確認してから広告 SDK を初期化
   useEffect(() => {
-    if (!DISABLE_ADS && Platform.OS !== 'web') {
-      // OS は Android/iOS のいずれか。ここで初期化しないと広告が表示されないことがある
+    async function initAds() {
+      if (Platform.OS === 'web' || DISABLE_ADS) return;
+      let status: TrackingStatus = 'unavailable';
       try {
-        mobileAds().initialize();
+        if (Platform.OS === 'ios') {
+          const asked = await AsyncStorage.getItem('trackingPermissionRequested');
+          if (asked) {
+            ({ status } = await getTrackingPermissionsAsync());
+          } else {
+            ({ status } = await requestTrackingPermissionsAsync());
+            await AsyncStorage.setItem('trackingPermissionRequested', 'true');
+          }
+        }
+        const authorized = Platform.OS !== 'ios' || status === 'authorized';
+        // 許可されなかった場合は非パーソナライズ広告に切り替え
+        setNonPersonalized(!authorized);
+        await mobileAds().initialize();
       } catch (e) {
-        // 共通エラーハンドラで詳細を通知
         handleError('広告初期化に失敗しました', e);
       }
     }
+    void initAds();
   }, [handleError]);
 
   if (!loaded) {
