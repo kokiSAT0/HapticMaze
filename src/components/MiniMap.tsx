@@ -147,11 +147,12 @@ export function MiniMap({
         {renderVisitedGoals({ visitedGoals, cell, showResult, showAll })}
         {showAll && (
           // ゴール位置は塗りつぶし四角で表示する
+          // プレイヤー円からはみ出さないように一回り小さく描画する
           <Rect
-            x={(maze.goal[0] + 0.25) * cell}
-            y={(maze.goal[1] + 0.25) * cell}
-            width={cell * 0.5}
-            height={cell * 0.5}
+            x={(maze.goal[0] + 0.3) * cell}
+            y={(maze.goal[1] + 0.3) * cell}
+            width={cell * 0.4}
+            height={cell * 0.4}
             fill="white" // 塗りつぶし
           />
         )}
