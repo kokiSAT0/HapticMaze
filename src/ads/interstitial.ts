@@ -14,6 +14,17 @@ export const AD_UNIT_ID = process.env.EXPO_PUBLIC_ADMOB_INTERSTITIAL_ID ?? TEST_
 // 環境変数 EXPO_PUBLIC_DISABLE_ADS が 'true' のとき広告関連処理を無効化する
 export const DISABLE_ADS = process.env.EXPO_PUBLIC_DISABLE_ADS === 'true';
 
+// ATT で拒否された場合に true へ設定されるフラグ
+let requestNonPersonalized = false;
+
+/**
+ * 非パーソナライズ広告を使用するか設定する
+ * @param enable true で非パーソナライズ広告へ切り替え
+ */
+export function setNonPersonalized(enable: boolean) {
+  requestNonPersonalized = enable;
+}
+
 // インタースティシャル広告の読み込み・表示を待つ最大時間をミリ秒単位で指定する
 const INTERSTITIAL_TIMEOUT_MS = 10000;
 
@@ -27,7 +38,7 @@ export async function showInterstitial() {
     return Promise.resolve();
   }
 
-  const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+  const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID, requestNonPersonalized ? { requestNonPersonalizedAdsOnly: true } : undefined);
   // どの ID を使っているか確認できるように出力しておく
   adLog('showInterstitial start', { unitId: AD_UNIT_ID });
 
@@ -78,7 +89,7 @@ export async function showInterstitial() {
  */
 export async function loadInterstitial(): Promise<InterstitialAd | null> {
   if (Platform.OS === 'web' || DISABLE_ADS || isAdsRemoved()) return Promise.resolve(null);
-  const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+  const ad = InterstitialAd.createForAdRequest(AD_UNIT_ID, requestNonPersonalized ? { requestNonPersonalizedAdsOnly: true } : undefined);
   // 現在の広告ユニットを確認するためログ出力
   adLog('loadInterstitial start', { unitId: AD_UNIT_ID });
   return new Promise((resolve) => {
