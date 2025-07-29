@@ -2,6 +2,8 @@ import React from "react";
 import { Modal, StyleSheet, View, ScrollView } from "react-native";
 import { PlainButton } from "@/components/PlainButton";
 import { useRouter } from "expo-router";
+// expo-iap からエラーコード定数を取得
+import { ErrorCode } from "expo-iap";
 import { useGame } from "@/src/game/useGame";
 import { loadGame, clearGame } from "@/src/game/saveGame";
 import { useSnackbar } from "@/src/hooks/useSnackbar";
@@ -53,6 +55,12 @@ export default function TitleScreen() {
       await purchase();
       showSnackbar(t("removeAds"));
     } catch (e) {
+      // ユーザーが購入処理を途中でキャンセルした場合はエラー扱いしない
+      if ((e as { code?: string }).code === ErrorCode.E_USER_CANCELLED) {
+        showSnackbar(t("purchaseCancelled"));
+        return;
+      }
+      // それ以外は共通エラーハンドラへ
       handleError("購入に失敗しました", e);
     }
   };
