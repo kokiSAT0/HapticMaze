@@ -110,12 +110,14 @@ export const LEVELS: LevelConfig[] = [
     enemyCountsFn: level1EnemyCounts,
     biasedSpawn: true,
     biasedGoal: false,
+    // プレイヤーと敵の周囲壁表示を有効にする
+    showAdjacentWalls: true,
     // こちらも3ステージで切り替える
     stagePerMap: 3,
     respawnMax: 2,
-    // プレイヤーのみ2ターン固定
-    playerAdjacentLife: 2,
-    enemyAdjacentLife: undefined,
+    // プレイヤー周囲壁は1ターン、敵周囲壁は10ターンで消える
+    playerAdjacentLife: 1,
+    enemyAdjacentLife: 10,
   },
   {
     id: 'hard',
