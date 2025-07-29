@@ -12,7 +12,7 @@ import {
   getTrackingPermissionsAsync,
   requestTrackingPermissionsAsync,
   type TrackingStatus,
-} from 'expo-tracking-transparency'; // eslint-disable-line import/no-unresolved
+} from 'expo-tracking-transparency';
 import { DISABLE_ADS, setNonPersonalized } from '@/src/ads/interstitial';
 // 課金情報の初期化を行うモジュール
 import { RemoveAdsProvider } from '@/src/iap/removeAds';
