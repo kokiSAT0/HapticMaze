@@ -25,8 +25,17 @@ export function handlePlayerMove(state: State, dir: Dir) {
     hitV = new Map(hitV);
     hitH = new Map(hitH);
     if (hit) {
-      if (hit.kind === 'v') hitV.set(hit.key, state.wallLifetime);
-      else hitH.set(hit.key, state.wallLifetime);
+      const updateLife = (map: Map<string, number>, key: string) => {
+        const current = map.get(key);
+        // 既に登録されている寿命より長い場合のみ上書きする
+        const nextLife =
+          current === Infinity || state.wallLifetime === Infinity
+            ? Infinity
+            : Math.max(current ?? 0, state.wallLifetime);
+        map.set(key, nextLife);
+      };
+      if (hit.kind === 'v') updateLife(hitV, hit.key);
+      else updateLife(hitH, hit.key);
     }
     bumps += 1;
   } else {
