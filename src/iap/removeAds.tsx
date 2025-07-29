@@ -1,15 +1,21 @@
-import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIAP } from 'expo-iap';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIAP } from "expo-iap";
 
 // ネイティブ環境 (iOS/Android) かどうかを判定
-const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
+const isNative = Platform.OS === "ios" || Platform.OS === "android";
 
 // 購入状態保存用キー
-const STORAGE_KEY = 'adsRemoved';
+const STORAGE_KEY = "adsRemoved";
 // App Store Connect / Google Play に登録した商品ID
-const PRODUCT_ID = 'remove_ads';
+const PRODUCT_ID = "remove_ads";
 
 // React コンポーネント外から参照できるように保持するフラグ
 let adsRemovedFlag = false;
@@ -38,10 +44,10 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     currentPurchase,
     availablePurchases,
     getAvailablePurchases,
-    getProducts,
+    requestProducts,
     requestPurchase,
     finishTransaction,
-  } = useIAP();
+  } = useIAP({ autoFinishTransactions: false });
 
   const [adsRemoved, setAdsRemoved] = useState(false);
 
@@ -50,23 +56,23 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     if (!isNative || !connected) return;
     (async () => {
       try {
-        await getProducts({ skus: [PRODUCT_ID] });
+        await requestProducts({ skus: [PRODUCT_ID], type: "inapp" });
       } catch {
         // エラーは無視して UI を維持する
       }
     })();
-  }, [connected, getProducts]);
+  }, [connected, requestProducts]);
 
   // 初回接続後に保存済みフラグを確認し、未保存なら購入履歴を取得
   useEffect(() => {
     if (!isNative || !connected) return;
     (async () => {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored === 'true') {
+      if (stored === "true") {
         setAdsRemoved(true);
       } else {
         // 購入履歴を取得してフラグを更新する
-        await getAvailablePurchases([]);
+        await getAvailablePurchases();
       }
     })();
   }, [connected, getAvailablePurchases]);
@@ -77,7 +83,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     const bought = availablePurchases.some((p) => p.productId === PRODUCT_ID);
     if (bought) {
       setAdsRemoved(true);
-      AsyncStorage.setItem(STORAGE_KEY, 'true').catch(() => {});
+      AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
     }
   }, [availablePurchases]);
 
@@ -93,7 +99,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
           // 失敗してもエラーにはしない
         }
         setAdsRemoved(true);
-        await AsyncStorage.setItem(STORAGE_KEY, 'true').catch(() => {});
+        await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
       })();
     }
   }, [currentPurchase, finishTransaction]);
@@ -106,13 +112,18 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
   /** 広告削除を購入する */
   const purchase = async () => {
     if (!isNative) return;
-    await requestPurchase({ request: { sku: PRODUCT_ID }, type: 'inapp' });
+    await requestPurchase({
+      request: {
+        ios: { sku: PRODUCT_ID },
+        android: { skus: [PRODUCT_ID] },
+      },
+    });
   };
 
   /** 購入履歴を復元する */
   const restore = async () => {
     if (!isNative) return;
-    await getAvailablePurchases([]);
+    await getAvailablePurchases();
   };
 
   return (
@@ -125,6 +136,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
 /** Context から広告削除状態を取得するフック */
 export function useRemoveAds(): RemoveAdsValue {
   const ctx = useContext(RemoveAdsContext);
-  if (!ctx) throw new Error('useRemoveAds は RemoveAdsProvider 内で利用してください');
+  if (!ctx)
+    throw new Error("useRemoveAds は RemoveAdsProvider 内で利用してください");
   return ctx;
 }
