@@ -130,8 +130,10 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
    * 接続前に実行すると失敗するため connected を確認する
    */
   const purchase = async () => {
-    // ネイティブ環境かつ IAP 接続済みかどうかを確認
-    if (!isNative || !connected) return;
+    // 接続できていなければ購入処理を開始できないためエラーを投げる
+    if (!isNative || !connected) {
+      throw new Error('IAP not connected');
+    }
     await requestPurchase({
       request: {
         ios: { sku: PRODUCT_ID },
@@ -149,8 +151,10 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
       // Web 環境ではストレージ上のフラグのみ返す
       return adsRemovedFlag;
     }
-    // 接続前の場合は購入情報を取得できない
-    if (!connected) return adsRemovedFlag;
+    // 接続されていない場合は復元処理ができないためエラー
+    if (!connected) {
+      throw new Error('IAP not connected');
+    }
 
     // 購入履歴取得用の配列を初期化
     let purchases = [];
