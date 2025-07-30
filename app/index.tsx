@@ -54,7 +54,8 @@ export default function TitleScreen() {
   const handlePurchase = async () => {
     try {
       await purchase();
-      showSnackbar(t("removeAds"));
+      // 購入成功を通知するメッセージを表示
+      showSnackbar(t("purchaseSuccess"));
     } catch (e) {
       // ユーザーが購入処理を途中でキャンセルした場合はエラー扱いしない
       if ((e as { code?: string }).code === ErrorCode.E_USER_CANCELLED) {

@@ -63,6 +63,10 @@ const messages = {
     watchAdForReveal: "広告を見るともう一度全表示できます",
     removeAds: "広告を削除する",
     restorePurchase: "購入を復元する",
+    // 購入完了時に表示するメッセージ
+    purchaseSuccess: "広告削除を購入しました",
+    // 復元完了時に表示するメッセージ
+    restoreSuccess: "購入情報を復元しました",
     // 購入をキャンセルしたときのメッセージ
     purchaseCancelled: "購入をキャンセルしました",
     // BGM 再生に失敗したときのエラーメッセージ
@@ -156,6 +160,10 @@ const messages = {
     watchAdForReveal: "Watch an ad to reveal again",
     removeAds: "Remove Ads",
     restorePurchase: "Restore Purchase",
+    // Message shown when purchase completes successfully
+    purchaseSuccess: "Ad removal purchased",
+    // Message shown when restore completes successfully
+    restoreSuccess: "Purchase restored",
     // Message shown when user cancels the purchase flow
     purchaseCancelled: "Purchase cancelled",
     // Message shown when BGM playback fails

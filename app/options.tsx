@@ -41,7 +41,8 @@ export default function OptionsScreen() {
   const handleRestore = async () => {
     try {
       await restore();
-      showSnackbar(t('restorePurchase'));
+      // 復元成功を通知するメッセージを表示
+      showSnackbar(t('restoreSuccess'));
     } catch (e) {
       handleError('復元に失敗しました', e);
     }
