@@ -67,6 +67,8 @@ const messages = {
     purchaseSuccess: "広告削除を購入しました",
     // 復元完了時に表示するメッセージ
     restoreSuccess: "購入情報を復元しました",
+    // 復元対象が見つからなかったときのメッセージ
+    purchaseNotFound: "購入履歴が見つかりませんでした",
     // 購入をキャンセルしたときのメッセージ
     purchaseCancelled: "購入をキャンセルしました",
     // BGM 再生に失敗したときのエラーメッセージ
@@ -164,6 +166,8 @@ const messages = {
     purchaseSuccess: "Ad removal purchased",
     // Message shown when restore completes successfully
     restoreSuccess: "Purchase restored",
+    // Shown when no purchases were found to restore
+    purchaseNotFound: "No purchases to restore",
     // Message shown when user cancels the purchase flow
     purchaseCancelled: "Purchase cancelled",
     // Message shown when BGM playback fails

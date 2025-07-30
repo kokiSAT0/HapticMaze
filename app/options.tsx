@@ -11,7 +11,7 @@ import { UI } from '@/constants/ui';
 import { useHandleError } from '@/src/utils/handleError';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
 // 広告削除機能
-import { useRemoveAds } from '@/src/iap/removeAds';
+import { useRemoveAds, isAdsRemoved } from '@/src/iap/removeAds';
 
 export default function OptionsScreen() {
   const router = useRouter();
@@ -40,9 +40,18 @@ export default function OptionsScreen() {
   // 購入済み情報を復元する処理
   const handleRestore = async () => {
     try {
-      await restore();
-      // 復元成功を通知するメッセージを表示
-      showSnackbar(t('restoreSuccess'));
+      // 購入履歴の取得結果を受け取る
+      const result = await restore();
+      // 復元後のフラグを参照してメッセージを切り替え
+      if (result && isAdsRemoved()) {
+        showSnackbar(t('restoreSuccess'));
+      } else if (isAdsRemoved()) {
+        // result が false でもフラグが立っていれば成功扱い
+        showSnackbar(t('restoreSuccess'));
+      } else {
+        // 購入情報が見つからない場合はこちら
+        showSnackbar(t('purchaseNotFound'));
+      }
     } catch (e) {
       handleError('復元に失敗しました', e);
     }

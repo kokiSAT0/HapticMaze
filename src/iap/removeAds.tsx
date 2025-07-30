@@ -29,7 +29,8 @@ export function isAdsRemoved() {
 interface RemoveAdsValue {
   adsRemoved: boolean;
   purchase: () => Promise<void>;
-  restore: () => Promise<void>;
+  // 復元処理の結果を boolean で返すように変更
+  restore: () => Promise<boolean>;
 }
 
 const RemoveAdsContext = createContext<RemoveAdsValue | undefined>(undefined);
@@ -134,10 +135,24 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  /** 購入履歴を復元する */
-  const restore = async () => {
-    if (!isNative) return;
-    await getAvailablePurchases();
+  /**
+   * 購入履歴を復元する
+   * 購入が見つかったか boolean で返す
+   */
+  const restore = async (): Promise<boolean> => {
+    if (!isNative) {
+      // Web 環境ではストレージ上のフラグのみ返す
+      return adsRemovedFlag;
+    }
+    // ストアから購入履歴を取得
+    const purchases = await getAvailablePurchases();
+    const bought = purchases.some((p) => p.productId === PRODUCT_ID);
+    if (bought) {
+      // すぐに反映できるようフラグも更新
+      setAdsRemoved(true);
+      await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
+    }
+    return bought;
   };
 
   return (
