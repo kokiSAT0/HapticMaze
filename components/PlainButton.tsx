@@ -1,5 +1,12 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, type PressableProps } from 'react-native';
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  type PressableProps,
+  type StyleProp,
+  type TextStyle,
+} from 'react-native';
 import { UI } from '@/constants/ui';
 
 interface PlainButtonProps {
@@ -11,6 +18,10 @@ interface PlainButtonProps {
    * 外から追加のスタイルを渡したいとき用
    */
   style?: PressableProps['style'];
+  /**
+   * ボタン内の文字に追加スタイルを適用したいときに使う
+   */
+  textStyle?: StyleProp<TextStyle>;
   /** 背景色と文字色の組み合わせを変えるオプション */
   variant?: 'dark' | 'light';
 }
@@ -25,6 +36,7 @@ export function PlainButton({
   accessibilityLabel,
   disabled = false,
   style,
+  textStyle,
   variant = 'dark',
 }: PlainButtonProps) {
   // variant の値に応じてボタンと文字の色を切り替える
@@ -46,7 +58,11 @@ export function PlainButton({
         typeof style === 'function' ? style(state) : style,
       ]}
     >
-      <Text style={[styles.text, { color: variantStyle.color }]}>{title}</Text>
+      <Text
+        style={[styles.text, { color: variantStyle.color }, textStyle]}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 }

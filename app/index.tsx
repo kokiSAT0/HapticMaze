@@ -210,6 +210,8 @@ export default function TitleScreen() {
             title={t("continue")}
             onPress={resumeGame}
             accessibilityLabel={t("continue")}
+            // 続きからボタンの文字を他のボタンより大きくする
+            textStyle={{ fontSize: 24 }}
           />
         )}
 
