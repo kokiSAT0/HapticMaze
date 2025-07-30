@@ -56,8 +56,9 @@ export default function TitleScreen() {
   // 広告削除を購入する処理
   const handlePurchase = async () => {
     try {
+      // purchase() は購入完了まで解決しない
       await purchase();
-      // 購入成功を通知するメッセージを表示
+      // 完了後に成功メッセージを表示
       showSnackbar(t("purchaseSuccess"));
     } catch (e) {
       // ユーザーが購入処理を途中でキャンセルした場合はエラー扱いしない

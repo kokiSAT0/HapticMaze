@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
 import { Platform } from "react-native";
@@ -43,6 +44,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
   const {
     connected,
     currentPurchase,
+    currentPurchaseError,
     availablePurchases,
     getAvailablePurchases,
     requestProducts,
@@ -51,6 +53,11 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
   } = useIAP({ autoFinishTransactions: false });
 
   const [adsRemoved, setAdsRemoved] = useState(false);
+  // 購入処理の完了を待ち受ける Promise の resolver を保持
+  const purchaseResolver = useRef<
+    | { resolve: () => void; reject: (e: Error) => void }
+    | null
+  >(null);
 
   // アプリ起動直後にストレージから購入済みフラグを読み込む
   useEffect(() => {
@@ -113,12 +120,29 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
           // 正常終了したらフラグを更新
           setAdsRemoved(true);
           await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
-        } catch {
-          // ログに残すなど (UI は落とさない)
+          // 購入待ち Promise があれば解決
+          purchaseResolver.current?.resolve();
+        } catch (e) {
+          // エラー時は Promise を reject
+          purchaseResolver.current?.reject(e as Error);
+        } finally {
+          purchaseResolver.current = null;
         }
       })();
     }
   }, [currentPurchase, finishTransaction]);
+
+  // 購入フロー中にエラーが発生した場合の処理
+  useEffect(() => {
+    if (!currentPurchaseError) return;
+    // Promise が待機中なら reject してクリア
+    if (purchaseResolver.current) {
+      purchaseResolver.current.reject(
+        new Error(currentPurchaseError.message)
+      );
+      purchaseResolver.current = null;
+    }
+  }, [currentPurchaseError]);
 
   // フラグが変わったら外部参照用変数へ反映
   useEffect(() => {
@@ -132,13 +156,19 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
   const purchase = async () => {
     // 接続できていなければ購入処理を開始できないためエラーを投げる
     if (!isNative || !connected) {
-      throw new Error('IAP not connected');
+      throw new Error("IAP not connected");
     }
+
     await requestPurchase({
       request: {
         ios: { sku: PRODUCT_ID },
         android: { skus: [PRODUCT_ID] },
       },
+    });
+
+    // ストアでの購入処理が完了するまで待ち受ける
+    return new Promise<void>((resolve, reject) => {
+      purchaseResolver.current = { resolve, reject };
     });
   };
 
@@ -157,14 +187,10 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     }
 
     // 購入履歴取得用の配列を初期化
-    let purchases = [];
-    try {
-      // ストアから購入履歴を取得
-      purchases = await getAvailablePurchases();
-    } catch {
-      // 取得失敗時は現在のフラグを返す
-      return adsRemovedFlag;
-    }
+    // API の戻り値はプラットフォームごとに型が異なるため any 配列で受け取る
+    let purchases: any[] = [];
+    // ストアから購入履歴を取得
+    purchases = await getAvailablePurchases();
 
     const bought = (purchases ?? []).some((p) => p.productId === PRODUCT_ID);
     if (bought) {
