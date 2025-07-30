@@ -33,7 +33,8 @@ export function BgmProvider({ children }: { children: ReactNode }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   // 現在再生中の BGM ファイル番号を保持
   const currentFileRef = useRef<number | null>(null);
-  const [volume, setVolume] = useState(1);
+  // デフォルト音量は 5(0.5) とする
+  const [volume, setVolume] = useState(0.5);
   const [ready, setReady] = useState(false);
   const handleError = useHandleError();
   const { t } = useLocale();
