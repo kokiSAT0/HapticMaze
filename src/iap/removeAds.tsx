@@ -124,9 +124,13 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     adsRemovedFlag = adsRemoved;
   }, [adsRemoved]);
 
-  /** 広告削除を購入する */
+  /**
+   * 広告削除を購入する
+   * 接続前に実行すると失敗するため connected を確認する
+   */
   const purchase = async () => {
-    if (!isNative) return;
+    // ネイティブ環境かつ IAP 接続済みかどうかを確認
+    if (!isNative || !connected) return;
     await requestPurchase({
       request: {
         ios: { sku: PRODUCT_ID },
@@ -144,11 +148,22 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
       // Web 環境ではストレージ上のフラグのみ返す
       return adsRemovedFlag;
     }
-    // ストアから購入履歴を取得
-    const purchases = await getAvailablePurchases();
-    const bought = purchases.some((p) => p.productId === PRODUCT_ID);
+    // 接続前の場合は購入情報を取得できない
+    if (!connected) return adsRemovedFlag;
+
+    // 購入履歴取得用の配列を初期化
+    let purchases = [];
+    try {
+      // ストアから購入履歴を取得
+      purchases = await getAvailablePurchases();
+    } catch {
+      // 取得失敗時は現在のフラグを返す
+      return adsRemovedFlag;
+    }
+
+    const bought = (purchases ?? []).some((p) => p.productId === PRODUCT_ID);
     if (bought) {
-      // すぐに反映できるようフラグも更新
+      // 即座に反映できるようフラグも更新
       setAdsRemoved(true);
       await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
     }
