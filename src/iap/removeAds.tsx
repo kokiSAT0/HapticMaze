@@ -110,11 +110,12 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
         try {
           // 購入が完了したらトランザクションを終了
           await finishTransaction({ purchase: currentPurchase });
+          // 正常終了したらフラグを更新
+          setAdsRemoved(true);
+          await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
         } catch {
-          // 失敗してもエラーにはしない
+          // ログに残すなど (UI は落とさない)
         }
-        setAdsRemoved(true);
-        await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
       })();
     }
   }, [currentPurchase, finishTransaction]);
