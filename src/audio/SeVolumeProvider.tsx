@@ -18,7 +18,8 @@ const SeVolumeContext = createContext<SeVolumeContextValue | undefined>(undefine
 const STORAGE_KEY = 'seVolume';
 
 export function SeVolumeProvider({ children }: { children: ReactNode }) {
-  const [volume, setVolume] = useState(1);
+  // デフォルト音量は 5(0.5) に設定
+  const [volume, setVolume] = useState(0.5);
   const handleError = useHandleError();
 
   // 初期表示時に保存済みの音量を読み込む
