@@ -24,7 +24,8 @@ import { useResultState } from "@/src/hooks/useResultState";
 import { useRunRecords } from "@/src/hooks/useRunRecords";
 import { useHandleError } from "@/src/utils/handleError";
 // 広告削除課金機能
-import { useRemoveAds } from "@/src/iap/removeAds";
+import { useRemoveAds, isAdsRemoved } from "@/src/iap/removeAds";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // EXPO_PUBLIC_UNLOCK_ALL_LEVELS が 'true' のとき
 // クリア状況に関わらず全難易度を選択可能にする
@@ -45,6 +46,8 @@ export default function TitleScreen() {
 
   const [showLang, setShowLang] = React.useState(false);
   const [hasSave, setHasSave] = React.useState(false);
+  // AsyncStorage に保存されている購入済みフラグを確認するための状態
+  const [storedAdsFlag, setStoredAdsFlag] = React.useState<string | null>(null);
 
   // 広告削除購入処理を提供するフック
   // 広告削除購入済みフラグと購入処理
@@ -94,6 +97,18 @@ export default function TitleScreen() {
       setHasSave(!!data);
     })();
   }, [showSnackbar]);
+
+  // 起動直後に AsyncStorage に保存された広告削除フラグを取得
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem("adsRemoved");
+        setStoredAdsFlag(stored);
+      } catch {
+        // 読み込み失敗時は null のままとする
+      }
+    })();
+  }, []);
 
   const select = (lang: Lang) => {
     changeLang(lang);
@@ -271,6 +286,20 @@ export default function TitleScreen() {
           />
         )}
 
+        {/* __DEV__ のときだけ購入フラグの状態を表示する */}
+        {__DEV__ && (
+          <ThemedText
+            lightColor="#fff"
+            darkColor="#fff"
+            style={styles.debug}
+            accessibilityLabel="debug-purchase-state"
+          >
+            {`adsRemoved: ${String(adsRemoved)} / isAdsRemoved: ${String(
+              isAdsRemoved()
+            )} / stored: ${String(storedAdsFlag)}`}
+          </ThemedText>
+        )}
+
         {/* デバッグ用に表示していた広告IDは本番では不要なため削除 */}
       </ScrollView>
 
@@ -349,5 +378,9 @@ const styles = StyleSheet.create({
   },
   volBtn: {
     padding: 4,
+  },
+  // デバッグ用テキストスタイル
+  debug: {
+    marginTop: 8,
   },
 });
