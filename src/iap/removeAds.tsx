@@ -51,6 +51,20 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
 
   const [adsRemoved, setAdsRemoved] = useState(false);
 
+  // アプリ起動直後にストレージから購入済みフラグを読み込む
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored === "true") {
+          setAdsRemoved(true);
+        }
+      } catch {
+        // 読み込み失敗時もエラーにはしない
+      }
+    })();
+  }, []);
+
   // 接続されたら商品情報を取得
   useEffect(() => {
     if (!isNative || !connected) return;
@@ -63,19 +77,19 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     })();
   }, [connected, requestProducts]);
 
-  // 初回接続後に保存済みフラグを確認し、未保存なら購入履歴を取得
+  // IAP 接続後に購入履歴を取得しフラグを更新
   useEffect(() => {
-    if (!isNative || !connected) return;
+    // ネイティブ環境かつ接続完了している、かつまだ未購入判定の場合のみ実行
+    if (!isNative || !connected || adsRemoved) return;
     (async () => {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored === "true") {
-        setAdsRemoved(true);
-      } else {
-        // 購入履歴を取得してフラグを更新する
+      try {
+        // ストアから購入履歴を取得して購入済みか確認する
         await getAvailablePurchases();
+      } catch {
+        // 失敗してもエラーにはしない
       }
     })();
-  }, [connected, getAvailablePurchases]);
+  }, [connected, adsRemoved, getAvailablePurchases]);
 
   // 購入履歴に変更があったらフラグを更新
   useEffect(() => {

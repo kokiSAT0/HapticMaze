@@ -47,7 +47,8 @@ export default function TitleScreen() {
   const [hasSave, setHasSave] = React.useState(false);
 
   // 広告削除購入処理を提供するフック
-  const { purchase } = useRemoveAds();
+  // 広告削除購入済みフラグと購入処理
+  const { adsRemoved, purchase } = useRemoveAds();
 
   // 広告削除を購入する処理
   const handlePurchase = async () => {
@@ -258,11 +259,14 @@ export default function TitleScreen() {
           accessibilityLabel={t("openHowToPlay")}
         />
         {/* ホーム画面にも広告削除オプションを表示 */}
-        <PlainButton
-          title={t("removeAds")}
-          onPress={handlePurchase}
-          accessibilityLabel={t("removeAds")}
-        />
+        {/* 購入済みならボタンを非表示にする */}
+        {!adsRemoved && (
+          <PlainButton
+            title={t("removeAds")}
+            onPress={handlePurchase}
+            accessibilityLabel={t("removeAds")}
+          />
+        )}
 
         {/* デバッグ用に表示していた広告IDは本番では不要なため削除 */}
       </ScrollView>
