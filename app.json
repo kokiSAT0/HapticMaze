@@ -55,9 +55,7 @@
       "eas": {}
     },
     "owner": "kokisato",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion":"1.0.0",
     "updates": {
       "url": "https://u.expo.dev/9b5bf180-0e1d-48e8-b2d5-a17224c8cfd2"
     }
