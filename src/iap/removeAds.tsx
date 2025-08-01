@@ -48,6 +48,8 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     availablePurchases,
     getAvailablePurchases,
     requestProducts,
+    // デバッグ目的で商品情報を直接取得するため getProducts も使用
+    getProducts,
     requestPurchase,
     finishTransaction,
   } = useIAP({ autoFinishTransactions: false });
@@ -84,6 +86,20 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
       }
     })();
   }, [connected, requestProducts]);
+
+  // デバッグ用: getProducts を呼び出して結果をコンソールに表示
+  useEffect(() => {
+    if (!isNative || !connected) return;
+    (async () => {
+      try {
+        const products = await getProducts([PRODUCT_ID]);
+        console.log("[getProducts]", products);
+      } catch (e) {
+        // ログだけ出して通常処理には影響させない
+        console.log("getProducts error", e);
+      }
+    })();
+  }, [connected, getProducts]);
 
   // IAP 接続後に購入履歴を取得しフラグを更新
   useEffect(() => {
