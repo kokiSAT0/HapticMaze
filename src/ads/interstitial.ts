@@ -52,6 +52,14 @@ export async function showInterstitial() {
       // すべてのイベントとペイロードを出力しておく
       adLog('Interstitial event', { type, payload });
       if (type === AdEventType.LOADED) {
+          // ← ここを追加：購入済みなら表示をやめる
+          if (isAdsRemoved()) {
+            adLog('Skip interstitial: purchase detected after load');
+            if (timeoutId) clearTimeout(timeoutId);
+            unsubscribe();
+            resolve();
+            return;
+          }
         ad.show();
       }
       if (type === AdEventType.OPENED) {
@@ -154,6 +162,14 @@ export async function showLoadedInterstitial(ad: InterstitialAd) {
       unsubscribe();
       reject(new Error('timeout'));
     }, INTERSTITIAL_TIMEOUT_MS);
+      // ← ここを追加
+      if (isAdsRemoved()) {
+        adLog('Skip loaded interstitial: purchase detected before show');
+        if (timeoutId) clearTimeout(timeoutId);
+        unsubscribe();
+        resolve();
+        return;
+      }
     ad.show();
   });
 }
