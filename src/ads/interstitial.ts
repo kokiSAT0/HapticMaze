@@ -57,6 +57,7 @@ export async function showInterstitial() {
             adLog('Skip interstitial: purchase detected after load');
             if (timeoutId) clearTimeout(timeoutId);
             unsubscribe();
+            adLog('skip show: ads removed after load');
             resolve();
             return;
           }

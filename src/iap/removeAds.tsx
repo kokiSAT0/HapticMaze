@@ -9,6 +9,7 @@ import React, {
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIAP } from "expo-iap";
+import { getAvailablePurchases as getAvailablePurchasesCore } from 'expo-iap';
 
 // ネイティブ環境 (iOS/Android) かどうかを判定
 const isNative = Platform.OS === "ios" || Platform.OS === "android";
@@ -16,7 +17,7 @@ const isNative = Platform.OS === "ios" || Platform.OS === "android";
 // 購入状態保存用キー
 const STORAGE_KEY = "adsRemoved";
 // App Store Connect / Google Play に登録した商品ID
-const PRODUCT_ID = "remove_ads";
+const PRODUCT_ID = "adstest";
 
 // React コンポーネント外から参照できるように保持するフラグ
 let adsRemovedFlag = false;
@@ -116,7 +117,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
       (async () => {
         try {
           // 購入が完了したらトランザクションを終了
-          await finishTransaction({ purchase: currentPurchase });
+          await finishTransaction({ purchase: currentPurchase, isConsumable: false });
           // 正常終了したらフラグを更新
           setAdsRemoved(true);
           await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
@@ -188,9 +189,8 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
 
     // 購入履歴取得用の配列を初期化
     // API の戻り値はプラットフォームごとに型が異なるため any 配列で受け取る
-    let purchases: any[] = [];
-    // ストアから購入履歴を取得
-    purchases = await getAvailablePurchases();
+    // コアAPIは Purchase[] を返します
+    const purchases = await getAvailablePurchasesCore();
 
     const bought = (purchases ?? []).some((p) => p.productId === PRODUCT_ID);
     if (bought) {
