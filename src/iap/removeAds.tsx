@@ -18,6 +18,7 @@ const STORAGE_KEY = "adsRemoved";
 // App Store Connect / Google Play に登録した商品ID
 const PRODUCT_ID = "adstest";
 
+
 // React コンポーネント外から参照できるように保持するフラグ
 let adsRemovedFlag = false;
 
@@ -38,18 +39,20 @@ const RemoveAdsContext = createContext<RemoveAdsValue | undefined>(undefined);
 
 /**
  * useIAP フックを利用して広告削除課金の状態を管理する Provider
- */
+*/
 export function RemoveAdsProvider({ children }: { children: ReactNode }) {
+  const finishedTxIdsRef = useRef<Set<string>>(new Set());
   // expo-iap が提供する useIAP で購入処理を監視
   const {
     connected,
+    connectAsync,
+    disconnectAsync,
     currentPurchase,
     currentPurchaseError,
+    products,
     availablePurchases,
     getAvailablePurchases,
     requestProducts,
-    // デバッグ目的で商品情報を直接取得するため getProducts も使用
-    getProducts,
     requestPurchase,
     finishTransaction,
   } = useIAP({ autoFinishTransactions: false });
@@ -80,26 +83,13 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     if (!isNative || !connected) return;
     (async () => {
       try {
-        await requestProducts({ skus: [PRODUCT_ID], type: "inapp" });
-      } catch {
-        // エラーは無視して UI を維持する
+       await requestProducts({ skus: [PRODUCT_ID], type: "inapp" });
+       console.log('[IAP] requested products');
+     } catch (e) {
+        console.warn('[IAP] requestProducts error', e);
       }
     })();
   }, [connected, requestProducts]);
-
-  // デバッグ用: getProducts を呼び出して結果をコンソールに表示
-  useEffect(() => {
-    if (!isNative || !connected) return;
-    (async () => {
-      try {
-        const products = await getProducts([PRODUCT_ID]);
-        console.log("[getProducts]", products);
-      } catch (e) {
-        // ログだけ出して通常処理には影響させない
-        console.log("getProducts error", e);
-      }
-    })();
-  }, [connected, getProducts]);
 
   // IAP 接続後に購入履歴を取得しフラグを更新
   useEffect(() => {
@@ -107,38 +97,75 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
     if (!isNative || !connected || adsRemoved) return;
     (async () => {
       try {
-        // ストアから購入履歴を取得して購入済みか確認する
-        await getAvailablePurchases();
-      } catch {
-        // 失敗してもエラーにはしない
+       await getAvailablePurchases();
+       console.log('[IAP] requested available purchases');
+     } catch (e) {
+        console.warn('[IAP] getAvailablePurchases error', e);
       }
     })();
   }, [connected, adsRemoved, getAvailablePurchases]);
 
+   // 取得できた products をログ確認（任意）
+ useEffect(() => {
+   if (!isNative) return;
+  if (products?.length) {
+    console.log('[IAP] products=', products.map(p => p.id));
+  } else {
+    console.log('[IAP] products is empty');
+  }
+ }, [products]);
+
+
   // 購入履歴に変更があったらフラグを更新
   useEffect(() => {
     if (!isNative) return;
-    const bought = availablePurchases.some((p) => p.productId === PRODUCT_ID);
+     const bought = availablePurchases.some((p: any) =>
+       p.productId === PRODUCT_ID || p.productIdentifier === PRODUCT_ID
+     );
+     console.log('[IAP] availablePurchases changed. bought =', bought);
     if (bought) {
       setAdsRemoved(true);
-      AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
+      AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => { });
     }
   }, [availablePurchases]);
 
   // 新規購入が発生したときの処理
   useEffect(() => {
     if (!isNative || !currentPurchase) return;
-    if (currentPurchase.productId === PRODUCT_ID) {
+     console.log('[IAP] currentPurchase arrived', {
+   productId: (currentPurchase as any).productId ?? (currentPurchase as any).productIdentifier,
+   transactionId: (currentPurchase as any).transactionId,
+ });
+{
+       console.log('[IAP] currentPurchase =', currentPurchase);
+
+   // 二重finish防止（StoreKitは同じTxに2回finish投げると失敗しがち）
+   const txId = String((currentPurchase as any).transactionId ?? '');
+   if (txId && finishedTxIdsRef.current.has(txId)) {
+     console.log('[IAP] skip finishTransaction (already finished):', txId);
+     return;
+   }
       (async () => {
         try {
           // 購入が完了したらトランザクションを終了
-          await finishTransaction({ purchase: currentPurchase });
+          console.log('[IAP] finishTransaction start');
+          await finishTransaction({ purchase: currentPurchase, isConsumable: false });
+          console.log('[IAP] finishTransaction done');
           // 正常終了したらフラグを更新
           setAdsRemoved(true);
-          await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
+          await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => { });
+                 // ここが重要：ストアの状態を取り直してUI側も同期
+       try {
+          const _ = await getAvailablePurchases(); // 返り値が無くてもOK。state更新待ち。
+          console.log('[IAP] called getAvailablePurchases after finish');
+       } catch (e) {
+         console.warn('[IAP] getAvailablePurchases error after finish', e);
+       }
+       if (txId) finishedTxIdsRef.current.add(txId);
           // 購入待ち Promise があれば解決
           purchaseResolver.current?.resolve();
         } catch (e) {
+          console.warn('[IAP] finishTransaction error:', e);
           // エラー時は Promise を reject
           purchaseResolver.current?.reject(e as Error);
         } finally {
@@ -151,6 +178,7 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
   // 購入フロー中にエラーが発生した場合の処理
   useEffect(() => {
     if (!currentPurchaseError) return;
+    console.warn('[IAP] purchase error', currentPurchaseError);
     // Promise が待機中なら reject してクリア
     if (purchaseResolver.current) {
       purchaseResolver.current.reject(
@@ -175,12 +203,13 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
       throw new Error("IAP not connected");
     }
 
-    await requestPurchase({
-      request: {
-        ios: { sku: PRODUCT_ID },
-        android: { skus: [PRODUCT_ID] },
-      },
-    });
+  console.log('[IAP] requestPurchase sku=', PRODUCT_ID);
+  await requestPurchase({
+    request: {
+      ios: { sku: PRODUCT_ID },        // ← iOS は単一 sku
+      android: { skus: [PRODUCT_ID] }, // ← Android は配列
+    },
+  });
 
     // ストアでの購入処理が完了するまで待ち受ける
     return new Promise<void>((resolve, reject) => {
@@ -204,15 +233,15 @@ export function RemoveAdsProvider({ children }: { children: ReactNode }) {
 
     // 購入履歴取得用の配列を初期化
     // API の戻り値はプラットフォームごとに型が異なるため any 配列で受け取る
-    let purchases: any[] = [];
-    // ストアから購入履歴を取得
-    purchases = await getAvailablePurchases();
-
-    const bought = (purchases ?? []).some((p) => p.productId === PRODUCT_ID);
+    // コアAPIは Purchase[] を返します
+    await getAvailablePurchases();
+    const bought = [...availablePurchases].some((p: any) =>
+      p.productId === PRODUCT_ID || p.productIdentifier === PRODUCT_ID
+    );
     if (bought) {
       // 即座に反映できるようフラグも更新
       setAdsRemoved(true);
-      await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => {});
+      await AsyncStorage.setItem(STORAGE_KEY, "true").catch(() => { });
     }
     return bought;
   };

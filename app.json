@@ -2,7 +2,7 @@
   "expo": {
     "name": "MazeSense",
     "slug": "mazesense",
-    "version": "1.0.17",
+    "version": "1.0.19",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -54,10 +54,12 @@
       "router": {},
       "eas": {}
     },
-    "owner": "kokisato",
-    "runtimeVersion":"1.0.0",
+    "owner": "kurohyou3",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "updates": {
-      "url": "https://u.expo.dev/9b5bf180-0e1d-48e8-b2d5-a17224c8cfd2"
+      "url": "https://u.expo.dev/d3cd7e59-b872-4f9c-8a23-5df8c4ae4583"
     }
   }
 }
