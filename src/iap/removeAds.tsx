@@ -16,7 +16,7 @@ const isNative = Platform.OS === "ios" || Platform.OS === "android";
 // 購入状態保存用キー
 const STORAGE_KEY = "adsRemoved";
 // App Store Connect / Google Play に登録した商品ID
-const PRODUCT_ID = "adstest";
+const PRODUCT_ID = "adstest_mazesense";
 
 
 // React コンポーネント外から参照できるように保持するフラグ
