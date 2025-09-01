@@ -31,6 +31,10 @@ import { initUnhandledRejectionHandler } from '@/src/utils/initUnhandledRejectio
 import { ErrorBoundary } from '@/src/components/ErrorBoundary';
 
 
+// 広告 SDK の初期化がすでに完了しているかどうかを管理するフラグ
+// initAds 内で利用し、二重初期化を防ぐ
+let adsInitialized = false;
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   // スナックバー表示用フック。エラー通知に利用する
@@ -50,7 +54,13 @@ export default function RootLayout() {
   // ATT 許可を確認してから広告 SDK を初期化
   useEffect(() => {
     async function initAds() {
+      // すでに初期化済みであれば何もせず終了する
+      if (adsInitialized) return;
+
+      // Web 環境や広告の無効化フラグが立っている場合は初期化不要
       if (Platform.OS === 'web' || DISABLE_ADS) return;
+
+      // 追跡許可ステータスの初期値を設定
       let status: TrackingStatus = 'unavailable';
       try {
         if (Platform.OS === 'ios') {
@@ -66,7 +76,12 @@ export default function RootLayout() {
         const authorized = Platform.OS !== 'ios' || status === 'authorized';
         // 許可されなかった場合は非パーソナライズ広告に切り替え
         setNonPersonalized(!authorized);
+
+        // 広告 SDK を初期化
         await mobileAds().initialize();
+
+        // 初期化が完了したことを示すフラグを更新
+        adsInitialized = true;
       } catch (e) {
         handleError('広告初期化に失敗しました', e);
       }
