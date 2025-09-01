@@ -5,7 +5,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
-import { Platform } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 // expo-tracking-transparency は Expo SDK に同梱されている
 import {
   getTrackingPermissionsAsync,
@@ -94,6 +94,35 @@ export default function RootLayout() {
     });
     // コンポーネントがアンマウントされた場合に備えてキャンセルを行う
     return () => cancelAnimationFrame(id);
+  }, [handleError]);
+
+  // アプリがバックグラウンドから復帰した際に追跡許可ステータスを再確認
+  useEffect(() => {
+    // AppState の状態変化時に呼び出されるコールバック
+    const handleAppStateChange = async (state: AppStateStatus) => {
+      // フォアグラウンドに戻った場合のみ実行する
+      if (state === 'active') {
+        try {
+          // 現在の追跡許可ステータスを取得
+          const { status } = await getTrackingPermissionsAsync();
+          // iOS で許可されているかどうかを判定
+          const authorized = Platform.OS !== 'ios' || status === 'authorized';
+          // 許可されていない場合は非パーソナライズ広告を有効にする
+          setNonPersonalized(!authorized);
+        } catch (e) {
+          // 取得に失敗した場合はエラーハンドラで通知
+          handleError('追跡許可の再取得に失敗しました', e);
+        }
+      }
+    };
+
+    // AppState の変更を監視開始
+    AppState.addEventListener('change', handleAppStateChange);
+
+    // クリーンアップ時にリスナーを解除
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
   }, [handleError]);
 
   if (!loaded) {
