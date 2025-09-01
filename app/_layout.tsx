@@ -71,7 +71,14 @@ export default function RootLayout() {
         handleError('広告初期化に失敗しました', e);
       }
     }
-    void initAds();
+    // 初回レンダー直後だとダイアログが無視されることがあるため一フレーム遅らせる
+    // requestAnimationFrame で次フレームに処理を移す
+    const id = requestAnimationFrame(() => {
+      // この時点でアプリがアクティブになっているので安全に広告初期化を行える
+      void initAds();
+    });
+    // コンポーネントがアンマウントされた場合に備えてキャンセルを行う
+    return () => cancelAnimationFrame(id);
   }, [handleError]);
 
   if (!loaded) {
