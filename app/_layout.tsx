@@ -33,6 +33,31 @@ import { ErrorBoundary } from '@/src/components/ErrorBoundary';
 // initAds 内で利用し、二重初期化を防ぐ
 let adsInitialized = false;
 
+// iOS: アプリが active になるまで待機（最大 5 秒）
+async function waitForActive(timeoutMs = 5000) {
+  if (Platform.OS !== 'ios') return;
+  if (AppState.currentState === 'active') return;
+  await new Promise<void>((resolve) => {
+    const timer = setTimeout(() => {
+      sub.remove();
+      resolve();
+    }, timeoutMs);
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') {
+        clearTimeout(timer);
+        sub.remove();
+        resolve();
+      }
+    });
+  });
+}
+
+// 初回フレーム完了＋短い遅延（ダイアログを安全に出すため）
+async function settleUI(delayMs = 150) {
+  await new Promise<void>((r) => requestAnimationFrame(() => r()));
+  await new Promise<void>((r) => setTimeout(r, delayMs));
+}
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   // スナックバー表示用フック。エラー通知に利用する
@@ -42,13 +67,13 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // アプリ全体のエラーハンドラを設定
+  // グローバルハンドラ設定
   useEffect(() => {
     initGlobalErrorHandler(showSnackbar);
     initUnhandledRejectionHandler(showSnackbar);
   }, [showSnackbar]);
 
-  // ATT 許可を確認してから広告 SDK を初期化
+  // ATT を確認してから広告 SDK を初期化（初回のみ）
   useEffect(() => {
     async function initAds() {
       // すでに初期化済みであれば何もせず終了する
@@ -58,9 +83,11 @@ export default function RootLayout() {
       if (Platform.OS === 'web' || DISABLE_ADS) return;
 
       try {
-        // iOS のみ ATT を確認。その他は常に許可相当として扱う
-        let authorized = Platform.OS !== 'ios';
+        // iOS ではアプリが active になってからダイアログを出す
+        await waitForActive();
+        await settleUI();
 
+        let authorized = Platform.OS !== 'ios';
         if (Platform.OS === 'ios') {
           const current = await getTrackingPermissionsAsync();
 
@@ -73,10 +100,10 @@ export default function RootLayout() {
           }
         }
 
-        // 非パーソナライズ設定を先に反映してから SDK 初期化
+        // ユーザー選択を反映（同意なし＝非パーソナライズ）
         setNonPersonalized(!authorized);
 
-        // 広告 SDK を初期化
+        // 反映後に広告 SDK を初期化（同意前に初期化しない）
         await mobileAds().initialize();
 
         // 初期化が完了したことを示すフラグを更新
@@ -86,8 +113,7 @@ export default function RootLayout() {
       }
     }
 
-    // 初回レンダー直後だとダイアログが無視されることがあるため一フレーム遅らせる
-    // requestAnimationFrame で次フレームに処理を移す
+    // 初回レンダーの次フレームで開始
     const id = requestAnimationFrame(() => {
       // この時点でアプリがアクティブになっているので安全に広告初期化を行える
       void initAds();
@@ -96,17 +122,16 @@ export default function RootLayout() {
     return () => cancelAnimationFrame(id);
   }, [handleError]);
 
-  // フォアグラウンド復帰時に追跡許可ステータスを再確認
+  // 復帰時は非パーソナライズ設定のみ再同期（広告 SDK は再初期化しない）
   useEffect(() => {
     // AppState の状態変化時に呼び出されるコールバック
     const handleAppStateChange = async (state: AppStateStatus) => {
       if (state !== 'active') return;
       try {
-        let authorized = Platform.OS !== 'ios';
-        if (Platform.OS === 'ios') {
-          const { status } = await getTrackingPermissionsAsync();
-          authorized = status === 'granted';
-        }
+        const authorized =
+          Platform.OS !== 'ios'
+            ? true
+            : (await getTrackingPermissionsAsync()).status === 'granted';
         setNonPersonalized(!authorized);
       } catch (e) {
           // 取得に失敗した場合はエラーハンドラで通知
