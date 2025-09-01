@@ -10,7 +10,6 @@ import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
   getTrackingPermissionsAsync,
   requestTrackingPermissionsAsync,
-  type TrackingStatus,
 } from 'expo-tracking-transparency';
 import { DISABLE_ADS, setNonPersonalized } from '@/src/ads/interstitial';
 // 課金情報の初期化を行うモジュール
@@ -29,7 +28,6 @@ import { initGlobalErrorHandler } from '@/src/utils/initGlobalErrorHandler';
 import { initUnhandledRejectionHandler } from '@/src/utils/initUnhandledRejectionHandler';
 
 import { ErrorBoundary } from '@/src/components/ErrorBoundary';
-
 
 // 広告 SDK の初期化がすでに完了しているかどうかを管理するフラグ
 // initAds 内で利用し、二重初期化を防ぐ
@@ -50,7 +48,6 @@ export default function RootLayout() {
     initUnhandledRejectionHandler(showSnackbar);
   }, [showSnackbar]);
 
-
   // ATT 許可を確認してから広告 SDK を初期化
   useEffect(() => {
     async function initAds() {
@@ -60,21 +57,23 @@ export default function RootLayout() {
       // Web 環境や広告の無効化フラグが立っている場合は初期化不要
       if (Platform.OS === 'web' || DISABLE_ADS) return;
 
-      // 追跡許可ステータスの初期値を設定
-      let status: TrackingStatus = 'unavailable';
       try {
-        if (Platform.OS === 'ios') {
-          // 端末の追跡許可ステータスを直接取得
-          // 端末ステータスを直接参照することでフラグに依存しないようにする
-          ({ status } = await getTrackingPermissionsAsync());
+        // iOS のみ ATT を確認。その他は常に許可相当として扱う
+        let authorized = Platform.OS !== 'ios';
 
-          // 「未決定」の場合のみユーザーに許可をリクエスト
-          if (status === 'not-determined') {
-            ({ status } = await requestTrackingPermissionsAsync());
+        if (Platform.OS === 'ios') {
+          const current = await getTrackingPermissionsAsync();
+
+          // 初回のみシステムダイアログを表示
+          if (current.status === 'undetermined') {
+            const req = await requestTrackingPermissionsAsync();
+            authorized = req.status === 'granted';
+          } else {
+            authorized = current.status === 'granted';
           }
         }
-        const authorized = Platform.OS !== 'ios' || status === 'authorized';
-        // 許可されなかった場合は非パーソナライズ広告に切り替え
+
+        // 非パーソナライズ設定を先に反映してから SDK 初期化
         setNonPersonalized(!authorized);
 
         // 広告 SDK を初期化
@@ -86,6 +85,7 @@ export default function RootLayout() {
         handleError('広告初期化に失敗しました', e);
       }
     }
+
     // 初回レンダー直後だとダイアログが無視されることがあるため一フレーム遅らせる
     // requestAnimationFrame で次フレームに処理を移す
     const id = requestAnimationFrame(() => {
@@ -96,71 +96,61 @@ export default function RootLayout() {
     return () => cancelAnimationFrame(id);
   }, [handleError]);
 
-  // アプリがバックグラウンドから復帰した際に追跡許可ステータスを再確認
+  // フォアグラウンド復帰時に追跡許可ステータスを再確認
   useEffect(() => {
     // AppState の状態変化時に呼び出されるコールバック
     const handleAppStateChange = async (state: AppStateStatus) => {
-      // フォアグラウンドに戻った場合のみ実行する
-      if (state === 'active') {
-        try {
-          // 現在の追跡許可ステータスを取得
+      if (state !== 'active') return;
+      try {
+        let authorized = Platform.OS !== 'ios';
+        if (Platform.OS === 'ios') {
           const { status } = await getTrackingPermissionsAsync();
-          // iOS で許可されているかどうかを判定
-          const authorized = Platform.OS !== 'ios' || status === 'authorized';
-          // 許可されていない場合は非パーソナライズ広告を有効にする
-          setNonPersonalized(!authorized);
-        } catch (e) {
-          // 取得に失敗した場合はエラーハンドラで通知
-          handleError('追跡許可の再取得に失敗しました', e);
+          authorized = status === 'granted';
         }
+        setNonPersonalized(!authorized);
+      } catch (e) {
+          // 取得に失敗した場合はエラーハンドラで通知
+        handleError('追跡許可の再取得に失敗しました', e);
       }
     };
 
-    // AppState の変更を監視開始
-    AppState.addEventListener('change', handleAppStateChange);
-
-    // クリーンアップ時にリスナーを解除
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-    };
+    const sub = AppState.addEventListener('change', handleAppStateChange);
+    return () => sub.remove();
   }, [handleError]);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
     <ErrorBoundary onError={showSnackbar}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RemoveAdsProvider>
           <LocaleProvider>
-          <BgmProvider>
-            <SeVolumeProvider>
-              <ResultStateProvider>
-                <RunRecordProvider>
-                <GameProvider>
-                <Stack>
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                  <Stack.Screen name="practice" options={{ headerShown: false }} />
-                  <Stack.Screen name="scores" options={{ headerShown: false }} />
-                  <Stack.Screen name="options" options={{ headerShown: false }} />
-                  <Stack.Screen name="rules" options={{ headerShown: false }} />
-                  <Stack.Screen name="play" options={{ headerShown: false }} />
-                  <Stack.Screen name="stage" options={{ headerShown: false }} />
-                  <Stack.Screen name="reset" options={{ headerShown: false }} />
-                  <Stack.Screen name="game-result" options={{ headerShown: false }} />
+            <BgmProvider>
+              <SeVolumeProvider>
+                <ResultStateProvider>
+                  <RunRecordProvider>
+                    <GameProvider>
+                      <Stack>
+                        <Stack.Screen name="index" options={{ headerShown: false }} />
+                        <Stack.Screen name="practice" options={{ headerShown: false }} />
+                        <Stack.Screen name="scores" options={{ headerShown: false }} />
+                        <Stack.Screen name="options" options={{ headerShown: false }} />
+                        <Stack.Screen name="rules" options={{ headerShown: false }} />
+                        <Stack.Screen name="play" options={{ headerShown: false }} />
+                        <Stack.Screen name="stage" options={{ headerShown: false }} />
+                        <Stack.Screen name="reset" options={{ headerShown: false }} />
+                        <Stack.Screen name="game-result" options={{ headerShown: false }} />
                   {/* デバッグ用のエラーログ一覧画面 */}
-                  <Stack.Screen name="error-logs" options={{ headerShown: false }} />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </GameProvider>
-              </RunRecordProvider>
-              </ResultStateProvider>
-              <StatusBar style="auto" />
-            </SeVolumeProvider>
-          </BgmProvider>
-        </LocaleProvider>
+                        <Stack.Screen name="error-logs" options={{ headerShown: false }} />
+                        <Stack.Screen name="+not-found" />
+                      </Stack>
+                    </GameProvider>
+                  </RunRecordProvider>
+                </ResultStateProvider>
+                <StatusBar style="auto" />
+              </SeVolumeProvider>
+            </BgmProvider>
+          </LocaleProvider>
         </RemoveAdsProvider>
       </ThemeProvider>
     </ErrorBoundary>
