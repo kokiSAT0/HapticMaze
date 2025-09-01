@@ -288,19 +288,6 @@ export default function TitleScreen() {
           />
         )}
 
-        {/* 購入フラグのデバッグ表示。完了後に削除する予定 */}
-        <ThemedText
-          lightColor="#fff"
-          darkColor="#fff"
-          style={styles.debug}
-          accessibilityLabel="debug-purchase-state"
-        >
-          {`adsRemoved: ${String(adsRemoved)} / isAdsRemoved: ${String(
-            isAdsRemoved()
-          )} / stored: ${String(storedAdsFlag)}`}
-        </ThemedText>
-
-        {/* デバッグ用に表示していた広告IDは本番では不要なため削除 */}
       </ScrollView>
 
       {/* ───── 言語選択モーダル ───── */}
