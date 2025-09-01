@@ -6,7 +6,6 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import mobileAds from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // expo-tracking-transparency は Expo SDK に同梱されている
 import {
   getTrackingPermissionsAsync,
@@ -55,12 +54,13 @@ export default function RootLayout() {
       let status: TrackingStatus = 'unavailable';
       try {
         if (Platform.OS === 'ios') {
-          const asked = await AsyncStorage.getItem('trackingPermissionRequested');
-          if (asked) {
-            ({ status } = await getTrackingPermissionsAsync());
-          } else {
+          // 端末の追跡許可ステータスを直接取得
+          // 端末ステータスを直接参照することでフラグに依存しないようにする
+          ({ status } = await getTrackingPermissionsAsync());
+
+          // 「未決定」の場合のみユーザーに許可をリクエスト
+          if (status === 'not-determined') {
             ({ status } = await requestTrackingPermissionsAsync());
-            await AsyncStorage.setItem('trackingPermissionRequested', 'true');
           }
         }
         const authorized = Platform.OS !== 'ios' || status === 'authorized';
