@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
+// 翻訳用フックを利用する
+import { useLocale, type MessageKey } from '@/src/locale/LocaleContext';
 import {
   loadHighScore,
   saveHighScore,
@@ -13,6 +15,15 @@ import {
  */
 export function useHighScore(levelId: string | null | undefined) {
   const { show: showSnackbar } = useSnackbar();
+  const { t } = useLocale();
+  // 翻訳済みメッセージをスナックバーに表示する関数
+  const showError = useCallback(
+    (key: MessageKey) => {
+      // useLocale で取得した文言をその場で渡す
+      showSnackbar(t(key));
+    },
+    [showSnackbar, t],
+  );
   // 現在保存されているハイスコア
   const [highScore, setHighScore] = useState<HighScore | null>(null);
   // 新記録かどうかを示すフラグ
@@ -26,11 +37,11 @@ export function useHighScore(levelId: string | null | undefined) {
       return;
     }
     (async () => {
-      const hs = await loadHighScore(levelId, { showError: showSnackbar });
+      const hs = await loadHighScore(levelId, { showError });
       setHighScore(hs);
       setNewRecord(false);
     })();
-  }, [levelId, showSnackbar]);
+  }, [levelId, showError]);
 
   /**
    * 現在のスコアを渡して、より良い記録なら保存する。
@@ -38,16 +49,16 @@ export function useHighScore(levelId: string | null | undefined) {
    */
   const updateScore = useCallback(async (score: HighScore, finalStage: boolean) => {
     if (!levelId) return;
-    const old = await loadHighScore(levelId, { showError: showSnackbar });
+    const old = await loadHighScore(levelId, { showError });
     const better = isBetterScore(old, score);
     if (better) {
-      await saveHighScore(levelId, score, { showError: showSnackbar });
+      await saveHighScore(levelId, score, { showError });
       setHighScore(score);
     } else {
       setHighScore(old);
     }
     setNewRecord(better && finalStage);
-  }, [levelId, showSnackbar]);
+  }, [levelId, showError]);
 
   return { highScore, newRecord, setNewRecord, updateScore } as const;
 }
