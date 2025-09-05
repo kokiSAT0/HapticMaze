@@ -83,6 +83,10 @@ const ja = {
     adInitFailure: "広告初期化に失敗しました",
     // 追跡許可の再取得に失敗したときのエラーメッセージ
     trackingPermissionFailure: "追跡許可の再取得に失敗しました",
+    // SE 音量読込に失敗したときのエラーメッセージ
+    loadSeVolumeFailure: "SE 音量を読み込めませんでした",
+    // SE 音量保存に失敗したときのエラーメッセージ
+    saveSeVolumeFailure: "SE 音量を保存できませんでした",
     // ハイスコア読込に失敗したときのエラーメッセージ
     loadHighScoreFailure: "ハイスコアを読み込めませんでした",
     // ハイスコア保存に失敗したときのエラーメッセージ
@@ -230,6 +234,10 @@ const en = {
     adInitFailure: "Failed to initialize ads",
     // Message shown when re-checking tracking permission fails
     trackingPermissionFailure: "Failed to re-check tracking permission",
+    // SE 音量読込に失敗したときのエラーメッセージ
+    loadSeVolumeFailure: "Failed to load SE volume",
+    // SE 音量保存に失敗したときのエラーメッセージ
+    saveSeVolumeFailure: "Failed to save SE volume",
     // Error message when loading high scores fails
     loadHighScoreFailure: "Failed to load high score",
     // Error message when saving high scores fails
