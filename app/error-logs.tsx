@@ -41,8 +41,9 @@ export default function ErrorLogsScreen() {
           </ThemedText>
         ))}
         {logs.length === 0 && (
+          // ログが一件も存在しない場合に表示するテキスト
           <ThemedText lightColor="#fff" darkColor="#fff">
-            ログはありません
+            {t('noLogs')}
           </ThemedText>
         )}
         <PlainButton

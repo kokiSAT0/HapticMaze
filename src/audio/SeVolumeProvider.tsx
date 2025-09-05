@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHandleError } from '@/src/utils/handleError';
+import { useLocale } from '@/src/locale/LocaleContext';
 
 interface SeVolumeContextValue {
   volume: number;
@@ -21,6 +22,8 @@ export function SeVolumeProvider({ children }: { children: ReactNode }) {
   // デフォルト音量は 5(0.5) に設定
   const [volume, setVolume] = useState(0.5);
   const handleError = useHandleError();
+  // 翻訳関数 t を取得
+  const { t } = useLocale();
 
   // 初期表示時に保存済みの音量を読み込む
   useEffect(() => {
@@ -29,10 +32,11 @@ export function SeVolumeProvider({ children }: { children: ReactNode }) {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored !== null) setVolume(Number(stored));
       } catch (e) {
-        handleError('SE 音量を読み込めませんでした', e);
+        // SE 音量の読み込みに失敗した場合は翻訳メッセージを表示
+        handleError(t('loadSeVolumeFailure'), e);
       }
     })();
-  }, [handleError]);
+  }, [handleError, t]);
 
   // 音量変更時は値を保存する
   useEffect(() => {
@@ -40,10 +44,11 @@ export function SeVolumeProvider({ children }: { children: ReactNode }) {
       try {
         await AsyncStorage.setItem(STORAGE_KEY, String(volume));
       } catch (e) {
-        handleError('SE 音量を保存できませんでした', e);
+        // SE 音量の保存に失敗した場合は翻訳メッセージを表示
+        handleError(t('saveSeVolumeFailure'), e);
       }
     })();
-  }, [volume, handleError]);
+  }, [volume, handleError, t]);
 
   return (
     <SeVolumeContext.Provider value={{ volume, setVolume }}>
