@@ -4,15 +4,23 @@ import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+// 多言語化のために Locale コンテキストを利用
+import { useLocale } from '@/src/locale/LocaleContext';
 
 export default function NotFoundScreen() {
+  // t 関数で翻訳済みの文言を取得
+  const { t } = useLocale();
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
+      {/* 画面タイトルも翻訳キーから取得 */}
+      <Stack.Screen options={{ title: t('notFoundTitle') }} />
       <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen does not exist.</ThemedText>
+        {/* ユーザーに存在しない画面であることを説明 */}
+        <ThemedText type="title">{t('notFoundMessage')}</ThemedText>
         <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
+          {/* ホーム画面へ戻るリンク */}
+          <ThemedText type="link">{t('goHome')}</ThemedText>
         </Link>
       </ThemedView>
     </>

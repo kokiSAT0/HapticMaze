@@ -17,6 +17,12 @@ const STORAGE_KEY = "lang";
 // 画面で表示する文言の定義
 // ja を原文として定義し、この型を基準に他言語をチェックする
 const ja = {
+    // 404 画面で表示するタイトル
+    notFoundTitle: "ページが見つかりません",
+    // 存在しない画面であることを説明する文言
+    notFoundMessage: "この画面は存在しません",
+    // ホーム画面へ戻るリンクのラベル
+    goHome: "ホーム画面に戻る",
     practiceMode: "練習モード",
     openPractice: "練習モードを開く",
     tutorial: "Tutorial",
@@ -194,6 +200,12 @@ export type MessageKey = keyof Messages;
 
 // en は ja と同じキーを持つ必要があるので satisfies を利用
 const en = {
+    // 404 画面で表示するタイトル
+    notFoundTitle: "Oops!",
+    // 画面が見つからない場合のメッセージ
+    notFoundMessage: "This screen does not exist.",
+    // ホーム画面へ戻るリンクのラベル
+    goHome: "Go to home screen!",
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
     tutorial: "Tutorial",
