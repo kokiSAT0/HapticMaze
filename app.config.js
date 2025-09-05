@@ -10,9 +10,12 @@ export default ({ config }) => ({
     bundleIdentifier: "com.kokisato.mazesense", // ⾃由に決定（Apple Dev 上でも登録）
     supportsTablet: true,
     // 広告トラッキング許可ダイアログの文言を追加
+    // ↳ iOS の ATT ダイアログで表示されるデフォルト文言（英語）
     infoPlist: {
       ...(appJson.expo.ios?.infoPlist ?? {}),
-      NSUserTrackingUsageDescription: "広告配信のために端末識別子を利用します",
+      // デフォルトは英語。日本語など他言語は app.json の locales で上書きする
+      NSUserTrackingUsageDescription:
+        "We use your device identifier to serve ads",
       // 将来的に音声録音機能を追加する場合は以下も定義する
       // NSMicrophoneUsageDescription: "マイクを使用して音声を録音します"
     },
@@ -46,8 +49,9 @@ export default ({ config }) => ({
         androidAppId: process.env.EXPO_PUBLIC_ANDROID_ADMOB_APP_ID,
         iosAppId: process.env.EXPO_PUBLIC_IOS_ADMOB_APP_ID,
         delayAppMeasurementInit: true,
+        // ATT ダイアログの文言（英語）。日本語は locales で定義
         userTrackingUsageDescription:
-          "広告の最適化のためにデバイスIDを使用します",
+          "We use your device identifier to serve ads",
       },
     ],
   ],
