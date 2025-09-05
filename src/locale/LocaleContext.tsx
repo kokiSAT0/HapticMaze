@@ -128,15 +128,17 @@ const messages = {
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
     tutorial: "Tutorial",
-    easy: "Easy ★☆☆ updatetest",
+    // 難易度の名称（Easy）
+    easy: "Easy ★☆☆",
     normal: "Normal ★★☆",
     hard: "Hard ★★★",
     startLevel: "Start {{name}}",
     enemyRandom: "Normal Random",
     enemySlow: "Slow Vision",
     enemySight: "Normal Vision",
-    enemyPathLen: "Enemy Path",
-    playerPathLen: "Player Path",
+    // 軌跡長関連
+    enemyPathLen: "Enemy Path Length",
+    playerPathLen: "Player Path Length",
     wallDuration: "Wall Lifetime",
     startMazeSize: "Start {{size}} maze",
     increase: "Increase {{label}}",
@@ -146,8 +148,9 @@ const messages = {
     resetMaze: "Reset Maze",
     resetMazeLabel: "Reset maze",
     showAll: "Show All",
-    showMazeAll: "Show whole maze",
-    hideMazeAll: "Hide whole maze",
+    // 迷路全体の表示切替
+    showMazeAll: "Show entire maze",
+    hideMazeAll: "Hide entire maze",
     gameClear: "Game Clear",
     gameOver: "Game Over",
     goal: "Goal!",
@@ -159,7 +162,8 @@ const messages = {
     highScores: "High Scores",
     openHighScores: "View High Scores",
     options: "Options",
-    openOptions: "Open settings",
+    // 設定画面を開くボタン
+    openOptions: "Open Settings",
     volumeSettings: "Volume Settings",
     noRecord: "No record",
     // Message shown when a new high score is achieved
@@ -206,9 +210,9 @@ const messages = {
     backToTitle: "Back to title",
     continue: "Continue",
     startFromBegin: "{{name}}",
-    needClearEasy: "Easy not cleared",
-    needClearNormal: "Normal not cleared",
-    confirmReset: "Delete saved game and start new?",
+    needClearEasy: "Easy level not cleared",
+    needClearNormal: "Normal level not cleared",
+    confirmReset: "Delete saved game and start a new one?",
     confirmResetHighScores: "Delete all high scores?",
     resetHighScores: "Reset High Scores",
     suspendInfo: "Level: {{level}} / Stage: {{stage}}",
@@ -219,8 +223,9 @@ const messages = {
     openHowToPlay: "Open How to Play",
     ruleIntro:
       "The icons below have the following meanings.",
+    // リスポーン機能の説明
     respawnUsage:
-      "Respawns enemy positions\nUse when you're in a pinch",
+      "Respawn enemy positions\nUse when you're in a pinch",
     revealUsage:
       "Reveals the entire maze\nBe careful, this makes the stage much easier",
     // Enemies の説明
