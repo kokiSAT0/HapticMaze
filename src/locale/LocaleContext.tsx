@@ -83,6 +83,10 @@ const ja = {
     adInitFailure: "広告初期化に失敗しました",
     // 追跡許可の再取得に失敗したときのエラーメッセージ
     trackingPermissionFailure: "追跡許可の再取得に失敗しました",
+    // 言語設定読込に失敗したときのエラーメッセージ
+    loadLangFailure: "言語設定を読み込めませんでした",
+    // 言語設定保存に失敗したときのエラーメッセージ
+    saveLangFailure: "言語設定を保存できませんでした",
     // ハイスコア読込に失敗したときのエラーメッセージ
     loadHighScoreFailure: "ハイスコアを読み込めませんでした",
     // ハイスコア保存に失敗したときのエラーメッセージ
@@ -228,13 +232,17 @@ const en = {
     adDisplayFailure: "Failed to show ad",
     // Message shown when ad initialization fails
     adInitFailure: "Failed to initialize ads",
-    // Message shown when re-checking tracking permission fails
+    // 追跡許可の再取得に失敗したときのエラーメッセージ
     trackingPermissionFailure: "Failed to re-check tracking permission",
-    // Error message when loading high scores fails
+    // 言語設定読込に失敗したときのエラーメッセージ
+    loadLangFailure: "Failed to load language setting",
+    // 言語設定保存に失敗したときのエラーメッセージ
+    saveLangFailure: "Failed to save language setting",
+    // ハイスコア読込に失敗したときのエラーメッセージ
     loadHighScoreFailure: "Failed to load high score",
-    // Error message when saving high scores fails
+    // ハイスコア保存に失敗したときのエラーメッセージ
     saveHighScoreFailure: "Failed to save high score",
-    // Error message when clearing high scores fails
+    // ハイスコア削除に失敗したときのエラーメッセージ
     clearHighScoresFailure: "Failed to clear high scores",
     nextStage: "Next stage",
     goGameResult: "View Game Results",
@@ -339,6 +347,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const [firstLaunch, setFirstLaunch] = useState(false);
   const handleError = useHandleError();
 
+  // 翻訳関数をメモ化して無駄な再レンダリングを防ぐ
+  const t = useCallback(
+    (key: MessageKey, params?: Record<string, string | number>) =>
+      translate(lang, key, params),
+    [lang]
+  );
+
   useEffect(() => {
     (async () => {
       try {
@@ -350,30 +365,25 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
           setFirstLaunch(true);
         }
       } catch (e) {
-        handleError("言語設定の読み込みに失敗しました", e);
+        // 言語設定読込に失敗したときは翻訳済みメッセージを表示
+        handleError(t("loadLangFailure"), e);
       } finally {
         // エラーの有無に関わらず ready にする
         setReady(true);
       }
     })();
-  }, [handleError]);
+  }, [handleError, t]);
 
   const changeLang = async (l: Lang) => {
     setLang(l);
     try {
       await AsyncStorage.setItem(STORAGE_KEY, l);
     } catch (e) {
-      handleError("言語設定を保存できませんでした", e);
+      // 言語設定保存に失敗したときも翻訳済みメッセージを表示
+      handleError(t("saveLangFailure"), e);
     }
     setFirstLaunch(false);
   };
-
-  // 翻訳関数をメモ化して無駄な再レンダリングを防ぐ
-  const t = useCallback(
-    (key: MessageKey, params?: Record<string, string | number>) =>
-      translate(lang, key, params),
-    [lang]
-  );
 
   return (
     <LocaleContext.Provider value={{ lang, t, changeLang, ready, firstLaunch }}>
