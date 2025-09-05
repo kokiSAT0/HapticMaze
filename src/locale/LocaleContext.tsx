@@ -148,6 +148,8 @@ const ja = {
     visitedGoalIcon: "訪問済みゴール",
     resetConfirmOverlay: "リセット確認オーバーレイ",
     errorLogs: "エラーログ一覧",
+    // エラーログが存在しない場合に表示するメッセージ
+    noLogs: "ログはありません",
     // loadMaze でサイズが不正なときのエラーメッセージ
     invalidMazeSize: "迷路サイズは 5 または 10 を指定してください",
   } as const;
@@ -296,6 +298,8 @@ const en = {
     visitedGoalIcon: "Visited goal",
     resetConfirmOverlay: "Reset confirmation overlay",
     errorLogs: "Error logs",
+    // エラーログが存在しない場合に表示するテキスト
+    noLogs: "No logs",
     // Error when an invalid maze size is specified in loadMaze
     invalidMazeSize: "Maze size must be 5 or 10",
   } as const satisfies Messages;
