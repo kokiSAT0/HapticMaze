@@ -28,10 +28,15 @@ describe('loadMaze', () => {
   test('無効なサイズはエラーを出して 10 を返す', () => {
     const spy = jest.spyOn(console, 'error').mockImplementation();
     const showError = jest.fn();
+    // エラーメッセージ取得用のダミー関数
+    const t = jest
+      .fn()
+      .mockReturnValue('迷路サイズは 5 または 10 を指定してください');
 
-    const maze = loadMaze(7, { showError });
+    const maze = loadMaze(7, { showError, t });
 
     expect(spy).toHaveBeenCalled();
+    expect(t).toHaveBeenCalledWith('invalidMazeSize');
     expect(showError).toHaveBeenCalledWith('迷路サイズは 5 または 10 を指定してください');
     expect(maze.size).toBe(10);
 

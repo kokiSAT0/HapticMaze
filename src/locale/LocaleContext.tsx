@@ -115,6 +115,8 @@ const messages = {
     player: "プレイヤーの現在位置",
     Goal: "挑戦中ステージのゴール地点",
     visitedGoals: "過去に到達したゴール地点",
+    // loadMaze でサイズが不正なときのエラーメッセージ
+    invalidMazeSize: "迷路サイズは 5 または 10 を指定してください",
   },
   en: {
     practiceMode: "Practice Mode",
@@ -214,6 +216,8 @@ const messages = {
     player: "Your current position",
     Goal: "Goal position for the current stage",
     visitedGoals: "Previously reached goal positions",
+    // Error when an invalid maze size is specified in loadMaze
+    invalidMazeSize: "Maze size must be 5 or 10",
   },
 } as const;
 
