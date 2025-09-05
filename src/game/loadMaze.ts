@@ -1,10 +1,13 @@
 // mazeAsset.ts から迷路セットを読み込む
 import { mazeSet5, mazeSet10 } from './mazeAsset';
 import type { MazeData } from '@/src/types/maze';
+import type { MessageKey } from '@/src/locale/LocaleContext';
 
 export interface LoadMazeOptions {
   /** エラー時に呼び出されるコールバック */
   showError?: (msg: string) => void;
+  /** 現在の言語に応じた文言を取得するための関数 */
+  t?: (key: MessageKey) => string;
 }
 
 // IIFE でプール配列と操作関数を閉じ込める
@@ -21,7 +24,11 @@ const { loadMaze, resetMazePools } = (() => {
     // 5 でも 10 でもない場合はエラー扱い
     if (size !== 5 && size !== 10) {
       console.error('loadMaze: invalid size', size);
-      opts.showError?.('迷路サイズは 5 または 10 を指定してください');
+      // 翻訳関数が渡されていればキーから文言を取得する
+      const msg = opts.t
+        ? opts.t('invalidMazeSize')
+        : '迷路サイズは 5 または 10 を指定してください';
+      opts.showError?.(msg);
       // 初心者向け: 不正な値はデフォルトの10に置き換える
       size = 10;
     }
