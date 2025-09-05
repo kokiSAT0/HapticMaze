@@ -7,6 +7,8 @@ import { showInterstitial, DISABLE_ADS } from '@/src/ads/interstitial';
 // 広告削除購入済みか判定するユーティリティ
 import { useRemoveAds } from '@/src/iap/removeAds';
 import { useHandleError } from '@/src/utils/handleError';
+// 国際化された文字列を取得するフック
+import { useLocale } from '@/src/locale/LocaleContext';
 
 import { useGame } from '@/src/game/useGame';
 import { useSnackbar } from '@/src/hooks/useSnackbar';
@@ -25,6 +27,8 @@ export function usePlayLogic() {
   const { show: showSnackbar } = useSnackbar();
   // 広告削除状態を取得
   const { adsRemoved } = useRemoveAds();
+  // 翻訳用の関数を取得
+  const { t } = useLocale();
 
   // BGM・SE 操作は専用フックに委譲
   const audio = useAudioControls(
@@ -75,7 +79,8 @@ export function usePlayLogic() {
           if (needMute) audio.pauseBgm();
           await showInterstitial();
         } catch (e) {
-          handleError('広告を表示できませんでした', e);
+          // 翻訳キーからエラーメッセージを取得して通知
+          handleError(t('adDisplayFailure'), e);
         } finally {
           if (needMute) audio.resumeBgm();
         }
