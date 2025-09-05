@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// ロケール用の型をインポート
+import { type MessageKey } from '@/src/locale/LocaleContext';
 
 export interface HighScore {
   stage: number;
@@ -6,14 +8,16 @@ export interface HighScore {
   bumps: number;
 }
 
+// AsyncStorage に保存する際のキーの接頭辞
 const PREFIX = 'highscore:';
 
 /**
- * ハイスコアを取得する非同期関数。
- * データが無い場合は null を返す。
+ * 各関数で共通的に利用するオプション
+ * エラー表示用に翻訳キーを渡すコールバックを受け取る
  */
 export interface HighScoreOptions {
-  showError?: (msg: string) => void;
+  // `MessageKey` を受け取り呼び出し元で翻訳して表示する
+  showError?: (key: MessageKey) => void;
 }
 
 export async function loadHighScore(
@@ -25,7 +29,8 @@ export async function loadHighScore(
     return json ? (JSON.parse(json) as HighScore) : null;
   } catch (e) {
     console.error('loadHighScore error', e);
-    opts?.showError?.('ハイスコアを読み込めませんでした');
+    // 翻訳キーを渡してエラーメッセージを表示
+    opts?.showError?.('loadHighScoreFailure');
     return null;
   }
 }
@@ -42,7 +47,8 @@ export async function saveHighScore(
     await AsyncStorage.setItem(PREFIX + levelId, JSON.stringify(score));
   } catch (e) {
     console.error('saveHighScore error', e);
-    opts?.showError?.('ハイスコアを保存できませんでした');
+    // 保存に失敗した場合も翻訳キーを返す
+    opts?.showError?.('saveHighScoreFailure');
   }
 }
 
@@ -71,6 +77,7 @@ export async function clearAllHighScores(
     await AsyncStorage.multiRemove(keys);
   } catch (e) {
     console.error('clearAllHighScores error', e);
-    opts?.showError?.('ハイスコアを削除できませんでした');
+    // 削除失敗時のエラーも翻訳キーで通知
+    opts?.showError?.('clearHighScoresFailure');
   }
 }

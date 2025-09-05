@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -19,6 +19,14 @@ export default function ScoresScreen() {
   const router = useRouter();
   const { t } = useLocale();
   const { show: showSnackbar } = useSnackbar();
+  // 翻訳キーを受け取りスナックバーに表示するヘルパー
+  const showError = useCallback(
+    (key: MessageKey) => {
+      // useLocale で取得した文言を表示
+      showSnackbar(t(key));
+    },
+    [showSnackbar, t],
+  );
   // レベルIDごとのハイスコアを保持
   const [scores, setScores] = useState<Record<string, HighScore | null>>({});
   // リセット確認モーダルの表示状態
@@ -28,7 +36,7 @@ export default function ScoresScreen() {
   const loadScores = async () => {
     const result: Record<string, HighScore | null> = {};
     for (const lv of LEVELS) {
-      result[lv.id] = await loadHighScore(lv.id, { showError: showSnackbar });
+      result[lv.id] = await loadHighScore(lv.id, { showError });
     }
     setScores(result);
   };
@@ -83,7 +91,7 @@ export default function ScoresScreen() {
               onPress={async () => {
                 await clearAllHighScores(
                   LEVELS.map((l) => l.id),
-                  { showError: showSnackbar },
+                  { showError },
                 );
                 await loadScores();
                 setShowConfirm(false);

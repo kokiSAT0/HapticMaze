@@ -75,6 +75,12 @@ const messages = {
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
     adDisplayFailure: "広告を表示できませんでした",
+    // ハイスコア読込に失敗したときのエラーメッセージ
+    loadHighScoreFailure: "ハイスコアを読み込めませんでした",
+    // ハイスコア保存に失敗したときのエラーメッセージ
+    saveHighScoreFailure: "ハイスコアを保存できませんでした",
+    // ハイスコア削除に失敗したときのエラーメッセージ
+    clearHighScoresFailure: "ハイスコアを削除できませんでした",
     nextStage: "次のステージへ",
     goGameResult: "ゲームリザルトへ進む",
     gameResults: "ゲームリザルト",
@@ -174,6 +180,12 @@ const messages = {
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails
     adDisplayFailure: "Failed to show ad",
+    // Error message when loading high scores fails
+    loadHighScoreFailure: "Failed to load high score",
+    // Error message when saving high scores fails
+    saveHighScoreFailure: "Failed to save high score",
+    // Error message when clearing high scores fails
+    clearHighScoresFailure: "Failed to clear high scores",
     nextStage: "Next stage",
     goGameResult: "View Game Results",
     gameResults: "Game Results",
