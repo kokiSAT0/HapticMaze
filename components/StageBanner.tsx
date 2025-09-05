@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { devLog } from "@/src/utils/logger";
+import { useLocale } from "@/src/locale/LocaleContext";
 
 // 環境変数 EXPO_PUBLIC_DISABLE_STAGE_BANNER が 'true' のとき
 // ステージバナーを表示せず即座に onFinish を呼び出す
@@ -52,15 +53,17 @@ export function StageBanner({
     };
   }, [visible, stage, onFinish]);
 
+  const { t } = useLocale();
   if (!visible || DISABLE_STAGE_BANNER) return null;
   return (
     <View
       style={styles.wrapper}
       accessible
-      accessibilityLabel={`Stage ${stage}`}
+      // ステージ番号の読み上げ
+      accessibilityLabel={t('stageNumber', { stage })}
     >
       <ThemedText type="title" style={styles.text}>
-        Stage {stage}
+        {t('stageNumber', { stage })}
       </ThemedText>
     </View>
   );

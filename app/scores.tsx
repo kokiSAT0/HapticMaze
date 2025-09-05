@@ -81,7 +81,12 @@ export default function ScoresScreen() {
 
       {/* リセット確認モーダル */}
       <Modal transparent visible={showConfirm} animationType="fade">
-        <View style={styles.modalWrapper} accessible accessibilityLabel="リセット確認オーバーレイ">
+        <View
+          style={styles.modalWrapper}
+          accessible
+          // ハイスコアリセット確認用オーバーレイ
+          accessibilityLabel={t('resetConfirmOverlay')}
+        >
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
               {t('confirmResetHighScores')}

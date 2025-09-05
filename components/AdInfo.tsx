@@ -3,11 +3,13 @@ import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useLocale } from "@/src/locale/LocaleContext";
 
 /**
  * AdMob に渡されている各種 ID を画面に表示するためのデバッグ用コンポーネント
  */
 export function AdInfo() {
+  const { t } = useLocale();
   // 環境変数はビルド時に置き換わるため、eas update でも値を確認可能
   const appId =
     Platform.OS === "ios"
@@ -19,7 +21,8 @@ export function AdInfo() {
     <ThemedView
       style={styles.container}
       accessible
-      accessibilityLabel="広告設定情報"
+      // デバッグ情報全体の説明ラベル
+      accessibilityLabel={t('adInfo')}
     >
       {/* 実際にビルド時の値をそのまま表示する */}
       <ThemedText lightColor="#000" darkColor="#000">

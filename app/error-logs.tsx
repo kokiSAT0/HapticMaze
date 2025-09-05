@@ -6,11 +6,13 @@ import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
 import { UI } from '@/constants/ui';
 import { getErrorLogs, type ErrorLog, clearErrorLogs } from '@/src/utils/errorLogger';
+import { useLocale } from '@/src/locale/LocaleContext';
 
 export default function ErrorLogsScreen() {
   const router = useRouter();
   // 取得したエラーログを保持
   const [logs, setLogs] = useState<ErrorLog[]>([]);
+  const { t } = useLocale();
 
   // 画面表示時にログを読み込む
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function ErrorLogsScreen() {
     <ThemedView lightColor="#000" darkColor="#000" style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
         <ThemedText type="title" lightColor="#fff" darkColor="#fff">
-          エラーログ一覧
+          {t('errorLogs')}
         </ThemedText>
         {logs.map((log, i) => (
           // 1 件ごとのログをシンプルに表示
@@ -44,14 +46,15 @@ export default function ErrorLogsScreen() {
           </ThemedText>
         )}
         <PlainButton
-          title="ログ削除"
+          title={t('deleteLogs')}
           onPress={handleClear}
-          accessibilityLabel="ログ削除"
+          // ログを全削除するボタン
+          accessibilityLabel={t('deleteLogs')}
         />
         <PlainButton
-          title="タイトルへ戻る"
+          title={t('backToTitle')}
           onPress={() => router.replace('/')}
-          accessibilityLabel="タイトルへ戻る"
+          accessibilityLabel={t('backToTitle')}
         />
       </ScrollView>
     </ThemedView>
