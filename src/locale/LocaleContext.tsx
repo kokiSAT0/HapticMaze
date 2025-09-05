@@ -99,6 +99,10 @@ const ja = {
     saveHighScoreFailure: "ハイスコアを保存できませんでした",
     // ハイスコア削除に失敗したときのエラーメッセージ
     clearHighScoresFailure: "ハイスコアを削除できませんでした",
+    // 進行状況読込に失敗したときのエラーメッセージ
+    loadProgressFailure: "進行状況を読み込めませんでした",
+    // 進行状況保存に失敗したときのエラーメッセージ
+    saveProgressFailure: "進行状況を保存できませんでした",
     nextStage: "次のステージへ",
     goGameResult: "ゲームリザルトへ進む",
     gameResults: "ゲームリザルト",
@@ -258,6 +262,10 @@ const en = {
     saveHighScoreFailure: "Failed to save high score",
     // Error message when clearing high scores fails
     clearHighScoresFailure: "Failed to clear high scores",
+    // Error message when loading progress fails
+    loadProgressFailure: "Failed to load progress",
+    // Error message when saving progress fails
+    saveProgressFailure: "Failed to save progress",
     nextStage: "Next stage",
     goGameResult: "View Game Results",
     gameResults: "Game Results",
