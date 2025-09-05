@@ -75,6 +75,12 @@ const ja = {
     purchaseFailure: "購入に失敗しました",
     // 復元処理に失敗したときのエラーメッセージ
     restoreFailure: "復元に失敗しました",
+    // BGM 音量の読み込みに失敗したときのエラーメッセージ
+    loadBgmVolumeFailure: "BGM 音量を読み込めませんでした",
+    // BGM 音量の保存に失敗したときのエラーメッセージ
+    saveBgmVolumeFailure: "BGM 音量を保存できませんでした",
+    // オーディオモードの設定に失敗したときのエラーメッセージ
+    audioModeFailure: "オーディオ設定に失敗しました",
     // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
@@ -222,9 +228,15 @@ const en = {
     purchaseCancelled: "Purchase cancelled",
     // Message shown when purchase fails
     purchaseFailure: "Failed to complete purchase",
-    // Message shown when restore fails
+    // 復元処理に失敗したときのエラーメッセージ
     restoreFailure: "Failed to restore purchase",
-    // Message shown when BGM playback fails
+    // BGM 音量の読み込みに失敗したときのエラーメッセージ
+    loadBgmVolumeFailure: "Failed to load BGM volume",
+    // BGM 音量の保存に失敗したときのエラーメッセージ
+    saveBgmVolumeFailure: "Failed to save BGM volume",
+    // オーディオモードの設定に失敗したときのエラーメッセージ
+    audioModeFailure: "Failed to configure audio mode",
+    // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails
     adDisplayFailure: "Failed to show ad",

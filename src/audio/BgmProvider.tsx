@@ -46,10 +46,11 @@ export function BgmProvider({ children }: { children: ReactNode }) {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored !== null) setVolume(Number(stored));
       } catch (e) {
-        handleError('BGM 音量を読み込めませんでした', e);
+        // 読み込みに失敗した場合はローカライズされたエラーメッセージを表示
+        handleError(t('loadBgmVolumeFailure'), e);
       }
     })();
-  }, [handleError]);
+  }, [handleError, t]);
 
   // 音量が変わったら保存する
   useEffect(() => {
@@ -57,10 +58,11 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       try {
         await AsyncStorage.setItem(STORAGE_KEY, String(volume));
       } catch (e) {
-        handleError('BGM 音量を保存できませんでした', e);
+        // 保存に失敗した場合はローカライズされたエラーメッセージを表示
+        handleError(t('saveBgmVolumeFailure'), e);
       }
     })();
-  }, [volume, handleError]);
+  }, [volume, handleError, t]);
 
   // 一定時間待つためのユーティリティ
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -92,8 +94,8 @@ export function BgmProvider({ children }: { children: ReactNode }) {
       try {
         await setAudioModeAsync({ playsInSilentMode: true });
       } catch (e) {
-        // 設定に失敗した場合はユーザーへ通知し詳細をログ出力
-        handleError("オーディオ設定に失敗しました", e);
+        // オーディオ設定に失敗した場合はローカライズされたメッセージで通知
+        handleError(t('audioModeFailure'), e);
       } finally {
         setReady(true);
       }
@@ -101,7 +103,7 @@ export function BgmProvider({ children }: { children: ReactNode }) {
     return () => {
       playerRef.current?.remove();
     };
-  }, [handleError]);
+  }, [handleError, t]);
 
   useEffect(() => {
     if (playerRef.current) playerRef.current.volume = volume;
