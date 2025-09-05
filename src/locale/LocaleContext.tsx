@@ -71,10 +71,18 @@ const messages = {
     purchaseNotFound: "購入履歴が見つかりませんでした",
     // 購入をキャンセルしたときのメッセージ
     purchaseCancelled: "購入をキャンセルしました",
+    // 購入処理に失敗したときのエラーメッセージ
+    purchaseFailure: "購入に失敗しました",
+    // 復元処理に失敗したときのエラーメッセージ
+    restoreFailure: "復元に失敗しました",
     // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
     adDisplayFailure: "広告を表示できませんでした",
+    // 広告初期化に失敗したときのエラーメッセージ
+    adInitFailure: "広告初期化に失敗しました",
+    // 追跡許可の再取得に失敗したときのエラーメッセージ
+    trackingPermissionFailure: "追跡許可の再取得に失敗しました",
     // ハイスコア読込に失敗したときのエラーメッセージ
     loadHighScoreFailure: "ハイスコアを読み込めませんでした",
     // ハイスコア保存に失敗したときのエラーメッセージ
@@ -182,10 +190,18 @@ const messages = {
     purchaseNotFound: "No purchases to restore",
     // Message shown when user cancels the purchase flow
     purchaseCancelled: "Purchase cancelled",
+    // Message shown when purchase fails
+    purchaseFailure: "Failed to complete purchase",
+    // Message shown when restore fails
+    restoreFailure: "Failed to restore purchase",
     // Message shown when BGM playback fails
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails
     adDisplayFailure: "Failed to show ad",
+    // Message shown when ad initialization fails
+    adInitFailure: "Failed to initialize ads",
+    // Message shown when re-checking tracking permission fails
+    trackingPermissionFailure: "Failed to re-check tracking permission",
     // Error message when loading high scores fails
     loadHighScoreFailure: "Failed to load high score",
     // Error message when saving high scores fails

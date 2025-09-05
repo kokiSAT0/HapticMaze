@@ -53,7 +53,8 @@ export default function OptionsScreen() {
         showSnackbar(t('purchaseNotFound'));
       }
     } catch (e) {
-      handleError('復元に失敗しました', e);
+      // 翻訳キーからエラーメッセージを取得して表示
+      handleError(t('restoreFailure'), e);
     }
   };
 

@@ -187,8 +187,8 @@ export default function PlayScreen() {
         incReveal();
       } catch (e) {
         // showInterstitial が reject を返した場合にここへ到達
-        // try/catch によりエラーメッセージが表示されることを確認する
-        handleError("広告を表示できませんでした", e);
+        // 翻訳キーを利用してエラーメッセージを表示
+        handleError(t('adDisplayFailure'), e);
       } finally {
         if (needMute) resumeBgm();
       }
