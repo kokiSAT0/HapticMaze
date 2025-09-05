@@ -19,7 +19,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDevelopmentRegion": "en",
-        "CFBundleLocalizations": ["en", "ja"]
+        "CFBundleLocalizations": ["en", "ja"],
+        "NSUserTrackingUsageDescription": "We use your device identifier to serve ads"
       }
     },
     "android": {
