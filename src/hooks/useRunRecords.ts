@@ -8,6 +8,8 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHandleError } from '@/src/utils/handleError';
+// 翻訳関数を利用するため LocaleContext から取得
+import { useLocale } from '@/src/locale/LocaleContext';
 
 /**
  * 1 ステージ分の記録を表すインターフェース
@@ -54,6 +56,8 @@ export function RunRecordProvider({ children }: { children: ReactNode }) {
   const [reveals, setReveals] = useState(0);
   // 例外表示用の共通ハンドラ
   const handleError = useHandleError();
+  // ローカライズされた文言を取得する関数
+  const { t } = useLocale();
 
   // 初回マウント時に保存済みのデータを読み込む
   useEffect(() => {
@@ -67,10 +71,11 @@ export function RunRecordProvider({ children }: { children: ReactNode }) {
           setReveals(data.reveals ?? 0);
         }
       } catch (e) {
-        handleError('スコアデータを読み込めませんでした', e);
+        // スコアデータの読込に失敗した場合の処理
+        handleError(t('loadScoreFailure'), e);
       }
     })();
-  }, [handleError]);
+  }, [handleError, t]);
 
   // データが変化するたびに保存する
   useEffect(() => {
@@ -79,10 +84,11 @@ export function RunRecordProvider({ children }: { children: ReactNode }) {
         const data: StoredData = { records, respawns, reveals };
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       } catch (e) {
-        handleError('スコアデータを保存できませんでした', e);
+        // スコアデータの保存に失敗した場合の処理
+        handleError(t('saveScoreFailure'), e);
       }
     })();
-  }, [records, respawns, reveals, handleError]);
+  }, [records, respawns, reveals, handleError, t]);
 
   /**
    * ステージクリア時に記録を追加する処理
