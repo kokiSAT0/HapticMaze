@@ -15,8 +15,8 @@ export type Lang = "ja" | "en";
 const STORAGE_KEY = "lang";
 
 // 画面で表示する文言の定義
-const messages = {
-  ja: {
+// ja を原文として定義し、この型を基準に他言語をチェックする
+const ja = {
     practiceMode: "練習モード",
     openPractice: "練習モードを開く",
     tutorial: "Tutorial",
@@ -123,8 +123,15 @@ const messages = {
     visitedGoals: "過去に到達したゴール地点",
     // loadMaze でサイズが不正なときのエラーメッセージ
     invalidMazeSize: "迷路サイズは 5 または 10 を指定してください",
-  },
-  en: {
+  } as const;
+
+// 共通メッセージ型。ja のキーを string として定義
+type Messages = { [K in keyof typeof ja]: string };
+// メッセージのキー型を公開して他コンポーネントで利用可能にする
+export type MessageKey = keyof Messages;
+
+// en は ja と同じキーを持つ必要があるので satisfies を利用
+const en = {
     practiceMode: "Practice Mode",
     openPractice: "Open Practice",
     tutorial: "Tutorial",
@@ -159,6 +166,8 @@ const messages = {
     stage: "Stage: {{current}}/{{total}}",
     // Template for high score display. "Best:" is redundant so omit it
     best: "{{stage}} stages / {{steps}} steps / {{bumps}} bumps",
+    // ハイスコア表示用タイトル
+    result: "Your HighScore",
     highScores: "High Scores",
     openHighScores: "View High Scores",
     options: "Options",
@@ -235,11 +244,10 @@ const messages = {
     visitedGoals: "Previously reached goal positions",
     // Error when an invalid maze size is specified in loadMaze
     invalidMazeSize: "Maze size must be 5 or 10",
-  },
-} as const;
+  } as const satisfies Messages;
 
-type Messages = typeof messages.ja;
-export type MessageKey = keyof Messages;
+// 各言語のメッセージを Lang と Messages のレコードにまとめる
+const messages = { ja, en } as const satisfies Record<Lang, Messages>;
 
 // 文言を取得しプレースホルダーを差し替える簡易関数
 function translate(
@@ -247,7 +255,8 @@ function translate(
   key: MessageKey,
   params?: Record<string, string | number>
 ) {
-  let template = messages[lang][key] ?? messages.ja[key];
+  // デフォルト言語の文言をフォールバックとして取得
+  let template: string = messages[lang][key] ?? messages.ja[key];
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       template = template.replace(`{{${k}}}`, String(v));
