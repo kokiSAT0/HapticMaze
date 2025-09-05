@@ -92,7 +92,12 @@ export default function OptionsScreen() {
 
       {/* 言語選択モーダル */}
       <Modal transparent visible={showLang} animationType="fade">
-        <View style={styles.modalWrapper} accessible accessibilityLabel="言語選択オーバーレイ">
+        <View
+          style={styles.modalWrapper}
+          accessible
+          // 言語選択モーダル全体のラベル
+          accessibilityLabel={t('languageSelectOverlay')}
+        >
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
               {t('selectLang')}
@@ -105,7 +110,12 @@ export default function OptionsScreen() {
 
       {/* 音量設定モーダル */}
       <Modal transparent visible={showVolume} animationType="fade">
-        <View style={styles.modalWrapper} accessible accessibilityLabel="音量設定オーバーレイ">
+        <View
+          style={styles.modalWrapper}
+          accessible
+          // 音量設定モーダル全体のラベル
+          accessibilityLabel={t('volumeSettingOverlay')}
+        >
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
               {t('volumeSettings')}

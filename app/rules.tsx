@@ -25,7 +25,7 @@ function EnemyIcon({
   spokes = 24,             // ← デフォルト 24 本
   color = 'white',
 }: EnemyIconProps) {
-
+  const { t } = useLocale();
   const cell = size;
   const cx = size / 2;
   const cy = size / 2;
@@ -48,7 +48,12 @@ function EnemyIcon({
   });
 
   return (
-    <Svg width={size} height={size} accessibilityLabel="Enemy">
+    <Svg
+      width={size}
+      height={size}
+      // 敵アイコンの説明ラベル
+      accessibilityLabel={t('enemyIcon')}
+    >
       {lines}
       <Circle cx={cx} cy={cy} r={rDot} fill={color} />
     </Svg>
@@ -57,20 +62,32 @@ function EnemyIcon({
 
 /* ─────────  Player／Goal アイコン  ───────── */
 function PlayerIcon({ size = 36, color = 'white' }: { size?: number; color?: string }) {
+  const { t } = useLocale();
   const r = size * 0.3;
   const c = size / 2;
   return (
-    <Svg width={size} height={size} accessibilityLabel="Player">
+    <Svg
+      width={size}
+      height={size}
+      // プレイヤーアイコンのラベル
+      accessibilityLabel={t('playerIcon')}
+    >
       <Circle cx={c} cy={c} r={r} fill={color} />
     </Svg>
   );
 }
 
 function GoalIcon({ size = 36, color = 'white' }: { size?: number; color?: string }) {
+  const { t } = useLocale();
   const pad = size * 0.25;
   const len = size * 0.5;
   return (
-    <Svg width={size} height={size} accessibilityLabel="Goal">
+    <Svg
+      width={size}
+      height={size}
+      // ゴールアイコンのラベル
+      accessibilityLabel={t('goalIcon')}
+    >
       <Rect x={pad} y={pad} width={len} height={len} fill={color} />
     </Svg>
   );
@@ -78,11 +95,17 @@ function GoalIcon({ size = 36, color = 'white' }: { size?: number; color?: strin
 
 /* ─────────  Visited-Goal（菱形）アイコン ───────── */
 function VisitedGoalIcon({ size = 28, color = 'white' }: { size?: number; color?: string }) {
+  const { t } = useLocale();
   const c  = size / 2;
   const r  = size * 0.3;          // PlayerIcon より少し小さめ
   const pts = `${c},${c - r} ${c + r},${c} ${c},${c + r} ${c - r},${c}`;
   return (
-    <Svg width={size} height={size} accessibilityLabel="VisitedGoal">
+    <Svg
+      width={size}
+      height={size}
+      // 訪問済みゴールアイコンのラベル
+      accessibilityLabel={t('visitedGoalIcon')}
+    >
       <Polygon points={pts} fill={color} />
     </Svg>
   );

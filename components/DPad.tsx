@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Dir } from '@/src/types/maze';
 import { UI } from '@/constants/ui';
+import { useLocale } from '@/src/locale/LocaleContext';
 
 // DPad はここに集約
 
@@ -16,6 +17,7 @@ export function DPad({
   onPress: (dir: Dir) => void;
   disabled?: boolean;
 }) {
+  const { t } = useLocale();
   return (
     <View style={styles.container}>
       {/* 一段目: 上ボタンを中央に配置 */}
@@ -25,7 +27,8 @@ export function DPad({
           disabled={disabled}
           onPress={() => onPress('Up')}
           style={[styles.btn, disabled && styles.disabledBtn]}
-          accessibilityLabel="上へ移動"
+          // 上方向への移動ボタン
+          accessibilityLabel={t('moveUp')}
         >
           {/* \u25B2: 三角形の記号を表示 */}
           <Text style={[styles.txt, disabled && styles.disabledTxt]}>▲</Text>
@@ -38,7 +41,8 @@ export function DPad({
           disabled={disabled}
           onPress={() => onPress('Left')}
           style={[styles.btn, disabled && styles.disabledBtn]}
-          accessibilityLabel="左へ移動"
+          // 左方向への移動ボタン
+          accessibilityLabel={t('moveLeft')}
         >
           <Text style={[styles.txt, disabled && styles.disabledTxt]}>◀</Text>
         </Pressable>
@@ -47,7 +51,8 @@ export function DPad({
           disabled={disabled}
           onPress={() => onPress('Right')}
           style={[styles.btn, disabled && styles.disabledBtn]}
-          accessibilityLabel="右へ移動"
+          // 右方向への移動ボタン
+          accessibilityLabel={t('moveRight')}
         >
           <Text style={[styles.txt, disabled && styles.disabledTxt]}>▶</Text>
         </Pressable>
@@ -59,7 +64,8 @@ export function DPad({
           disabled={disabled}
           onPress={() => onPress('Down')}
           style={[styles.btn, disabled && styles.disabledBtn]}
-          accessibilityLabel="下へ移動"
+          // 下方向への移動ボタン
+          accessibilityLabel={t('moveDown')}
         >
           <Text style={[styles.txt, disabled && styles.disabledTxt]}>▼</Text>
         </Pressable>

@@ -42,7 +42,8 @@ export function ResultModal({
     <ThemedView
       style={[styles.content, { top }]}
       accessible
-      accessibilityLabel="結果表示パネル"
+      // 結果パネル全体のラベルを翻訳から取得
+      accessibilityLabel={t('resultPanel')}
     >
       <ThemedText type="title" style={styles.text}>{title}</ThemedText>
       <ThemedText style={styles.text}>{steps}</ThemedText>

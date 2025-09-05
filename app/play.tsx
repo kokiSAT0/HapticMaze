@@ -203,7 +203,8 @@ export default function PlayScreen() {
       <Pressable
         style={[playStyles.homeBtn, { top: insets.top + 10 }]}
         onPress={handleExit}
-        accessibilityLabel="ホーム画面へ戻る"
+        // タイトル画面へ戻るボタン
+        accessibilityLabel={t('backToHome')}
       >
         <MaterialIcons name="home" size={24} color={UI.colors.icon} />
       </Pressable>
@@ -221,7 +222,8 @@ export default function PlayScreen() {
           handleRespawn();
         }}
         disabled={respawnLocked}
-        accessibilityLabel="敵をリスポーン"
+        // 敵の位置を再配置するボタン
+        accessibilityLabel={t('respawnEnemy')}
       >
         {/* リスポーン回数が 0 回ならアウトライン表示に切り替える */}
         <Ionicons name={resetIcon} size={24} color={resetColor} />

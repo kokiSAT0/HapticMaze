@@ -267,9 +267,9 @@ export default function TitleScreen() {
 
         {/* エラーログ一覧へ遷移するボタン */}
         {/* <PlainButton
-          title="エラーログ"
-          onPress={() => router.push("/error-logs")}
-          accessibilityLabel="エラーログ"
+          title={t('errorLogs')}
+          onPress={() => router.push('/error-logs')}
+          accessibilityLabel={t('errorLogs')}
         /> */}
 
         {/* 一番下にルール説明ページへのリンクを追加 */}
@@ -295,7 +295,8 @@ export default function TitleScreen() {
         <View
           style={styles.modalWrapper}
           accessible
-          accessibilityLabel="言語選択オーバーレイ"
+          // 言語選択モーダル全体の説明
+          accessibilityLabel={t('languageSelectOverlay')}
         >
           <ThemedView style={styles.modalContent}>
             <ThemedText type="title" lightColor="#fff" darkColor="#fff">
