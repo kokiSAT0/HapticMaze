@@ -52,6 +52,10 @@
     "experiments": {
       "typedRoutes": true
     },
+    "locales": {
+      "en": "./locales/en.json",
+      "ja": "./locales/ja.json"
+    },
     "extra": {
       "router": {},
       "eas": {}
