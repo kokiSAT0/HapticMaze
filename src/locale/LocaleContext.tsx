@@ -75,6 +75,8 @@ const ja = {
     purchaseFailure: "購入に失敗しました",
     // 復元処理に失敗したときのエラーメッセージ
     restoreFailure: "復元に失敗しました",
+    // 予期せぬエラー全般のメッセージ
+    unexpectedError: "予期せぬエラーが発生しました",
     // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
@@ -222,6 +224,8 @@ const en = {
     purchaseFailure: "Failed to complete purchase",
     // Message shown when restore fails
     restoreFailure: "Failed to restore purchase",
+    // Generic unexpected error message
+    unexpectedError: "An unexpected error occurred",
     // Message shown when BGM playback fails
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails

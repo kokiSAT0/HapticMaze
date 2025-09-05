@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import type { MessageKey } from '@/src/locale/LocaleContext';
 import { IS_TESTFLIGHT } from '@/src/utils/appEnv';
 
 interface ErrorBoundaryProps {
   /** エラー発生時に呼び出されるコールバック */
   onError: (msg: string) => void;
+  /** 翻訳関数。エラーメッセージ表示に利用 */
+  t: (key: MessageKey) => string;
   children?: React.ReactNode;
 }
 
@@ -27,9 +30,9 @@ export class ErrorBoundary extends React.Component<
     // 詳細をコンソールに出力しデバッグしやすくする
     console.error(error, info);
     // TestFlight ではエラー詳細を通知
-    const msg = IS_TESTFLIGHT
-      ? String(error)
-      : '予期せぬエラーが発生しました';
+      const msg = IS_TESTFLIGHT
+        ? String(error)
+        : this.props.t('unexpectedError');
     this.props.onError(msg);
     // フォールバック UI を表示するためフラグを立てる
     this.setState({ hasError: true });
@@ -40,7 +43,7 @@ export class ErrorBoundary extends React.Component<
       // シンプルなエラーメッセージだけを表示
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>エラーが発生しました</Text>
+          <Text>{this.props.t('unexpectedError')}</Text>
         </View>
       );
     }

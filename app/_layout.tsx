@@ -57,9 +57,10 @@ function RootLayoutInner() {
 
   // アプリ全体のエラーハンドラを設定
   useEffect(() => {
-    initGlobalErrorHandler(showSnackbar);
-    initUnhandledRejectionHandler(showSnackbar);
-  }, [showSnackbar]);
+    // グローバルなエラーハンドラを設定し、翻訳関数を渡す
+    initGlobalErrorHandler(showSnackbar, t);
+    initUnhandledRejectionHandler(showSnackbar, t);
+  }, [showSnackbar, t]);
 
   // ATT 許可を確認してから広告 SDK を初期化
   useEffect(() => {
@@ -135,7 +136,8 @@ function RootLayoutInner() {
   if (!loaded) return null;
 
   return (
-    <ErrorBoundary onError={showSnackbar}>
+    // エラーバウンダリにも翻訳関数を渡して文言を統一
+    <ErrorBoundary onError={showSnackbar} t={t}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RemoveAdsProvider>
           <BgmProvider>
