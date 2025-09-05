@@ -75,6 +75,12 @@ const ja = {
     purchaseFailure: "購入に失敗しました",
     // 復元処理に失敗したときのエラーメッセージ
     restoreFailure: "復元に失敗しました",
+    // BGM 音量の読み込みに失敗したときのエラーメッセージ
+    loadBgmVolumeFailure: "BGM 音量を読み込めませんでした",
+    // BGM 音量の保存に失敗したときのエラーメッセージ
+    saveBgmVolumeFailure: "BGM 音量を保存できませんでした",
+    // オーディオモードの設定に失敗したときのエラーメッセージ
+    audioModeFailure: "オーディオ設定に失敗しました",
     // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "BGM の再生に失敗しました",
     // 広告表示に失敗したときのエラーメッセージ
@@ -83,16 +89,27 @@ const ja = {
     adInitFailure: "広告初期化に失敗しました",
     // 追跡許可の再取得に失敗したときのエラーメッセージ
     trackingPermissionFailure: "追跡許可の再取得に失敗しました",
+
     // スコアデータ読込に失敗したときのエラーメッセージ
     loadScoreFailure: "スコアデータを読み込めませんでした",
     // スコアデータ保存に失敗したときのエラーメッセージ
     saveScoreFailure: "スコアデータを保存できませんでした",
+
+    // SE 音量読込に失敗したときのエラーメッセージ
+    loadSeVolumeFailure: "SE 音量を読み込めませんでした",
+    // SE 音量保存に失敗したときのエラーメッセージ
+    saveSeVolumeFailure: "SE 音量を保存できませんでした",
+
     // ハイスコア読込に失敗したときのエラーメッセージ
     loadHighScoreFailure: "ハイスコアを読み込めませんでした",
     // ハイスコア保存に失敗したときのエラーメッセージ
     saveHighScoreFailure: "ハイスコアを保存できませんでした",
     // ハイスコア削除に失敗したときのエラーメッセージ
     clearHighScoresFailure: "ハイスコアを削除できませんでした",
+    // 進行状況読込に失敗したときのエラーメッセージ
+    loadProgressFailure: "進行状況を読み込めませんでした",
+    // 進行状況保存に失敗したときのエラーメッセージ
+    saveProgressFailure: "進行状況を保存できませんでした",
     nextStage: "次のステージへ",
     goGameResult: "ゲームリザルトへ進む",
     gameResults: "ゲームリザルト",
@@ -152,6 +169,8 @@ const ja = {
     visitedGoalIcon: "訪問済みゴール",
     resetConfirmOverlay: "リセット確認オーバーレイ",
     errorLogs: "エラーログ一覧",
+    // エラーログが存在しない場合に表示するメッセージ
+    noLogs: "ログはありません",
     // loadMaze でサイズが不正なときのエラーメッセージ
     invalidMazeSize: "迷路サイズは 5 または 10 を指定してください",
   } as const;
@@ -224,9 +243,15 @@ const en = {
     purchaseCancelled: "Purchase cancelled",
     // Message shown when purchase fails
     purchaseFailure: "Failed to complete purchase",
-    // Message shown when restore fails
+    // 復元処理に失敗したときのエラーメッセージ
     restoreFailure: "Failed to restore purchase",
-    // Message shown when BGM playback fails
+    // BGM 音量の読み込みに失敗したときのエラーメッセージ
+    loadBgmVolumeFailure: "Failed to load BGM volume",
+    // BGM 音量の保存に失敗したときのエラーメッセージ
+    saveBgmVolumeFailure: "Failed to save BGM volume",
+    // オーディオモードの設定に失敗したときのエラーメッセージ
+    audioModeFailure: "Failed to configure audio mode",
+    // BGM 再生に失敗したときのエラーメッセージ
     playbackFailure: "Failed to play BGM",
     // Message shown when ad display fails
     adDisplayFailure: "Failed to show ad",
@@ -234,16 +259,27 @@ const en = {
     adInitFailure: "Failed to initialize ads",
     // Message shown when re-checking tracking permission fails
     trackingPermissionFailure: "Failed to re-check tracking permission",
+
     // スコアデータ読込に失敗したときのエラーメッセージ
     loadScoreFailure: "Failed to load score data",
     // スコアデータ保存に失敗したときのエラーメッセージ
     saveScoreFailure: "Failed to save score data",
+
+    // SE 音量読込に失敗したときのエラーメッセージ
+    loadSeVolumeFailure: "Failed to load SE volume",
+    // SE 音量保存に失敗したときのエラーメッセージ
+    saveSeVolumeFailure: "Failed to save SE volume",
+
     // Error message when loading high scores fails
     loadHighScoreFailure: "Failed to load high score",
     // Error message when saving high scores fails
     saveHighScoreFailure: "Failed to save high score",
     // Error message when clearing high scores fails
     clearHighScoresFailure: "Failed to clear high scores",
+    // Error message when loading progress fails
+    loadProgressFailure: "Failed to load progress",
+    // Error message when saving progress fails
+    saveProgressFailure: "Failed to save progress",
     nextStage: "Next stage",
     goGameResult: "View Game Results",
     gameResults: "Game Results",
@@ -304,6 +340,8 @@ const en = {
     visitedGoalIcon: "Visited goal",
     resetConfirmOverlay: "Reset confirmation overlay",
     errorLogs: "Error logs",
+    // エラーログが存在しない場合に表示するテキスト
+    noLogs: "No logs",
     // Error when an invalid maze size is specified in loadMaze
     invalidMazeSize: "Maze size must be 5 or 10",
   } as const satisfies Messages;
