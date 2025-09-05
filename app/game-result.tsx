@@ -36,8 +36,8 @@ export default function GameResultScreen() {
       await showInterstitial();
     } catch (e) {
       // showInterstitial から reject された場合はここへ
-      // 例外処理でエラーメッセージが表示されることを確認する
-      handleError('広告を表示できませんでした', e);
+      // 翻訳キーを使用してエラーメッセージを取得
+      handleError(t('adDisplayFailure'), e);
     } finally {
       if (needMute) resumeBgm();
       router.replace('/');

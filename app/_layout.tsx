@@ -18,7 +18,7 @@ import { useHandleError } from '@/src/utils/handleError';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GameProvider } from '@/src/game/useGame';
-import { LocaleProvider } from '@/src/locale/LocaleContext';
+import { LocaleProvider, useLocale } from '@/src/locale/LocaleContext';
 import { ResultStateProvider } from '@/src/hooks/useResultState';
 import { RunRecordProvider } from '@/src/hooks/useRunRecords';
 import { BgmProvider } from '@/src/audio/BgmProvider';
@@ -34,10 +34,23 @@ import { ErrorBoundary } from '@/src/components/ErrorBoundary';
 let adsInitialized = false;
 
 export default function RootLayout() {
+  // LocaleProvider でアプリ全体を包み、内部コンポーネントから翻訳を利用可能にする
+  return (
+    <LocaleProvider>
+      <RootLayoutInner />
+    </LocaleProvider>
+  );
+}
+
+/**
+ * 実際のレイアウト本体。翻訳関数 t を利用してエラーメッセージを表示する。
+ */
+function RootLayoutInner() {
   const colorScheme = useColorScheme();
   // スナックバー表示用フック。エラー通知に利用する
   const { show: showSnackbar } = useSnackbar();
   const handleError = useHandleError();
+  const { t } = useLocale();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -82,7 +95,8 @@ export default function RootLayout() {
         // 初期化が完了したことを示すフラグを更新
         adsInitialized = true;
       } catch (e) {
-        handleError('広告初期化に失敗しました', e);
+        // 翻訳キーを利用してエラーメッセージを表示
+        handleError(t('adInitFailure'), e);
       }
     }
 
@@ -94,7 +108,7 @@ export default function RootLayout() {
     });
     // コンポーネントがアンマウントされた場合に備えてキャンセルを行う
     return () => cancelAnimationFrame(id);
-  }, [handleError]);
+  }, [handleError, t]);
 
   // フォアグラウンド復帰時に追跡許可ステータスを再確認
   useEffect(() => {
@@ -109,14 +123,14 @@ export default function RootLayout() {
         }
         setNonPersonalized(!authorized);
       } catch (e) {
-          // 取得に失敗した場合はエラーハンドラで通知
-        handleError('追跡許可の再取得に失敗しました', e);
+        // 取得に失敗した場合は翻訳キーから文言を取得して表示
+        handleError(t('trackingPermissionFailure'), e);
       }
     };
 
     const sub = AppState.addEventListener('change', handleAppStateChange);
     return () => sub.remove();
-  }, [handleError]);
+  }, [handleError, t]);
 
   if (!loaded) return null;
 
@@ -124,33 +138,31 @@ export default function RootLayout() {
     <ErrorBoundary onError={showSnackbar}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RemoveAdsProvider>
-          <LocaleProvider>
-            <BgmProvider>
-              <SeVolumeProvider>
-                <ResultStateProvider>
-                  <RunRecordProvider>
-                    <GameProvider>
-                      <Stack>
-                        <Stack.Screen name="index" options={{ headerShown: false }} />
-                        <Stack.Screen name="practice" options={{ headerShown: false }} />
-                        <Stack.Screen name="scores" options={{ headerShown: false }} />
-                        <Stack.Screen name="options" options={{ headerShown: false }} />
-                        <Stack.Screen name="rules" options={{ headerShown: false }} />
-                        <Stack.Screen name="play" options={{ headerShown: false }} />
-                        <Stack.Screen name="stage" options={{ headerShown: false }} />
-                        <Stack.Screen name="reset" options={{ headerShown: false }} />
-                        <Stack.Screen name="game-result" options={{ headerShown: false }} />
-                  {/* デバッグ用のエラーログ一覧画面 */}
-                        <Stack.Screen name="error-logs" options={{ headerShown: false }} />
-                        <Stack.Screen name="+not-found" />
-                      </Stack>
-                    </GameProvider>
-                  </RunRecordProvider>
-                </ResultStateProvider>
-                <StatusBar style="auto" />
-              </SeVolumeProvider>
-            </BgmProvider>
-          </LocaleProvider>
+          <BgmProvider>
+            <SeVolumeProvider>
+              <ResultStateProvider>
+                <RunRecordProvider>
+                  <GameProvider>
+                    <Stack>
+                      <Stack.Screen name="index" options={{ headerShown: false }} />
+                      <Stack.Screen name="practice" options={{ headerShown: false }} />
+                      <Stack.Screen name="scores" options={{ headerShown: false }} />
+                      <Stack.Screen name="options" options={{ headerShown: false }} />
+                      <Stack.Screen name="rules" options={{ headerShown: false }} />
+                      <Stack.Screen name="play" options={{ headerShown: false }} />
+                      <Stack.Screen name="stage" options={{ headerShown: false }} />
+                      <Stack.Screen name="reset" options={{ headerShown: false }} />
+                      <Stack.Screen name="game-result" options={{ headerShown: false }} />
+                      {/* デバッグ用のエラーログ一覧画面 */}
+                      <Stack.Screen name="error-logs" options={{ headerShown: false }} />
+                      <Stack.Screen name="+not-found" />
+                    </Stack>
+                  </GameProvider>
+                </RunRecordProvider>
+              </ResultStateProvider>
+              <StatusBar style="auto" />
+            </SeVolumeProvider>
+          </BgmProvider>
         </RemoveAdsProvider>
       </ThemeProvider>
     </ErrorBoundary>

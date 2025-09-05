@@ -66,8 +66,8 @@ export default function TitleScreen() {
         showSnackbar(t("purchaseCancelled"));
         return;
       }
-      // それ以外は共通エラーハンドラへ
-      handleError("購入に失敗しました", e);
+      // それ以外は翻訳キーを使ってエラーメッセージを表示
+      handleError(t('purchaseFailure'), e);
     }
   };
 
