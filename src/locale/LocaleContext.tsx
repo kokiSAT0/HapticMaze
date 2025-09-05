@@ -249,8 +249,12 @@ function translate(
 ) {
   let template = messages[lang][key] ?? messages.ja[key];
   if (params) {
+    // 渡されたプレースホルダーと値の組を順番に処理する
     for (const [k, v] of Object.entries(params)) {
-      template = template.replace(`{{${k}}}`, String(v));
+      // すべての出現箇所を置換するため g フラグ付きの正規表現を使用
+      const regex = new RegExp(`{{${k}}}`, "g");
+      // 正規表現にマッチしたすべての箇所を実際の値に差し替える
+      template = template.replace(regex, String(v));
     }
   }
   return template;
