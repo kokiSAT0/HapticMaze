@@ -24,10 +24,17 @@ const { loadMaze, resetMazePools } = (() => {
     // 5 でも 10 でもない場合はエラー扱い
     if (size !== 5 && size !== 10) {
       console.error('loadMaze: invalid size', size);
-      // 翻訳関数が渡されていればキーから文言を取得する
-      const msg = opts.t
-        ? opts.t('invalidMazeSize')
-        : '迷路サイズは 5 または 10 を指定してください';
+      // 翻訳関数が渡されなくても必ず t('invalidMazeSize') を利用するため
+      // デフォルトの翻訳関数を用意して英語メッセージを返す
+      const t = opts.t ?? ((key: MessageKey) => {
+        // 想定しているキーは invalidMazeSize のみだが、他のキーが来た場合はそのまま返す
+        if (key === 'invalidMazeSize') {
+          return 'Maze size must be 5 or 10';
+        }
+        return key;
+      });
+      // 上記で用意した t を利用してエラーメッセージを取得する
+      const msg = t('invalidMazeSize');
       opts.showError?.(msg);
       // 初心者向け: 不正な値はデフォルトの10に置き換える
       size = 10;

@@ -42,4 +42,18 @@ describe('loadMaze', () => {
 
     spy.mockRestore();
   });
+
+  test('翻訳関数が無い場合は英語メッセージで通知される', () => {
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const showError = jest.fn();
+
+    // t を渡さずに呼び出した場合、内部のデフォルト関数が英語メッセージを返す
+    const maze = loadMaze(8, { showError });
+
+    expect(spy).toHaveBeenCalled();
+    expect(showError).toHaveBeenCalledWith('Maze size must be 5 or 10');
+    expect(maze.size).toBe(10);
+
+    spy.mockRestore();
+  });
 });
